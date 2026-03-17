@@ -1,0 +1,102 @@
+[
+  {
+    "id": 1,
+    "title": "Senior AI Engineer",
+    "company": "TechCorp",
+    "required_skills": ["Python", "Deep Learning", "LLM Fine-tuning", "Cloud Architecture"],
+    "nice_to_have": ["Prompt Engineering", "Kubernetes", "Rust"],
+    "salary_range": [160000, 200000],
+    "posted_date": "2024-11-15",
+    "category": "AI/ML"
+  },
+  {
+    "id": 2,
+    "title": "ML Platform Engineer",
+    "company": "DataFlow Inc",
+    "required_skills": ["Python", "Machine Learning", "Kubernetes", "Cloud Architecture"],
+    "nice_to_have": ["Go", "Deep Learning", "DevOps"],
+    "salary_range": [140000, 175000],
+    "posted_date": "2024-11-20",
+    "category": "AI/ML"
+  },
+  {
+    "id": 3,
+    "title": "Full Stack Developer",
+    "company": "WebScale",
+    "required_skills": ["TypeScript", "React", "Next.js", "SQL"],
+    "nice_to_have": ["Cloud Architecture", "DevOps", "Python"],
+    "salary_range": [110000, 140000],
+    "posted_date": "2024-11-18",
+    "category": "Engineering"
+  },
+  {
+    "id": 4,
+    "title": "Cloud Security Engineer",
+    "company": "SecureNet",
+    "required_skills": ["Cybersecurity", "Cloud Architecture", "Python", "Kubernetes"],
+    "nice_to_have": ["DevOps", "Go", "Machine Learning"],
+    "salary_range": [130000, 165000],
+    "posted_date": "2024-11-22",
+    "category": "Security"
+  },
+  {
+    "id": 5,
+    "title": "Data Scientist",
+    "company": "InsightAI",
+    "required_skills": ["Python", "Machine Learning", "SQL", "Data Analysis"],
+    "nice_to_have": ["Deep Learning", "Communication", "Technical Writing"],
+    "salary_range": [120000, 155000],
+    "posted_date": "2024-11-10",
+    "category": "Data"
+  },
+  {
+    "id": 6,
+    "title": "DevOps Lead",
+    "company": "CloudFirst",
+    "required_skills": ["DevOps", "Kubernetes", "Cloud Architecture", "Python"],
+    "nice_to_have": ["Cybersecurity", "Go", "Leadership"],
+    "salary_range": [135000, 160000],
+    "posted_date": "2024-11-25",
+    "category": "Infrastructure"
+  },
+  {
+    "id": 7,
+    "title": "Frontend Architect",
+    "company": "PixelPerfect",
+    "required_skills": ["TypeScript", "React", "Next.js", "UI/UX Design"],
+    "nice_to_have": ["Figma", "Communication", "Problem Solving"],
+    "salary_range": [125000, 155000],
+    "posted_date": "2024-11-12",
+    "category": "Engineering"
+  },
+  {
+    "id": 8,
+    "title": "Prompt Engineer",
+    "company": "GenAI Labs",
+    "required_skills": ["Prompt Engineering", "Python", "LLM Fine-tuning", "Communication"],
+    "nice_to_have": ["Deep Learning", "Technical Writing", "Machine Learning"],
+    "salary_range": [130000, 170000],
+    "posted_date": "2024-11-28",
+    "category": "AI/ML"
+  },
+  {
+    "id": 9,
+    "title": "Backend Engineer (Rust)",
+    "company": "HighPerf Systems",
+    "required_skills": ["Rust", "Cloud Architecture", "DevOps"],
+    "nice_to_have": ["Go", "Kubernetes", "Cybersecurity"],
+    "salary_range": [140000, 180000],
+    "posted_date": "2024-11-30",
+    "category": "Engineering"
+  },
+  {
+    "id": 10,
+    "title": "Product Manager - AI",
+    "company": "AI Ventures",
+    "required_skills": ["Communication", "Leadership", "Data Analysis", "Machine Learning"],
+    "nice_to_have": ["Prompt Engineering", "Agile/Scrum", "Problem Solving"],
+    "salary_range": [140000, 175000],
+    "posted_date": "2024-12-01",
+    "category": "Management"
+  }
+]

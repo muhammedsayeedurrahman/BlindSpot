@@ -1,0 +1,2 @@
+# Vercel serverless Python functions — no external deps needed
+# (stdlib only: csv, json, math, os)

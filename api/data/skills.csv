@@ -1,0 +1,31 @@
+skill,category,demand_2024,demand_2027,growth_rate,automation_risk
+Python,Programming,92,88,0.04,0.15
+JavaScript,Programming,90,82,0.02,0.18
+TypeScript,Programming,78,85,0.12,0.12
+Rust,Programming,45,72,0.35,0.05
+Go,Programming,55,68,0.28,0.08
+SQL,Data,85,78,-0.02,0.25
+Data Analysis,Data,80,85,0.08,0.30
+Machine Learning,AI/ML,75,92,0.25,0.10
+Deep Learning,AI/ML,60,82,0.30,0.08
+Prompt Engineering,AI/ML,40,88,0.45,0.05
+LLM Fine-tuning,AI/ML,30,78,0.50,0.06
+Cloud Architecture,Infrastructure,82,90,0.15,0.12
+Kubernetes,Infrastructure,65,80,0.20,0.10
+DevOps,Infrastructure,78,82,0.08,0.15
+Cybersecurity,Security,70,88,0.22,0.08
+React,Frontend,88,80,0.01,0.20
+Next.js,Frontend,60,75,0.18,0.15
+UI/UX Design,Design,72,68,0.00,0.35
+Figma,Design,65,60,-0.02,0.30
+Project Management,Management,75,70,-0.01,0.40
+Agile/Scrum,Management,70,62,-0.05,0.45
+Communication,Soft Skills,80,82,0.03,0.05
+Leadership,Soft Skills,70,72,0.04,0.03
+Problem Solving,Soft Skills,85,90,0.06,0.02
+Critical Thinking,Soft Skills,82,88,0.05,0.02
+Excel,Data,80,55,-0.10,0.60
+Manual Testing,QA,65,40,-0.15,0.70
+Data Entry,Admin,50,20,-0.25,0.85
+Bookkeeping,Finance,55,30,-0.18,0.75
+Technical Writing,Content,60,50,-0.05,0.45
