@@ -7,6 +7,7 @@ import IllusionChart from '../components/IllusionChart'
 import CareerTwin from '../components/CareerTwin'
 import Roadmap from '../components/Roadmap'
 import AlertPanel from '../components/AlertPanel'
+import CurrencyToggle from '../components/CurrencyToggle'
 
 // Demo data used when no API result is provided
 const DEMO_DATA = {
@@ -111,9 +112,12 @@ export default function Dashboard() {
             {profile.name} &bull; {profile.current_role} &bull; {profile.years_experience}y exp
           </p>
         </div>
-        <button onClick={() => navigate('/onboarding')} className="btn-secondary text-sm">
-          Re-analyze
-        </button>
+        <div className="flex items-center gap-3">
+          <CurrencyToggle />
+          <button onClick={() => navigate('/onboarding')} className="btn-secondary text-sm">
+            Re-analyze
+          </button>
+        </div>
       </motion.div>
 
       {/* Alert Panel */}

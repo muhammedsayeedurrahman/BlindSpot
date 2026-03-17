@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion'
+import { useCurrency } from '../context/CurrencyContext'
+import { formatSalaryRange } from '../utils/currency'
 
 export default function Roadmap({ data, jobs }) {
+  const { currency } = useCurrency()
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* Timeline */}
@@ -87,7 +90,7 @@ export default function Roadmap({ data, jobs }) {
 
               <div className="flex items-center gap-2">
                 <span className="text-white/30 text-xs">
-                  ${job.salary_range[0].toLocaleString()} - ${job.salary_range[1].toLocaleString()}
+                  {formatSalaryRange(job.salary_range, currency)}
                 </span>
               </div>
 

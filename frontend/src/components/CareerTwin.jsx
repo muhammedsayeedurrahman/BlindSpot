@@ -10,10 +10,13 @@ import {
   Legend,
 } from 'chart.js'
 import { motion } from 'framer-motion'
+import { useCurrency } from '../context/CurrencyContext'
+import { formatSalary, formatSalaryCompact } from '../utils/currency'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend)
 
 export default function CareerTwin({ data }) {
+  const { currency } = useCurrency()
   const { current_path, optimized_path, recommended_skills } = data
 
   const chartData = {
@@ -50,7 +53,7 @@ export default function CareerTwin({ data }) {
       },
       tooltip: {
         callbacks: {
-          label: (ctx) => `${ctx.dataset.label}: $${ctx.parsed.y.toLocaleString()}`,
+          label: (ctx) => `${ctx.dataset.label}: ${formatSalary(ctx.parsed.y, currency)}`,
         },
         backgroundColor: '#1a1a2e',
         borderColor: 'rgba(0, 240, 255, 0.3)',
@@ -66,7 +69,7 @@ export default function CareerTwin({ data }) {
         grid: { color: 'rgba(255,255,255,0.05)' },
         ticks: {
           color: 'rgba(255,255,255,0.6)',
-          callback: (v) => `$${(v / 1000).toFixed(0)}k`,
+          callback: (v) => formatSalaryCompact(v, currency),
         },
       },
     },
@@ -88,7 +91,7 @@ export default function CareerTwin({ data }) {
         <div className="bg-dark-700/50 rounded-xl p-4">
           <p className="text-xs text-white/40 mb-1">Salary uplift by 2027</p>
           <p className="text-2xl font-bold text-neon-green">
-            +${salaryDiff.toLocaleString()}
+            +{formatSalary(salaryDiff, currency)}
           </p>
         </div>
 
