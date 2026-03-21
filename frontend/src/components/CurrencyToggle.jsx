@@ -10,7 +10,13 @@ export default function CurrencyToggle() {
   const { currency, toggleCurrency } = useCurrency()
 
   return (
-    <div className="inline-flex items-center bg-dark-800/80 backdrop-blur-sm border border-white/10 rounded-lg p-0.5 text-xs">
+    <div
+      className="inline-flex items-center backdrop-blur-sm rounded-lg p-0.5 text-xs border"
+      style={{
+        backgroundColor: 'var(--bg-secondary)',
+        borderColor: 'var(--border-default)',
+      }}
+    >
       {options.map((opt) => (
         <button
           key={opt.key}
@@ -26,8 +32,9 @@ export default function CurrencyToggle() {
           )}
           <span
             className={`relative z-10 ${
-              currency === opt.key ? 'text-neon-cyan' : 'text-white/40'
+              currency === opt.key ? 'text-neon-cyan' : ''
             }`}
+            style={currency !== opt.key ? { color: 'var(--text-tertiary)' } : undefined}
           >
             {opt.label}
           </span>

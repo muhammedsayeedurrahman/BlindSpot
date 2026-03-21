@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Bar } from 'react-chartjs-2'
 import {
   Chart as ChartJS,
@@ -7,11 +8,22 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js'
+import { useTheme } from '../context/ThemeContext'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend)
 
 export default function IllusionChart({ data }) {
-  const chartData = {
+  const { isDark } = useTheme()
+
+  const textColor = isDark ? 'rgba(255,255,255,0.7)' : 'rgba(26,26,46,0.7)'
+  const textColorMuted = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(26,26,46,0.5)'
+  const textColorFaint = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(26,26,46,0.4)'
+  const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(26,26,46,0.06)'
+  const tooltipBg = isDark ? '#1a1a2e' : '#ffffff'
+  const tooltipBorder = isDark ? 'rgba(0, 240, 255, 0.3)' : 'rgba(0, 160, 190, 0.3)'
+  const legendColor = isDark ? 'rgba(255,255,255,0.6)' : 'rgba(26,26,46,0.6)'
+
+  const chartData = useMemo(() => ({
     labels: data.map((d) => d.skill),
     datasets: [
       {
@@ -31,14 +43,14 @@ export default function IllusionChart({ data }) {
         borderRadius: 4,
       },
     ],
-  }
+  }), [data])
 
-  const options = {
+  const options = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        labels: { color: 'rgba(255,255,255,0.6)', usePointStyle: true },
+        labels: { color: legendColor, usePointStyle: true },
       },
       tooltip: {
         callbacks: {
@@ -51,24 +63,26 @@ export default function IllusionChart({ data }) {
             return ''
           },
         },
-        backgroundColor: '#1a1a2e',
-        borderColor: 'rgba(0, 240, 255, 0.3)',
+        backgroundColor: tooltipBg,
+        titleColor: isDark ? '#fff' : '#1a1a2e',
+        bodyColor: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(26,26,46,0.8)',
+        borderColor: tooltipBorder,
         borderWidth: 1,
       },
     },
     scales: {
       x: {
         grid: { display: false },
-        ticks: { color: 'rgba(255,255,255,0.7)', font: { size: 10 } },
+        ticks: { color: textColor, font: { size: 10 } },
       },
       y: {
-        grid: { color: 'rgba(255,255,255,0.05)' },
-        ticks: { color: 'rgba(255,255,255,0.5)' },
+        grid: { color: gridColor },
+        ticks: { color: textColorMuted },
         max: 100,
-        title: { display: true, text: 'Score', color: 'rgba(255,255,255,0.4)' },
+        title: { display: true, text: 'Score', color: textColorFaint },
       },
     },
-  }
+  }), [data, isDark, textColor, textColorMuted, textColorFaint, gridColor, legendColor, tooltipBg, tooltipBorder])
 
   return (
     <div className="h-64">

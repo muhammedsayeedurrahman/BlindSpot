@@ -10,6 +10,9 @@ from models.survival import SkillSurvivalAnalyzer
 from models.illusion import CompetenceIllusionDetector
 from models.index import BlindSpotIndex
 from models.twin import CareerTwinEngine
+from models.courses import CourseRecommendationEngine
+from models.insights import InsightEngine
+from models.benchmark import BenchmarkEngine
 
 app = Flask(__name__)
 CORS(app)
@@ -18,6 +21,9 @@ survival_analyzer = SkillSurvivalAnalyzer()
 illusion_detector = CompetenceIllusionDetector()
 blindspot_index = BlindSpotIndex()
 twin_engine = CareerTwinEngine()
+course_engine = CourseRecommendationEngine()
+insight_engine = InsightEngine()
+benchmark_engine = BenchmarkEngine()
 
 
 @app.route("/api/analyze", methods=["POST"])
@@ -48,16 +54,32 @@ def analyze():
     bsi = blindspot_index.calculate(skill_names, survival, illusion)
     twin = twin_engine.project(skill_names, data.get("current_role"))
 
+    current_role = data.get("current_role", "Unknown")
+    optimized_role = twin.get("optimized_path", {}).get("role", current_role)
+
+    courses = course_engine.recommend(
+        twin.get("recommended_skills", []),
+        current_role,
+        optimized_role,
+    )
+    ai_insights = insight_engine.generate(bsi, survival, illusion, twin)
+    benchmarks = benchmark_engine.compare(skill_names, current_role)
+
     return jsonify({
         "profile": {
             "name": data.get("name", "Anonymous"),
-            "current_role": data.get("current_role", "Unknown"),
+            "current_role": current_role,
             "years_experience": data.get("years_experience", 0),
+            "linkedin_url": data.get("linkedin_url", ""),
+            "github_username": data.get("github_username", ""),
         },
         "blindspot_index": bsi,
         "skill_survival": survival,
         "competence_illusion": illusion,
         "career_twin": twin,
+        "course_recommendations": courses,
+        "ai_insights": ai_insights,
+        "benchmarks": benchmarks,
     })
 
 

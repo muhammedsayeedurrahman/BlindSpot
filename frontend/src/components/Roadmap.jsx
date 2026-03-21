@@ -8,7 +8,7 @@ export default function Roadmap({ data, jobs }) {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* Timeline */}
       <div>
-        <h3 className="text-sm font-semibold text-white/60 mb-4 uppercase tracking-wider">
+        <h3 className="text-sm font-semibold theme-text-tertiary mb-4 uppercase tracking-wider">
           Learning Timeline
         </h3>
         <div className="relative">
@@ -32,7 +32,7 @@ export default function Roadmap({ data, jobs }) {
                 }`}
               />
 
-              <div className="bg-dark-700/50 rounded-lg p-4">
+              <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--bg-tertiary)' }}>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xs font-mono text-neon-cyan">{item.quarter}</span>
                   <span
@@ -45,8 +45,8 @@ export default function Roadmap({ data, jobs }) {
                     {item.priority}
                   </span>
                 </div>
-                <p className="text-white font-medium text-sm">{item.skill}</p>
-                <p className="text-white/40 text-xs mt-1">{item.milestone}</p>
+                <p className="theme-text font-medium text-sm">{item.skill}</p>
+                <p className="theme-text-muted text-xs mt-1">{item.milestone}</p>
               </div>
             </motion.div>
           ))}
@@ -55,7 +55,7 @@ export default function Roadmap({ data, jobs }) {
 
       {/* Matching Jobs */}
       <div>
-        <h3 className="text-sm font-semibold text-white/60 mb-4 uppercase tracking-wider">
+        <h3 className="text-sm font-semibold theme-text-tertiary mb-4 uppercase tracking-wider">
           Top Job Matches
         </h3>
         <div className="space-y-3">
@@ -65,12 +65,13 @@ export default function Roadmap({ data, jobs }) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="bg-dark-700/50 rounded-lg p-4"
+              className="rounded-lg p-4"
+              style={{ backgroundColor: 'var(--bg-tertiary)' }}
             >
               <div className="flex justify-between items-start mb-2">
                 <div>
-                  <p className="text-white font-medium text-sm">{job.title}</p>
-                  <p className="text-white/40 text-xs">{job.company}</p>
+                  <p className="theme-text font-medium text-sm">{job.title}</p>
+                  <p className="theme-text-muted text-xs">{job.company}</p>
                 </div>
                 <div className="text-right">
                   <span
@@ -84,19 +85,19 @@ export default function Roadmap({ data, jobs }) {
                   >
                     {job.match_percentage}%
                   </span>
-                  <p className="text-white/30 text-xs">match</p>
+                  <p className="theme-text-muted text-xs">match</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-white/30 text-xs">
+                <span className="theme-text-muted text-xs">
                   {formatSalaryRange(job.salary_range, currency)}
                 </span>
               </div>
 
               {job.missing_skills.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
-                  <span className="text-white/30 text-xs">Missing:</span>
+                  <span className="theme-text-muted text-xs">Missing:</span>
                   {job.missing_skills.map((s) => (
                     <span key={s} className="text-xs px-1.5 py-0.5 rounded bg-neon-orange/15 text-neon-orange">
                       {s}
