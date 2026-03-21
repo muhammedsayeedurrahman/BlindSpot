@@ -22,10 +22,16 @@ class SkillSurvivalAnalyzer:
         growth = skill["growth_rate"]
         auto_risk = skill["automation_risk"]
 
-        # Decay rate: negative growth + automation pressure
-        decay = max(0.01, auto_risk - growth)
-        # Half-life formula: t = ln(2) / decay_rate
-        return round(math.log(2) / decay, 1)
+        net_decay = auto_risk - growth
+
+        if net_decay > 0:
+            # Skill is declining: classic half-life formula
+            return round(math.log(2) / net_decay, 1)
+        else:
+            # Skill is growing: use log scaling to differentiate thriving skills
+            # Higher net growth → longer projected relevance
+            net_growth = abs(net_decay)
+            return round(10 + math.log1p(net_growth * 10) * 8, 1)
 
     def analyze(self, user_skills):
         """Return survival analysis for a list of user skills."""

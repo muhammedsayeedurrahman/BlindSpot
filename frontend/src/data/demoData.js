@@ -18,12 +18,12 @@ const DEMO_DATA = {
     weights: { skill_decay: 0.3, illusion_gap: 0.25, market_mismatch: 0.25, concentration_risk: 0.2 },
   },
   skill_survival: [
-    { skill: 'Excel', half_life_years: 1.5, status: 'critical', automation_risk: 0.6, growth_rate: -0.1, demand_trend: 'declining' },
+    { skill: 'Excel', half_life_years: 1.0, status: 'critical', automation_risk: 0.61, growth_rate: -0.09, demand_trend: 'declining' },
     { skill: 'JavaScript', half_life_years: 4.3, status: 'at_risk', automation_risk: 0.18, growth_rate: 0.02, demand_trend: 'stable' },
-    { skill: 'React', half_life_years: 3.6, status: 'at_risk', automation_risk: 0.2, growth_rate: 0.01, demand_trend: 'stable' },
-    { skill: 'SQL', half_life_years: 2.6, status: 'at_risk', automation_risk: 0.25, growth_rate: -0.02, demand_trend: 'stable' },
-    { skill: 'Python', half_life_years: 6.3, status: 'stable', automation_risk: 0.15, growth_rate: 0.04, demand_trend: 'stable' },
-    { skill: 'TypeScript', half_life_years: 69.3, status: 'thriving', automation_risk: 0.12, growth_rate: 0.12, demand_trend: 'stable' },
+    { skill: 'React', half_life_years: 3.6, status: 'at_risk', automation_risk: 0.21, growth_rate: 0.01, demand_trend: 'stable' },
+    { skill: 'SQL', half_life_years: 2.6, status: 'at_risk', automation_risk: 0.24, growth_rate: -0.02, demand_trend: 'stable' },
+    { skill: 'Python', half_life_years: 6.3, status: 'stable', automation_risk: 0.14, growth_rate: 0.04, demand_trend: 'stable' },
+    { skill: 'TypeScript', half_life_years: 10.0, status: 'stable', automation_risk: 0.12, growth_rate: 0.12, demand_trend: 'stable' },
   ],
   competence_illusion: [
     { skill: 'JavaScript', confidence: 9, market_relevance: 62.8, illusion_score: 27.2, warning: 'Moderate illusion: JavaScript confidence may not match future market value' },

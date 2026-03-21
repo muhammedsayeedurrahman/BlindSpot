@@ -1,97 +1,97 @@
 skill,category,demand_2024,demand_2027,growth_rate,automation_risk
-Python,Programming,92,88,0.04,0.15
-JavaScript,Programming,90,82,0.02,0.18
-TypeScript,Programming,78,85,0.12,0.12
-Rust,Programming,45,72,0.35,0.05
-Go,Programming,55,68,0.28,0.08
-SQL,Data,85,78,-0.02,0.25
-Data Analysis,Data,80,85,0.08,0.30
-Machine Learning,AI/ML,75,92,0.25,0.10
-Deep Learning,AI/ML,60,82,0.30,0.08
-Prompt Engineering,AI/ML,40,88,0.45,0.05
-LLM Fine-tuning,AI/ML,30,78,0.50,0.06
-Cloud Architecture,Infrastructure,82,90,0.15,0.12
-Kubernetes,Infrastructure,65,80,0.20,0.10
-DevOps,Infrastructure,78,82,0.08,0.15
-Cybersecurity,Security,70,88,0.22,0.08
-React,Frontend,88,80,0.01,0.20
-Next.js,Frontend,60,75,0.18,0.15
-UI/UX Design,Design,72,68,0.00,0.35
-Figma,Design,65,60,-0.02,0.30
-Project Management,Management,75,70,-0.01,0.40
-Agile/Scrum,Management,70,62,-0.05,0.45
-Communication,Soft Skills,80,82,0.03,0.05
-Leadership,Soft Skills,70,72,0.04,0.03
-Problem Solving,Soft Skills,85,90,0.06,0.02
-Critical Thinking,Soft Skills,82,88,0.05,0.02
-Excel,Data,80,55,-0.10,0.60
-Manual Testing,QA,65,40,-0.15,0.70
-Data Entry,Admin,50,20,-0.25,0.85
-Bookkeeping,Finance,55,30,-0.18,0.75
-Technical Writing,Content,60,50,-0.05,0.45
-Apache Spark,Data Engineering,62,78,0.22,0.12
-Apache Kafka,Data Engineering,58,76,0.25,0.10
-Apache Airflow,Data Engineering,50,72,0.30,0.11
-dbt,Data Engineering,38,68,0.42,0.09
-Snowflake,Data Engineering,55,75,0.28,0.13
-Data Warehousing,Data Engineering,60,65,0.06,0.22
-ETL Pipelines,Data Engineering,58,62,0.04,0.28
-MLflow,MLOps,35,70,0.48,0.08
-Kubeflow,MLOps,28,62,0.45,0.09
-Feature Stores,MLOps,22,58,0.52,0.07
-Model Monitoring,MLOps,30,65,0.46,0.08
-Solidity,Blockchain,32,50,0.20,0.06
-Web3 Development,Blockchain,28,48,0.22,0.07
-Smart Contracts,Blockchain,30,52,0.24,0.06
-Unity,AR/VR,48,62,0.18,0.14
-Unreal Engine,AR/VR,40,58,0.22,0.12
-3D Modeling,AR/VR,42,55,0.15,0.18
-AR Development,AR/VR,30,55,0.32,0.10
-VR Development,AR/VR,28,50,0.30,0.11
-Embedded Systems,IoT,52,65,0.18,0.08
-Edge Computing,IoT,35,62,0.35,0.07
-MQTT,IoT,30,48,0.25,0.10
-IoT Security,IoT,32,58,0.33,0.06
-React Native,Mobile,62,68,0.08,0.18
-Flutter,Mobile,50,70,0.24,0.15
-Swift,Mobile,58,62,0.05,0.16
-Kotlin,Mobile,55,65,0.12,0.14
-MongoDB,Databases,68,72,0.05,0.18
-PostgreSQL,Databases,72,80,0.10,0.15
-Redis,Databases,55,68,0.16,0.12
-Neo4j,Databases,28,48,0.30,0.10
-Playwright,Testing,35,65,0.40,0.12
-Cypress,Testing,48,58,0.12,0.18
-Jest,Testing,60,62,0.03,0.20
-Network Security,Networking,65,82,0.20,0.08
-DNS Management,Networking,50,45,-0.04,0.35
-Load Balancing,Networking,52,60,0.10,0.20
-AWS,Cloud,80,88,0.12,0.10
-Azure,Cloud,72,82,0.14,0.11
-GCP,Cloud,60,75,0.18,0.10
-Terraform,Cloud,55,78,0.28,0.09
-Pulumi,Cloud,22,50,0.45,0.08
-Computer Vision,AI/ML,52,78,0.32,0.07
-NLP,AI/ML,58,82,0.30,0.08
-Reinforcement Learning,AI/ML,35,60,0.35,0.06
-RAG Architecture,AI/ML,20,72,0.58,0.05
-AI Agents,AI/ML,15,70,0.62,0.04
-Generative AI,AI/ML,25,80,0.55,0.05
-GraphQL,Backend,50,60,0.12,0.16
-gRPC,Backend,35,52,0.22,0.12
-WebSockets,Backend,42,50,0.10,0.14
-Docker,Infrastructure,75,82,0.08,0.12
-Linux Administration,Infrastructure,72,70,-0.01,0.18
-Git,DevTools,88,88,0.00,0.10
-Microservices,Architecture,68,75,0.10,0.15
-API Design,Architecture,70,78,0.12,0.14
-System Design,Architecture,65,80,0.18,0.08
-Event-Driven Architecture,Architecture,42,62,0.25,0.10
-CI/CD,DevOps,72,80,0.10,0.15
-Site Reliability Engineering,DevOps,55,75,0.24,0.09
-Observability,DevOps,45,70,0.28,0.10
-Rust for WebAssembly,Programming,20,48,0.42,0.05
-HTMX,Frontend,18,42,0.38,0.12
-Svelte,Frontend,25,45,0.32,0.14
-Vue.js,Frontend,55,52,-0.02,0.20
-Angular,Frontend,60,48,-0.08,0.22
+Python,Programming,91,87,0.038,0.148
+JavaScript,Programming,89,81,0.017,0.182
+TypeScript,Programming,77,84,0.118,0.124
+Rust,Programming,44,71,0.342,0.048
+Go,Programming,54,67,0.276,0.082
+SQL,Data,84,77,-0.024,0.248
+Data Analysis,Data,79,84,0.078,0.296
+Machine Learning,AI/ML,74,91,0.248,0.098
+Deep Learning,AI/ML,59,81,0.296,0.078
+Prompt Engineering,AI/ML,39,87,0.446,0.052
+LLM Fine-tuning,AI/ML,29,77,0.498,0.058
+Cloud Architecture,Infrastructure,81,89,0.148,0.118
+Kubernetes,Infrastructure,64,79,0.198,0.102
+DevOps,Infrastructure,77,81,0.076,0.152
+Cybersecurity,Security,69,87,0.218,0.078
+React,Frontend,87,79,0.012,0.206
+Next.js,Frontend,59,74,0.178,0.148
+UI/UX Design,Design,71,67,-0.004,0.346
+Figma,Design,64,59,-0.024,0.298
+Project Management,Management,74,69,-0.012,0.396
+Agile/Scrum,Management,69,61,-0.048,0.448
+Communication,Soft Skills,79,81,0.028,0.048
+Leadership,Soft Skills,69,71,0.036,0.032
+Problem Solving,Soft Skills,84,89,0.058,0.022
+Critical Thinking,Soft Skills,81,87,0.048,0.018
+Excel,Data,79,54,-0.098,0.604
+Manual Testing,QA,64,39,-0.148,0.698
+Data Entry,Admin,49,19,-0.248,0.848
+Bookkeeping,Finance,54,29,-0.178,0.746
+Technical Writing,Content,59,49,-0.048,0.448
+Apache Spark,Data Engineering,61,77,0.218,0.118
+Apache Kafka,Data Engineering,57,75,0.248,0.098
+Apache Airflow,Data Engineering,49,71,0.296,0.108
+dbt,Data Engineering,37,67,0.416,0.088
+Snowflake,Data Engineering,54,74,0.278,0.128
+Data Warehousing,Data Engineering,59,64,0.058,0.218
+ETL Pipelines,Data Engineering,57,61,0.038,0.276
+MLflow,MLOps,34,69,0.478,0.082
+Kubeflow,MLOps,27,61,0.448,0.092
+Feature Stores,MLOps,21,57,0.516,0.072
+Model Monitoring,MLOps,29,64,0.458,0.078
+Solidity,Blockchain,31,49,0.198,0.062
+Web3 Development,Blockchain,27,47,0.216,0.072
+Smart Contracts,Blockchain,29,51,0.238,0.058
+Unity,AR/VR,47,61,0.178,0.138
+Unreal Engine,AR/VR,39,57,0.218,0.122
+3D Modeling,AR/VR,41,54,0.148,0.178
+AR Development,AR/VR,29,54,0.318,0.098
+VR Development,AR/VR,27,49,0.296,0.112
+Embedded Systems,IoT,51,64,0.178,0.082
+Edge Computing,IoT,34,61,0.346,0.072
+MQTT,IoT,29,47,0.248,0.098
+IoT Security,IoT,31,57,0.328,0.062
+React Native,Mobile,61,67,0.078,0.182
+Flutter,Mobile,49,69,0.238,0.148
+Swift,Mobile,57,61,0.048,0.162
+Kotlin,Mobile,54,64,0.118,0.138
+MongoDB,Databases,67,71,0.048,0.178
+PostgreSQL,Databases,71,79,0.098,0.148
+Redis,Databases,54,67,0.158,0.118
+Neo4j,Databases,27,47,0.296,0.098
+Playwright,Testing,34,64,0.398,0.122
+Cypress,Testing,47,57,0.118,0.182
+Jest,Testing,59,61,0.028,0.198
+Network Security,Networking,64,81,0.198,0.082
+DNS Management,Networking,49,44,-0.038,0.348
+Load Balancing,Networking,51,59,0.098,0.198
+AWS,Cloud,79,87,0.118,0.098
+Azure,Cloud,71,81,0.138,0.108
+GCP,Cloud,59,74,0.178,0.102
+Terraform,Cloud,54,77,0.276,0.088
+Pulumi,Cloud,21,49,0.448,0.082
+Computer Vision,AI/ML,51,77,0.316,0.072
+NLP,AI/ML,57,81,0.298,0.082
+Reinforcement Learning,AI/ML,34,59,0.346,0.062
+RAG Architecture,AI/ML,19,71,0.578,0.048
+AI Agents,AI/ML,14,69,0.618,0.042
+Generative AI,AI/ML,24,79,0.548,0.052
+GraphQL,Backend,49,59,0.118,0.158
+gRPC,Backend,34,51,0.218,0.122
+WebSockets,Backend,41,49,0.098,0.142
+Docker,Infrastructure,74,81,0.078,0.118
+Linux Administration,Infrastructure,71,69,-0.012,0.178
+Git,DevTools,87,87,0.002,0.098
+Microservices,Architecture,67,74,0.098,0.148
+API Design,Architecture,69,77,0.118,0.138
+System Design,Architecture,64,79,0.178,0.082
+Event-Driven Architecture,Architecture,41,61,0.248,0.098
+CI/CD,DevOps,71,79,0.098,0.148
+Site Reliability Engineering,DevOps,54,74,0.238,0.092
+Observability,DevOps,44,69,0.276,0.098
+Rust for WebAssembly,Programming,19,47,0.416,0.052
+HTMX,Frontend,17,41,0.378,0.118
+Svelte,Frontend,24,44,0.318,0.142
+Vue.js,Frontend,54,51,-0.022,0.198
+Angular,Frontend,59,47,-0.078,0.218

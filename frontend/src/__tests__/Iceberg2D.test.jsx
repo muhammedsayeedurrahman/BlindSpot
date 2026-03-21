@@ -2,11 +2,9 @@
  * Iceberg2D Component Tests — RED phase
  *
  * These tests verify:
- *   1. The component renders the "ABOVE WATER" and "BELOW WATER" section labels.
- *   2. Skills with status "thriving" or "stable" are placed in the above-water
- *      section (rendered before the water line in the SVG tree).
- *   3. Skills with status "at_risk" or "critical" are placed in the below-water
- *      section (rendered after the water line in the SVG tree).
+ *   1. The component renders "SAFE ZONE" and "RISK ZONE" section labels.
+ *   2. Skills with status "thriving" or "stable" are placed above water.
+ *   3. Skills with status "at_risk" or "critical" are placed below water.
  *   4. Edge cases: empty data, all skills above water, all skills below water.
  *
  * Because Iceberg2D renders entirely inside an <svg>, we rely on SVG text
@@ -95,32 +93,18 @@ function getSvgTextContents(container) {
 // ---------------------------------------------------------------------------
 
 describe('Iceberg2D — section labels', () => {
-  it('renders "ABOVE WATER" label', () => {
+  it('renders "SAFE ZONE" label', () => {
     const { container } = render(<Iceberg2D survivalData={ALL_STATUSES} />)
 
     const texts = getSvgTextContents(container)
-    expect(texts).toContain('ABOVE WATER')
+    expect(texts).toContain('SAFE ZONE')
   })
 
-  it('renders "BELOW WATER" label', () => {
+  it('renders "RISK ZONE" label', () => {
     const { container } = render(<Iceberg2D survivalData={ALL_STATUSES} />)
 
     const texts = getSvgTextContents(container)
-    expect(texts).toContain('BELOW WATER')
-  })
-
-  it('renders "Safe Skills" sub-label', () => {
-    const { container } = render(<Iceberg2D survivalData={ALL_STATUSES} />)
-
-    const texts = getSvgTextContents(container)
-    expect(texts).toContain('Safe Skills')
-  })
-
-  it('renders "Hidden Risks" sub-label', () => {
-    const { container } = render(<Iceberg2D survivalData={ALL_STATUSES} />)
-
-    const texts = getSvgTextContents(container)
-    expect(texts).toContain('Hidden Risks')
+    expect(texts).toContain('RISK ZONE')
   })
 })
 
@@ -157,16 +141,8 @@ describe('Iceberg2D — skill placement above/below water line', () => {
     expect(texts).toContain('Excel')
   })
 
-  it('above-water skills (thriving, stable) appear before "BELOW WATER" label in DOM order', () => {
+  it('above-water skills (thriving, stable) appear before "RISK ZONE" label in DOM order', () => {
     /**
-     * The SVG renders in document order:
-     *   1. Sky area / above-water shapes
-     *   2. Water area / below-water shapes
-     *   3. "ABOVE WATER" label text
-     *   4. "BELOW WATER" label text
-     *   5. Above-water skill pills  ← thriving / stable
-     *   6. Below-water skill pills  ← at_risk / critical
-     *
      * We verify that the SVG text element for "TypeScript" (thriving) appears
      * BEFORE the text element for "Excel" (critical) in the DOM, confirming
      * the above/below split is wired to the correct data partitions.
@@ -253,8 +229,8 @@ describe('Iceberg2D — edge cases', () => {
     const { container } = render(<Iceberg2D survivalData={[]} />)
 
     const texts = getSvgTextContents(container)
-    expect(texts).toContain('ABOVE WATER')
-    expect(texts).toContain('BELOW WATER')
+    expect(texts).toContain('SAFE ZONE')
+    expect(texts).toContain('RISK ZONE')
   })
 
   it('handles all skills being above water (thriving/stable only)', () => {
