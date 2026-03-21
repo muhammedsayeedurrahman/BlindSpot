@@ -1,9 +1,10 @@
 import { useState, useCallback } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { useTheme } from '../context/ThemeContext'
+import { motion, AnimatePresence } from 'framer-motion'
 import Gauge from '../components/Gauge'
+import RiskCards from '../components/RiskCards'
 import Iceberg from '../components/Iceberg'
+import Iceberg2D from '../components/Iceberg2D'
 import SkillSurvivalChart from '../components/SkillSurvivalChart'
 import IllusionChart from '../components/IllusionChart'
 import CareerTwin from '../components/CareerTwin'
@@ -16,158 +17,17 @@ import BenchmarkComparison from '../components/BenchmarkComparison'
 import CourseRecommendations from '../components/CourseRecommendations'
 import ExportButton from '../components/ExportButton'
 import AnalysisHistory from '../components/AnalysisHistory'
+import ShareCard from '../components/ShareCard'
+import ProgressView from '../components/ProgressView'
+import { DashboardSkeleton } from '../components/Skeleton'
 import { saveAnalysis, loadAnalysis } from '../utils/storage'
+import DEMO_DATA from '../data/demoData'
 
-// Demo data used when no API result is provided
-const DEMO_DATA = {
-  profile: {
-    name: 'Alex Demo',
-    current_role: 'Full Stack Developer',
-    years_experience: 5,
-  },
-  blindspot_index: {
-    score: 58.2,
-    level: 'warning',
-    message: 'Notable blind spots found. Consider upskilling in emerging areas.',
-    components: {
-      skill_decay: 32.5,
-      illusion_gap: 22.0,
-      market_mismatch: 60.0,
-      concentration_risk: 75.0,
-    },
-    weights: { skill_decay: 0.3, illusion_gap: 0.25, market_mismatch: 0.25, concentration_risk: 0.2 },
-  },
-  skill_survival: [
-    { skill: 'Excel', half_life_years: 1.5, status: 'critical', automation_risk: 0.6, growth_rate: -0.1, demand_trend: 'declining' },
-    { skill: 'JavaScript', half_life_years: 4.3, status: 'at_risk', automation_risk: 0.18, growth_rate: 0.02, demand_trend: 'stable' },
-    { skill: 'React', half_life_years: 3.6, status: 'at_risk', automation_risk: 0.2, growth_rate: 0.01, demand_trend: 'stable' },
-    { skill: 'SQL', half_life_years: 2.6, status: 'at_risk', automation_risk: 0.25, growth_rate: -0.02, demand_trend: 'stable' },
-    { skill: 'Python', half_life_years: 6.3, status: 'stable', automation_risk: 0.15, growth_rate: 0.04, demand_trend: 'stable' },
-    { skill: 'TypeScript', half_life_years: 69.3, status: 'thriving', automation_risk: 0.12, growth_rate: 0.12, demand_trend: 'stable' },
-  ],
-  competence_illusion: [
-    { skill: 'JavaScript', confidence: 9, market_relevance: 62.8, illusion_score: 27.2, warning: 'Moderate illusion: JavaScript confidence may not match future market value' },
-    { skill: 'React', confidence: 8, market_relevance: 74.0, illusion_score: 6.0, warning: null },
-    { skill: 'Excel', confidence: 7, market_relevance: 49.0, illusion_score: 21.0, warning: 'Moderate illusion: Excel confidence may not match future market value' },
-    { skill: 'SQL', confidence: 7, market_relevance: 76.8, illusion_score: 0, warning: null },
-    { skill: 'Python', confidence: 6, market_relevance: 86.8, illusion_score: 0, warning: null },
-    { skill: 'TypeScript', confidence: 5, market_relevance: 86.2, illusion_score: 0, warning: null },
-  ],
-  career_twin: {
-    current_path: {
-      role: 'Full Stack Developer',
-      salary_projection: [
-        { year: 2024, salary: 118000 },
-        { year: 2025, salary: 117200 },
-        { year: 2026, salary: 116400 },
-        { year: 2027, salary: 115000 },
-      ],
-      automation_exposure: 0.28,
-      risk_level: 'moderate',
-    },
-    optimized_path: {
-      role: 'AI Engineer',
-      salary_projection: [
-        { year: 2024, salary: 150000 },
-        { year: 2025, salary: 162000 },
-        { year: 2026, salary: 170000 },
-        { year: 2027, salary: 185000 },
-      ],
-      automation_exposure: 0.08,
-      risk_level: 'low',
-    },
-    recommended_skills: [
-      { skill: 'Prompt Engineering', priority: 'high', growth_rate: 0.45, category: 'AI/ML' },
-      { skill: 'LLM Fine-tuning', priority: 'high', growth_rate: 0.5, category: 'AI/ML' },
-      { skill: 'Deep Learning', priority: 'high', growth_rate: 0.3, category: 'AI/ML' },
-      { skill: 'Cloud Architecture', priority: 'medium', growth_rate: 0.15, category: 'Infrastructure' },
-    ],
-    matching_jobs: [
-      { title: 'Full Stack Developer', company: 'WebScale', match_percentage: 75, missing_skills: ['Next.js'], salary_range: [110000, 140000] },
-      { title: 'Frontend Architect', company: 'PixelPerfect', match_percentage: 50, missing_skills: ['Next.js', 'UI/UX Design'], salary_range: [125000, 155000] },
-      { title: 'Data Scientist', company: 'InsightAI', match_percentage: 50, missing_skills: ['Machine Learning', 'Data Analysis'], salary_range: [120000, 155000] },
-    ],
-    roadmap: [
-      { quarter: 'Q1 2025', skill: 'Prompt Engineering', priority: 'high', action: 'Learn Prompt Engineering through projects and courses', milestone: 'Build a project using Prompt Engineering' },
-      { quarter: 'Q2 2025', skill: 'LLM Fine-tuning', priority: 'high', action: 'Learn LLM Fine-tuning through projects and courses', milestone: 'Build a project using LLM Fine-tuning' },
-      { quarter: 'Q3 2025', skill: 'Deep Learning', priority: 'high', action: 'Learn Deep Learning through projects and courses', milestone: 'Build a project using Deep Learning' },
-      { quarter: 'Q4 2025', skill: 'Cloud Architecture', priority: 'medium', action: 'Learn Cloud Architecture through projects and courses', milestone: 'Build a project using Cloud Architecture' },
-    ],
-  },
-  ai_insights: {
-    source: 'rule_based',
-    insights: [
-      { key: 'career_direction', title: 'Career Direction', icon: 'compass', text: 'Your career trajectory has notable blind spots (BSI: 58). The path from Full Stack Developer to AI Engineer is achievable and would strengthen your market position significantly.' },
-      { key: 'skill_gaps', title: 'Skill Gap Analysis', icon: 'target', text: '4 skills are showing signs of market erosion. While not yet critical, JavaScript, React, SQL should be supplemented with Prompt Engineering, LLM Fine-tuning to maintain competitiveness.' },
-      { key: 'market_positioning', title: 'Market Positioning', icon: 'chart', text: 'Your skill portfolio has limited overlap (40%) with the top demanded skills in the market. Focus on high-growth areas like Prompt Engineering, LLM Fine-tuning to close this gap.' },
-      { key: 'action_items', title: 'Immediate Action Items', icon: 'lightning', text: 'Re-evaluate your confidence in JavaScript — there\'s a 27-point gap between your confidence and market reality. Start with Prompt Engineering this quarter and aim to complete a portfolio project within 3 months.' },
-    ],
-  },
-  benchmarks: {
-    user_scores: { skill_breadth: 75, automation_readiness: 72, market_alignment: 40, growth_potential: 35, salary_position: 48 },
-    industry_avg: { skill_breadth: 60, automation_readiness: 55, market_alignment: 50, growth_potential: 50, salary_position: 50 },
-    summary: "You're above average in Skill Breadth, Automation Readiness, but below in Market Alignment, Growth Potential.",
-  },
-  course_recommendations: [
-    {
-      skill: 'Prompt Engineering', priority: 'high', context: 'AI & Machine Learning',
-      reason: 'Your target role AI Engineer requires Prompt Engineering proficiency with a AI & Machine Learning focus.',
-      courses: [
-        { id: 20, title: 'Prompt Engineering for Developers', provider: 'DeepLearning.AI', difficulty: 'beginner', estimated_hours: 8, topics: ['prompt patterns', 'chain-of-thought', 'few-shot learning', 'API integration'], rating: 4.8, free: true },
-        { id: 21, title: 'Advanced Prompt Engineering & LLM Applications', provider: 'Coursera', difficulty: 'intermediate', estimated_hours: 20, topics: ['RAG', 'agents', 'evaluation', 'production prompts', 'guardrails'], rating: 4.6, free: false },
-      ],
-    },
-    {
-      skill: 'LLM Fine-tuning', priority: 'high', context: 'AI & Machine Learning',
-      reason: 'Your target role AI Engineer requires LLM Fine-tuning proficiency with a AI & Machine Learning focus.',
-      courses: [
-        { id: 22, title: 'LLM Fine-tuning with Hugging Face', provider: 'DeepLearning.AI', difficulty: 'advanced', estimated_hours: 15, topics: ['LoRA', 'QLoRA', 'PEFT', 'training data', 'evaluation metrics'], rating: 4.7, free: true },
-        { id: 23, title: 'Production LLM Fine-tuning & Deployment', provider: 'Udemy', difficulty: 'advanced', estimated_hours: 25, topics: ['RLHF', 'model serving', 'optimization', 'cost management', 'monitoring'], rating: 4.5, free: false },
-      ],
-    },
-    {
-      skill: 'Deep Learning', priority: 'high', context: 'AI & Machine Learning',
-      reason: 'Your target role AI Engineer requires Deep Learning proficiency with a AI & Machine Learning focus.',
-      courses: [
-        { id: 18, title: 'Deep Learning Specialization', provider: 'Coursera', difficulty: 'advanced', estimated_hours: 80, topics: ['CNNs', 'RNNs', 'transformers', 'GANs', 'transfer learning'], rating: 4.9, free: false },
-        { id: 19, title: 'PyTorch for Deep Learning', provider: 'Udemy', difficulty: 'advanced', estimated_hours: 35, topics: ['PyTorch', 'neural networks', 'computer vision', 'NLP', 'deployment'], rating: 4.6, free: false },
-      ],
-    },
-  ],
-}
-
-const COMPONENT_LABELS = {
-  skill_decay: { label: 'Skill Decay', icon: '30%', color: 'text-neon-orange' },
-  illusion_gap: { label: 'Illusion Gap', icon: '25%', color: 'text-neon-purple' },
-  market_mismatch: { label: 'Market Mismatch', icon: '25%', color: 'text-neon-pink' },
-  concentration_risk: { label: 'Concentration Risk', icon: '20%', color: 'text-neon-cyan' },
-}
-
-
-function ComponentBar({ name, value }) {
-  const meta = COMPONENT_LABELS[name] || { label: name, icon: '', color: 'theme-text' }
-  const barColor = value > 60 ? 'bg-neon-pink' : value > 35 ? 'bg-neon-orange' : 'bg-neon-green'
-
-  return (
-    <div className="space-y-1.5">
-      <div className="flex justify-between items-center">
-        <span className="text-xs theme-text-tertiary">{meta.label}</span>
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] theme-text-muted">{meta.icon}</span>
-          <span className={`text-sm font-bold font-mono ${meta.color}`}>{value.toFixed(1)}</span>
-        </div>
-      </div>
-      <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bg-quaternary)' }}>
-        <motion.div
-          className={`h-full rounded-full ${barColor}`}
-          initial={{ width: 0 }}
-          animate={{ width: `${Math.min(value, 100)}%` }}
-          transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          style={{ boxShadow: '0 0 8px currentColor' }}
-        />
-      </div>
-    </div>
-  )
+const LEVEL_COLOR_MAP = {
+  critical: '#ff2d7c',
+  warning: '#ff6a00',
+  healthy: '#39ff14',
+  moderate: '#00f0ff',
 }
 
 function SectionHeader({ title, subtitle }) {
@@ -179,7 +39,213 @@ function SectionHeader({ title, subtitle }) {
   )
 }
 
-/* ── Stagger animation variants ────────────────────────────── */
+function CollapsibleSection({ title, subtitle, children, defaultOpen = true, delay = 0, exportSection = false }) {
+  const [isOpen, setIsOpen] = useState(defaultOpen)
+
+  return (
+    <motion.div
+      {...fadeUp(delay)}
+      data-export-section={exportSection ? '' : undefined}
+      className="glass-card-premium neon-border"
+    >
+      <button
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="w-full flex items-center justify-between p-6 pb-0 text-left"
+        aria-expanded={isOpen}
+      >
+        <div>
+          <h2 className="text-lg font-semibold theme-text">{title}</h2>
+          {subtitle && <p className="text-xs theme-text-muted mt-0.5">{subtitle}</p>}
+        </div>
+        <motion.svg
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          className="w-5 h-5 theme-text-muted flex-shrink-0"
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+        </motion.svg>
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="p-6 pt-4">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+}
+
+function TldrSummary({ bsi, survival, twin, illusion }) {
+  const criticalSkills = survival.filter((s) => s.status === 'critical')
+  const atRiskSkills = survival.filter((s) => s.status === 'at_risk')
+  const topIllusion = illusion.find((s) => s.illusion_score > 15)
+  const optimizedRole = twin?.optimized_path?.role
+  const currentSalary = twin?.current_path?.salary_projection?.at(-1)?.salary || 0
+  const optimizedSalary = twin?.optimized_path?.salary_projection?.at(-1)?.salary || 0
+  const salaryUplift = optimizedSalary - currentSalary
+
+  const bsiBullet = bsi.level === 'critical'
+    ? { icon: '!', color: 'text-neon-pink', bg: 'bg-neon-pink/10', text: `Critical BSI score of ${bsi.score.toFixed(0)} — significant career blind spots detected` }
+    : bsi.level === 'warning'
+      ? { icon: '!', color: 'text-neon-orange', bg: 'bg-neon-orange/10', text: `BSI score ${bsi.score.toFixed(0)} — notable blind spots need attention` }
+      : { icon: '\u2713', color: 'text-neon-green', bg: 'bg-neon-green/10', text: `BSI score ${bsi.score.toFixed(0)} — your career foundation is solid` }
+
+  const skillBullet = criticalSkills.length > 0
+    ? { icon: '\u2193', color: 'text-neon-pink', bg: 'bg-neon-pink/10', text: `${criticalSkills.map((s) => s.skill).join(', ')} ${criticalSkills.length === 1 ? 'is' : 'are'} in critical decay (<2 years of relevance)` }
+    : atRiskSkills.length > 0
+      ? { icon: '\u2193', color: 'text-neon-orange', bg: 'bg-neon-orange/10', text: `${atRiskSkills.length} skill${atRiskSkills.length > 1 ? 's' : ''} at risk: ${atRiskSkills.slice(0, 3).map((s) => s.skill).join(', ')}` }
+      : null
+
+  const illusionBullet = topIllusion
+    ? { icon: '?', color: 'text-neon-purple', bg: 'bg-neon-purple/10', text: `Confidence in ${topIllusion.skill} exceeds market reality by ${topIllusion.illusion_score.toFixed(0)} points` }
+    : null
+
+  const salaryBullet = optimizedRole && salaryUplift > 0
+    ? { icon: '\u2191', color: 'text-neon-cyan', bg: 'bg-neon-cyan/10', text: `Upskilling toward ${optimizedRole} could unlock +$${(salaryUplift / 1000).toFixed(0)}k in annual salary` }
+    : null
+
+  const bullets = [bsiBullet, skillBullet, illusionBullet, salaryBullet].filter(Boolean)
+
+  return (
+    <motion.div {...fadeUp(0.04)} className="glass-card-premium neon-border p-6">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-8 h-8 rounded-lg bg-neon-cyan/10 flex items-center justify-center">
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-neon-cyan">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
+          </svg>
+        </div>
+        <div>
+          <h2 className="text-lg font-semibold theme-text">TL;DR</h2>
+          <p className="text-xs theme-text-muted">Key findings at a glance</p>
+        </div>
+      </div>
+      <div className="space-y-3">
+        {bullets.map((b, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 + i * 0.08 }}
+            className="flex items-start gap-3"
+          >
+            <span className={`w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold flex-shrink-0 ${b.color} ${b.bg}`}>
+              {b.icon}
+            </span>
+            <p className="text-sm theme-text-secondary leading-relaxed">{b.text}</p>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
+const BSI_THRESHOLDS = { CRITICAL: 70, WARNING: 50, MODERATE: 30 }
+const MONTHS_MIN = 6
+const URGENCY_THRESHOLD_MONTHS = 18
+const CRITICAL_SKILL_PENALTY_MONTHS = 3
+const AT_RISK_SKILL_PENALTY_MONTHS = 1
+
+function estimateMonthsToIrrelevance(bsiScore, criticalCount, atRiskCount) {
+  let base
+  if (bsiScore >= BSI_THRESHOLDS.CRITICAL) {
+    base = Math.round(12 + (100 - bsiScore) * 0.3)
+  } else if (bsiScore >= BSI_THRESHOLDS.WARNING) {
+    base = Math.round(18 + (BSI_THRESHOLDS.CRITICAL - bsiScore) * 0.6)
+  } else if (bsiScore >= BSI_THRESHOLDS.MODERATE) {
+    base = Math.round(30 + (BSI_THRESHOLDS.WARNING - bsiScore) * 1.2)
+  } else {
+    base = Math.round(54 + (BSI_THRESHOLDS.MODERATE - bsiScore) * 2)
+  }
+  return Math.max(MONTHS_MIN, base - criticalCount * CRITICAL_SKILL_PENALTY_MONTHS - atRiskCount * AT_RISK_SKILL_PENALTY_MONTHS)
+}
+
+function TimeToIrrelevanceAlert({ bsi, survival }) {
+  const criticalCount = survival.filter((s) => s.status === 'critical').length
+  const atRiskCount = survival.filter((s) => s.status === 'at_risk').length
+  const avgHalfLife = survival.reduce((sum, s) => sum + s.half_life_years, 0) / survival.length
+
+  if (bsi.score < BSI_THRESHOLDS.MODERATE) return null
+
+  const months = estimateMonthsToIrrelevance(bsi.score, criticalCount, atRiskCount)
+  const isUrgent = months <= URGENCY_THRESHOLD_MONTHS
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2, duration: 0.5 }}
+      className={`alert-pulse flex items-center gap-4 px-5 py-4 rounded-xl border ${
+        isUrgent
+          ? 'border-neon-pink/40 bg-neon-pink/8'
+          : 'border-neon-orange/30 bg-neon-orange/5'
+      }`}
+    >
+      <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${
+        isUrgent ? 'bg-neon-pink/15 text-neon-pink' : 'bg-neon-orange/15 text-neon-orange'
+      }`}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className={`text-sm font-bold ${isUrgent ? 'text-neon-pink' : 'text-neon-orange'}`}>
+          ~{months} months to irrelevance
+        </p>
+        <p className="text-xs theme-text-tertiary mt-0.5 leading-relaxed">
+          At current trajectory, {criticalCount > 0 ? `${criticalCount} critical skill${criticalCount > 1 ? 's' : ''} and ` : ''}
+          {atRiskCount > 0 ? `${atRiskCount} at-risk skill${atRiskCount > 1 ? 's' : ''} ` : 'your skill portfolio '}
+          will significantly erode your market value. Average skill half-life: {avgHalfLife.toFixed(1)} years.
+        </p>
+      </div>
+      <div className={`hidden sm:block text-3xl font-black font-mono ${isUrgent ? 'text-neon-pink' : 'text-neon-orange'}`}
+        style={{ opacity: 0.7 }}
+      >
+        {months}mo
+      </div>
+    </motion.div>
+  )
+}
+
+function IcebergToggle({ mode, onToggle }) {
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        onClick={() => onToggle('2d')}
+        className={`px-3 py-1 rounded-lg text-[11px] font-medium transition-all ${
+          mode === '2d'
+            ? 'bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/30'
+            : 'theme-text-muted border border-transparent hover:border-[var(--border-default)]'
+        }`}
+      >
+        2D View
+      </button>
+      <button
+        onClick={() => onToggle('3d')}
+        className={`px-3 py-1 rounded-lg text-[11px] font-medium transition-all ${
+          mode === '3d'
+            ? 'bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/30'
+            : 'theme-text-muted border border-transparent hover:border-[var(--border-default)]'
+        }`}
+      >
+        3D View
+      </button>
+    </div>
+  )
+}
+
+/* Stagger animation variants */
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24, filter: 'blur(4px)' },
   animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
@@ -191,16 +257,20 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const [data, setData] = useState(() => location.state?.data || DEMO_DATA)
   const [saveToast, setSaveToast] = useState(false)
+  const [isLoading] = useState(false)
+  const [icebergMode, setIcebergMode] = useState('2d')
 
   const { profile, blindspot_index: bsi, skill_survival, competence_illusion, career_twin } = data
 
   const thriving = skill_survival.filter((s) => s.status === 'thriving').length
   const atRisk = skill_survival.filter((s) => s.status === 'at_risk' || s.status === 'critical').length
 
+  const TOAST_DURATION_MS = 2000
+
   const handleSave = useCallback(() => {
     saveAnalysis(data)
     setSaveToast(true)
-    setTimeout(() => setSaveToast(false), 2000)
+    setTimeout(() => setSaveToast(false), TOAST_DURATION_MS)
   }, [data])
 
   const handleLoadHistory = useCallback((id) => {
@@ -208,11 +278,20 @@ export default function Dashboard() {
     if (loaded) setData(loaded)
   }, [])
 
+  if (isLoading) {
+    return <DashboardSkeleton />
+  }
+
   return (
-    <div className="min-h-screen">
+    <motion.div
+      className="min-h-screen"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       {/* Top Navigation Bar */}
-      <nav className="sticky top-0 z-50 nav-glass">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
+      <nav className="sticky top-0 z-50 nav-glass" role="navigation" aria-label="Dashboard navigation">
+        <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate('/')}
@@ -224,7 +303,7 @@ export default function Dashboard() {
             <span className="hidden sm:inline" style={{ color: 'var(--text-muted)' }}>|</span>
             <span className="text-sm hidden sm:inline theme-text-tertiary">Dashboard</span>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
+          <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-end">
             <ThemeToggle />
             <CurrencyToggle />
             <ExportButton profileName={profile.name} />
@@ -232,7 +311,8 @@ export default function Dashboard() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleSave}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium border transition-colors micro-press"
+              aria-label="Save analysis"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-medium border transition-colors micro-press"
               style={{
                 borderColor: 'var(--border-default)',
                 color: 'var(--text-tertiary)',
@@ -241,12 +321,12 @@ export default function Dashboard() {
               <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
                 <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z" />
               </svg>
-              Save
+              <span className="hidden sm:inline">Save</span>
             </motion.button>
             <AnalysisHistory onLoad={handleLoadHistory} />
             <button
               onClick={() => navigate('/onboarding')}
-              className="px-4 py-2 rounded-lg text-xs font-medium border transition-colors micro-press"
+              className="px-3 sm:px-4 py-2 rounded-lg text-xs font-medium border transition-colors micro-press"
               style={{
                 borderColor: 'var(--border-default)',
                 color: 'var(--text-tertiary)',
@@ -270,7 +350,7 @@ export default function Dashboard() {
         </motion.div>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 space-y-6">
+      <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-6 space-y-6">
         {/* Profile header + quick stats */}
         <motion.div {...fadeUp(0)} data-export-section className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
@@ -301,7 +381,7 @@ export default function Dashboard() {
               transition={{ type: 'spring', stiffness: 400, damping: 15 }}
               className="stat-card"
             >
-              <p className="text-lg font-bold font-mono" style={{ color: bsi.level === 'critical' ? '#ff2d7c' : bsi.level === 'warning' ? '#ff6a00' : '#39ff14' }}>
+              <p className="text-lg font-bold font-mono" style={{ color: LEVEL_COLOR_MAP[bsi.level] || '#39ff14' }}>
                 {bsi.score.toFixed(0)}
               </p>
               <p className="text-[10px] theme-text-muted uppercase">BSI Score</p>
@@ -309,85 +389,147 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
+        {/* TL;DR Summary */}
+        <TldrSummary bsi={bsi} survival={skill_survival} twin={career_twin} illusion={competence_illusion} />
+
         {/* Alert Panel */}
         <motion.div {...fadeUp(0.08)}>
           <AlertPanel bsi={bsi} illusions={competence_illusion} survival={skill_survival} />
         </motion.div>
 
+        {/* Time-to-Irrelevance Alert */}
+        <TimeToIrrelevanceAlert bsi={bsi} survival={skill_survival} />
+
         {/* AI Insights */}
         {data.ai_insights && (
-          <motion.div {...fadeUp(0.12)} data-export-section className="glass-card-premium neon-border p-6">
-              <SectionHeader title="AI Career Insights" subtitle="Personalized intelligence from your analysis" />
-              <AIInsights data={data.ai_insights} />
-            </motion.div>
+          <CollapsibleSection
+            title="AI Career Insights"
+            subtitle="Personalized intelligence from your analysis"
+            delay={0.12}
+            exportSection
+          >
+            <AIInsights data={data.ai_insights} />
+          </CollapsibleSection>
         )}
 
-        {/* BSI Score + Iceberg */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          <div className="lg:col-span-2">
-            <motion.div {...fadeUp(0.16)} data-export-section className="glass-card-premium neon-border p-6 h-full">
-              <SectionHeader title="BlindSpot Index" subtitle="Career vulnerability composite score" />
-              <Gauge score={bsi.score} level={bsi.level} />
-              <p className="text-center theme-text-tertiary text-xs mt-4 leading-relaxed">{bsi.message}</p>
+        {/* BSI Gauge + Risk Factor Cards — 2-column layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left: BSI Gauge */}
+          <motion.div {...fadeUp(0.16)} data-export-section className="glass-card-premium neon-border p-6">
+            <SectionHeader title="BlindSpot Index" subtitle="Career vulnerability composite score" />
+            <Gauge score={bsi.score} level={bsi.level} />
+          </motion.div>
 
-              <div className="mt-6 space-y-3">
-                {Object.entries(bsi.components).map(([key, val]) => (
-                  <ComponentBar key={key} name={key} value={val} />
-                ))}
-              </div>
-            </motion.div>
-          </div>
-
-          <div className="lg:col-span-3">
-            <motion.div {...fadeUp(0.2)} data-export-section className="glass-card-premium neon-border p-6 h-full">
-              <SectionHeader title="Skill Iceberg" subtitle="Above water = thriving &bull; Below = at risk" />
-              <div className="h-[400px] -mx-2">
-                <Iceberg survivalData={skill_survival} />
-              </div>
-            </motion.div>
-          </div>
+          {/* Right: Risk Factor Cards */}
+          <motion.div {...fadeUp(0.2)} data-export-section className="glass-card-premium neon-border p-6">
+            <SectionHeader title="Risk Factors" subtitle="Component breakdown of your BSI score" />
+            <RiskCards components={bsi.components} />
+          </motion.div>
         </div>
+
+        {/* Skill Iceberg — full width */}
+        <motion.div {...fadeUp(0.24)} data-export-section className="glass-card-premium neon-border p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-lg font-semibold theme-text">Skill Iceberg</h2>
+              <p className="text-xs theme-text-muted mt-0.5">Above water = thriving &bull; Below = at risk</p>
+            </div>
+            <IcebergToggle mode={icebergMode} onToggle={setIcebergMode} />
+          </div>
+          <div className={icebergMode === '3d' ? 'h-[420px] -mx-2' : 'min-h-[420px]'}>
+            {icebergMode === '2d' ? (
+              <Iceberg2D survivalData={skill_survival} />
+            ) : (
+              <Iceberg survivalData={skill_survival} />
+            )}
+          </div>
+        </motion.div>
 
         {/* Benchmark */}
         {data.benchmarks && (
-          <motion.div {...fadeUp(0.24)} data-export-section className="glass-card-premium neon-border p-6">
-            <SectionHeader title="Industry Benchmark" subtitle="Your profile vs. industry average across 5 dimensions" />
+          <CollapsibleSection
+            title="Industry Benchmark"
+            subtitle="Your profile vs. industry average across 5 dimensions"
+            delay={0.28}
+            exportSection
+          >
             <BenchmarkComparison data={data.benchmarks} />
-          </motion.div>
+          </CollapsibleSection>
         )}
 
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <motion.div {...fadeUp(0.28)} data-export-section className="glass-card-premium neon-border p-6 h-full">
-            <SectionHeader title="Skill Half-Life" subtitle="Years until 50% market value loss" />
+          <CollapsibleSection
+            title="Skill Half-Life"
+            subtitle="Years until 50% market value loss"
+            delay={0.32}
+            exportSection
+          >
             <SkillSurvivalChart data={skill_survival} />
-          </motion.div>
+          </CollapsibleSection>
 
-          <motion.div {...fadeUp(0.32)} data-export-section className="glass-card-premium neon-border p-6 h-full">
-            <SectionHeader title="Competence Illusion" subtitle="Confidence vs. actual market relevance" />
+          <CollapsibleSection
+            title="Competence Illusion"
+            subtitle="Confidence vs. actual market relevance"
+            delay={0.36}
+            exportSection
+          >
             <IllusionChart data={competence_illusion} />
-          </motion.div>
+          </CollapsibleSection>
         </div>
 
         {/* Career Twin */}
-        <motion.div {...fadeUp(0.36)} data-export-section className="glass-card-premium neon-border p-6">
-          <SectionHeader title="Career Twin Projection" subtitle="Current path vs. optimized trajectory" />
+        <CollapsibleSection
+          title="Career Twin Projection"
+          subtitle="Current path vs. optimized trajectory"
+          delay={0.4}
+          exportSection
+        >
           <CareerTwin data={career_twin} />
-        </motion.div>
+        </CollapsibleSection>
 
         {/* Roadmap */}
-        <motion.div {...fadeUp(0.4)} data-export-section className="glass-card-premium neon-border p-6">
-          <SectionHeader title="Upskilling Roadmap" subtitle="Quarter-by-quarter learning plan + job matches" />
+        <CollapsibleSection
+          title="Upskilling Roadmap"
+          subtitle="Quarter-by-quarter learning plan + job matches"
+          delay={0.44}
+          exportSection
+        >
           <Roadmap data={career_twin.roadmap} jobs={career_twin.matching_jobs} />
-        </motion.div>
+        </CollapsibleSection>
 
         {/* Course Recommendations */}
         {data.course_recommendations && data.course_recommendations.length > 0 && (
-          <motion.div {...fadeUp(0.44)} data-export-section className="glass-card-premium neon-border p-6">
-            <SectionHeader title="Recommended Courses" subtitle="Context-aware learning resources for your target role" />
+          <CollapsibleSection
+            title="Recommended Courses"
+            subtitle="Context-aware learning resources for your target role"
+            delay={0.48}
+            exportSection
+          >
             <CourseRecommendations data={data.course_recommendations} />
-          </motion.div>
+          </CollapsibleSection>
         )}
+
+        {/* Share + Progress Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <CollapsibleSection
+            title="Share Your Score"
+            subtitle="Generate a shareable career score card"
+            delay={0.52}
+            defaultOpen={false}
+          >
+            <ShareCard bsi={bsi} profile={profile} survival={skill_survival} />
+          </CollapsibleSection>
+
+          <CollapsibleSection
+            title="Progress Over Time"
+            subtitle="Track your BSI score across analyses"
+            delay={0.56}
+            defaultOpen={false}
+          >
+            <ProgressView />
+          </CollapsibleSection>
+        </div>
 
         {/* Footer */}
         <div className="text-center py-6">
@@ -397,6 +539,6 @@ export default function Dashboard() {
           </span>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

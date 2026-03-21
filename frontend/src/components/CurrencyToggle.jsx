@@ -12,6 +12,8 @@ export default function CurrencyToggle() {
   return (
     <div
       className="inline-flex items-center backdrop-blur-sm rounded-lg p-0.5 text-xs border"
+      role="radiogroup"
+      aria-label="Currency selection"
       style={{
         backgroundColor: 'var(--bg-secondary)',
         borderColor: 'var(--border-default)',
@@ -21,6 +23,9 @@ export default function CurrencyToggle() {
         <button
           key={opt.key}
           onClick={currency !== opt.key ? toggleCurrency : undefined}
+          role="radio"
+          aria-checked={currency === opt.key}
+          aria-label={`Show salaries in ${opt.key}`}
           className="relative px-3 py-1.5 rounded-md font-medium transition-colors"
         >
           {currency === opt.key && (

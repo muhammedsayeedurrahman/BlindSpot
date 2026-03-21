@@ -1,11 +1,12 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { analyzeProfile } from '../api'
+import { analyzeProfile, fetchSkills, fetchRoles } from '../api'
 import { useTheme } from '../context/ThemeContext'
 import ThemeToggle from '../components/ThemeToggle'
 
-const SKILL_CATEGORIES = {
+// Fallback data if API is unreachable
+const FALLBACK_SKILL_CATEGORIES = {
   'Programming': ['Python', 'JavaScript', 'TypeScript', 'Rust', 'Go', 'SQL'],
   'AI & Data': ['Data Analysis', 'Machine Learning', 'Deep Learning', 'Prompt Engineering', 'LLM Fine-tuning'],
   'Infrastructure': ['Cloud Architecture', 'Kubernetes', 'DevOps', 'Cybersecurity'],
@@ -14,9 +15,7 @@ const SKILL_CATEGORIES = {
   'Legacy': ['Excel', 'Manual Testing', 'Data Entry', 'Bookkeeping', 'Technical Writing'],
 }
 
-const ALL_SKILLS = Object.values(SKILL_CATEGORIES).flat()
-
-const ROLES = [
+const FALLBACK_ROLES = [
   'Software Engineer', 'Frontend Developer', 'Backend Developer',
   'Full Stack Developer', 'Data Scientist', 'Data Analyst',
   'ML Engineer', 'AI Engineer', 'DevOps Engineer', 'Cloud Architect',
@@ -31,9 +30,18 @@ const STEPS = [
 ]
 
 const slideVariants = {
-  enter: { opacity: 0, x: 50, filter: 'blur(4px)' },
-  center: { opacity: 1, x: 0, filter: 'blur(0px)' },
-  exit: { opacity: 0, x: -50, filter: 'blur(4px)' },
+  enter: { opacity: 0, x: 40 },
+  center: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -40 },
+}
+
+function useDebounce(value, delay) {
+  const [debounced, setDebounced] = useState(value)
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay)
+    return () => clearTimeout(timer)
+  }, [value, delay])
+  return debounced
 }
 
 function ProgressBar({ currentStep, totalSteps }) {
@@ -122,6 +130,7 @@ function ConfidenceSlider({ skill, value, onChange }) {
           style={{
             background: `linear-gradient(to right, ${color} ${((value - 1) / 9) * 100}%, var(--bg-quaternary) ${((value - 1) / 9) * 100}%)`,
           }}
+          aria-label={`Confidence in ${skill}`}
         />
       </div>
       <motion.span
@@ -151,8 +160,58 @@ export default function Onboarding() {
   const [confidences, setConfidences] = useState({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [fieldErrors, setFieldErrors] = useState({})
   const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState(null)
+
+  // Dynamic data from API
+  const [skillCategories, setSkillCategories] = useState(FALLBACK_SKILL_CATEGORIES)
+  const [roles, setRoles] = useState(FALLBACK_ROLES)
+  const [dataLoaded, setDataLoaded] = useState(false)
+
+  const debouncedSearch = useDebounce(searchQuery, 200)
+
+  // Fetch skills and roles from API on mount
+  useEffect(() => {
+    let cancelled = false
+    async function loadData() {
+      try {
+        const [skillsData, rolesData] = await Promise.all([
+          fetchSkills().catch(() => null),
+          fetchRoles().catch(() => null),
+        ])
+
+        if (cancelled) return
+
+        if (skillsData && Array.isArray(skillsData)) {
+          // Group skills by category
+          const grouped = {}
+          for (const s of skillsData) {
+            const cat = s.category || 'Other'
+            if (!grouped[cat]) grouped[cat] = []
+            grouped[cat].push(s.skill)
+          }
+          setSkillCategories(grouped)
+        }
+
+        if (rolesData && Array.isArray(rolesData)) {
+          setRoles(rolesData.map((r) => r.role))
+        }
+
+        setDataLoaded(true)
+      } catch {
+        // Fallback data is already set
+        setDataLoaded(true)
+      }
+    }
+    loadData()
+    return () => { cancelled = true }
+  }, [])
+
+  const allSkills = useMemo(
+    () => Object.values(skillCategories).flat(),
+    [skillCategories],
+  )
 
   const toggleSkill = (skill) => {
     setSelectedSkills((prev) =>
@@ -165,19 +224,21 @@ export default function Onboarding() {
   }
 
   const filteredSkills = useMemo(() => {
+    const query = debouncedSearch.toLowerCase()
     if (activeCategory) {
-      return SKILL_CATEGORIES[activeCategory].filter((s) =>
-        s.toLowerCase().includes(searchQuery.toLowerCase())
+      return (skillCategories[activeCategory] || []).filter((s) =>
+        s.toLowerCase().includes(query)
       )
     }
-    return ALL_SKILLS.filter((s) =>
-      s.toLowerCase().includes(searchQuery.toLowerCase())
+    return allSkills.filter((s) =>
+      s.toLowerCase().includes(query)
     )
-  }, [searchQuery, activeCategory])
+  }, [debouncedSearch, activeCategory, skillCategories, allSkills])
 
   const handleSubmit = async () => {
     setLoading(true)
     setError(null)
+    setFieldErrors({})
     try {
       const profile = {
         name: name || 'Anonymous',
@@ -193,7 +254,20 @@ export default function Onboarding() {
       const result = await analyzeProfile(profile)
       navigate('/dashboard', { state: { data: result } })
     } catch (err) {
-      setError('Failed to analyze profile. Make sure the backend is running on port 5000.')
+      // Parse structured validation errors from API
+      if (err.response?.data?.error) {
+        const apiError = err.response.data.error
+        if (apiError.details && Array.isArray(apiError.details)) {
+          const fErrors = {}
+          for (const d of apiError.details) {
+            fErrors[d.field] = d.message
+          }
+          setFieldErrors(fErrors)
+        }
+        setError(apiError.message || 'Analysis failed')
+      } else {
+        setError('Failed to analyze profile. Make sure the backend is running on port 5000.')
+      }
     } finally {
       setLoading(false)
     }
@@ -231,7 +305,7 @@ export default function Onboarding() {
       >
         <ProgressBar currentStep={step} totalSteps={STEPS.length} />
 
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="popLayout">
           {/* Step 1: Profile */}
           {step === 0 && (
             <motion.div
@@ -240,7 +314,7 @@ export default function Onboarding() {
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
             >
               <h2 className="text-2xl font-bold mb-1 theme-text">{STEPS[0].title}</h2>
               <p className="theme-text-tertiary mb-6 text-sm">{STEPS[0].subtitle}</p>
@@ -269,10 +343,13 @@ export default function Onboarding() {
                     className="w-full theme-input rounded-xl px-4 py-3 focus:outline-none transition-all border"
                   >
                     <option value="">Select your role...</option>
-                    {ROLES.map((r) => (
+                    {roles.map((r) => (
                       <option key={r} value={r}>{r}</option>
                     ))}
                   </select>
+                  {fieldErrors['current_role'] && (
+                    <p className="text-xs text-neon-pink mt-1">{fieldErrors['current_role']}</p>
+                  )}
                 </div>
 
                 <div>
@@ -290,6 +367,7 @@ export default function Onboarding() {
                       style={{
                         background: `linear-gradient(to right, #00f0ff ${(experience / 20) * 100}%, var(--bg-quaternary) ${(experience / 20) * 100}%)`,
                       }}
+                      aria-label="Years of experience"
                     />
                     <motion.span
                       className="text-neon-cyan font-mono font-bold text-lg w-10 text-center"
@@ -340,7 +418,7 @@ export default function Onboarding() {
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
             >
               <h2 className="text-2xl font-bold mb-1 theme-text">{STEPS[1].title}</h2>
               <p className="theme-text-tertiary mb-4 text-sm">{STEPS[1].subtitle}</p>
@@ -382,7 +460,7 @@ export default function Onboarding() {
                 >
                   All
                 </motion.button>
-                {Object.keys(SKILL_CATEGORIES).map((cat) => (
+                {Object.keys(skillCategories).map((cat) => (
                   <motion.button
                     key={cat}
                     onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
@@ -413,7 +491,6 @@ export default function Onboarding() {
                 {filteredSkills.map((skill, i) => (
                   <motion.button
                     key={skill}
-                    layout
                     onClick={() => toggleSkill(skill)}
                     onKeyDown={(e) => {
                       if (e.key === ' ' || e.key === 'Enter') {
@@ -480,6 +557,9 @@ export default function Onboarding() {
                   </button>
                 )}
               </div>
+              {fieldErrors['skills'] && (
+                <p className="text-xs text-neon-pink mt-2">{fieldErrors['skills']}</p>
+              )}
             </motion.div>
           )}
 
@@ -491,7 +571,7 @@ export default function Onboarding() {
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
             >
               <h2 className="text-2xl font-bold mb-1 theme-text">{STEPS[2].title}</h2>
               <p className="theme-text-tertiary mb-6 text-sm">{STEPS[2].subtitle}</p>

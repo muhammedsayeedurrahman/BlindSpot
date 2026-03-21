@@ -4,10 +4,7 @@ Matches recommended skills to context-aware courses based on the user's
 current role and target (optimized) role.
 """
 
-import json
-import os
-
-COURSES_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "courses.json")
+from .data_loader import load_courses
 
 # Maps role categories to course contexts for smarter matching
 ROLE_CONTEXT_MAP = {
@@ -30,14 +27,9 @@ ROLE_CONTEXT_MAP = {
 }
 
 
-def _load_courses():
-    with open(COURSES_PATH, encoding="utf-8") as f:
-        return json.load(f)
-
-
 class CourseRecommendationEngine:
     def __init__(self):
-        self.courses = _load_courses()
+        self.courses = list(load_courses())
 
     def _get_context_for_skill(self, skill, target_role):
         """Determine the best course context for a skill given the target role."""

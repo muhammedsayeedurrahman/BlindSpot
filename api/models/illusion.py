@@ -5,29 +5,12 @@ The "illusion" is when someone rates themselves highly on a skill that is declin
 or easily automated.
 """
 
-import csv
-import os
-
-DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "skills.csv")
-
-
-def _load_skills():
-    skills = {}
-    with open(DATA_PATH, newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            skills[row["skill"]] = {
-                "demand_2024": float(row["demand_2024"]),
-                "demand_2027": float(row["demand_2027"]),
-                "growth_rate": float(row["growth_rate"]),
-                "automation_risk": float(row["automation_risk"]),
-            }
-    return skills
+from .data_loader import load_skills_dict
 
 
 class CompetenceIllusionDetector:
     def __init__(self):
-        self.skills_db = _load_skills()
+        self.skills_db = load_skills_dict()
 
     def detect(self, user_skills_with_confidence):
         """

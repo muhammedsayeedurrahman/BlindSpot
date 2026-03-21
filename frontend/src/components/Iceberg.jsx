@@ -245,22 +245,29 @@ function IcebergScene({ survivalData }) {
       (s) => s.status === 'at_risk' || s.status === 'critical'
     )
 
-    // Arrange nodes in a circular pattern around the iceberg
-    const arrangeCircular = (items, yBase, radius, ySpacing) =>
-      items.map((_, i) => {
-        const angle = (i / Math.max(items.length, 1)) * Math.PI * 2
+    // Arrange nodes in layered rings around the iceberg
+    const arrangeLayered = (items, yBase, baseRadius, yStep, direction = 1) => {
+      const maxPerRing = 6
+      return items.map((_, i) => {
+        const ring = Math.floor(i / maxPerRing)
+        const indexInRing = i % maxPerRing
+        const countInRing = Math.min(maxPerRing, items.length - ring * maxPerRing)
+        const angle = (indexInRing / countInRing) * Math.PI * 2 + ring * 0.5
+        const radius = baseRadius + ring * 0.6
+        const y = yBase + ring * yStep * direction
         return [
           Math.sin(angle) * radius,
-          yBase + i * ySpacing,
+          y,
           Math.cos(angle) * radius,
         ]
       })
+    }
 
     return {
       above: aboveWater,
       below: belowWater,
-      abovePositions: arrangeCircular(aboveWater, 1.0, 2.8, 0.5),
-      belowPositions: arrangeCircular(belowWater, -0.8, 3.2, -0.5),
+      abovePositions: arrangeLayered(aboveWater, 1.2, 2.5, 0.8, 1),
+      belowPositions: arrangeLayered(belowWater, -1.0, 2.8, 0.7, -1),
     }
   }, [survivalData])
 
@@ -381,7 +388,7 @@ export default function Iceberg({ survivalData }) {
   return (
     <div className="relative w-full h-full">
       <Canvas
-        camera={{ position: [0, 1.5, 7], fov: 45 }}
+        camera={{ position: [0, 2, 9], fov: 42 }}
         gl={{ antialias: true, alpha: true }}
         style={{ background: 'transparent' }}
       >

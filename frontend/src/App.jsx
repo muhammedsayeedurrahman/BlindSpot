@@ -11,8 +11,9 @@ export default function App() {
     <ThemeProvider>
       <CurrencyProvider>
         <div className="min-h-screen theme-bg relative transition-colors duration-500">
+          <a href="#main-content" className="skip-link">Skip to content</a>
           <FloatingOrbs />
-          <div className="relative z-10">
+          <div className="relative z-10" id="main-content" role="main">
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/onboarding" element={<Onboarding />} />

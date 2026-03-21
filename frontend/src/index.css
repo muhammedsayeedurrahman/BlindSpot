@@ -7,10 +7,10 @@
    ═══════════════════════════════════════════════════════════ */
 :root,
 [data-theme="dark"] {
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #12121a;
-  --bg-tertiary: #1a1a2e;
-  --bg-quaternary: #252540;
+  --bg-primary: #0F172A;
+  --bg-secondary: #151d33;
+  --bg-tertiary: #1E1A3A;
+  --bg-quaternary: #2a2550;
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.7);
   --text-tertiary: rgba(255, 255, 255, 0.4);
@@ -19,9 +19,9 @@
   --border-subtle: rgba(255, 255, 255, 0.06);
   --border-default: rgba(255, 255, 255, 0.1);
   --border-hover: rgba(255, 255, 255, 0.2);
-  --glass-from: rgba(18, 18, 26, 0.6);
-  --glass-to: rgba(26, 26, 46, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-from: rgba(30, 30, 50, 0.6);
+  --glass-to: rgba(30, 26, 58, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.08);
   --glass-highlight: rgba(255, 255, 255, 0.03);
   --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   --card-shadow-hover: 0 20px 60px rgba(0, 0, 0, 0.6);
@@ -84,10 +84,11 @@
 
 @layer base {
   body {
-    background-color: var(--bg-primary);
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-tertiary) 100%);
+    background-attachment: fixed;
     color: var(--text-primary);
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-    transition: background-color 0.5s ease, color 0.4s ease;
+    transition: background 0.5s ease, color 0.4s ease;
     overflow-x: hidden;
   }
 
@@ -731,5 +732,173 @@
   .gpu-accelerated {
     will-change: transform;
     transform: translateZ(0);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE RESPONSIVENESS
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  /* Larger touch targets for sliders */
+  input[type="range"] {
+    height: 8px;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 50%;
+    background: currentColor;
+    cursor: pointer;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 50%;
+    background: currentColor;
+    cursor: pointer;
+  }
+
+  /* Career twin chart: horizontal scroll on mobile */
+  .chart-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Prevent nav overflow */
+  .nav-glass .flex-wrap {
+    gap: 4px;
+  }
+
+  /* Stack stat cards */
+  .stat-card {
+    padding: 8px 12px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ACCESSIBILITY — FOCUS & CONTRAST
+   ═══════════════════════════════════════════════════════════ */
+
+/* Visible focus ring for keyboard nav */
+*:focus-visible {
+  outline: 2px solid rgb(var(--neon-cyan-rgb));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Skip link (hidden unless focused) */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--bg-primary);
+  color: rgb(var(--neon-cyan-rgb));
+  padding: 8px 16px;
+  z-index: 100;
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* Ensure sufficient contrast for light mode text */
+[data-theme="light"] .theme-text-tertiary {
+  color: rgba(0, 0, 0, 0.55);
+}
+[data-theme="light"] .theme-text-muted {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RISING BUBBLES — Iceberg section
+   ═══════════════════════════════════════════════════════════ */
+.bubbles-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bubble {
+  position: absolute;
+  bottom: -20px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(var(--neon-cyan-rgb), 0.15);
+  animation: bubble-rise linear infinite;
+}
+
+.bubble:nth-child(1) { left: 10%; width: 6px; height: 6px; animation-duration: 6s; animation-delay: 0s; }
+.bubble:nth-child(2) { left: 25%; width: 10px; height: 10px; animation-duration: 8s; animation-delay: 1s; }
+.bubble:nth-child(3) { left: 40%; width: 5px; height: 5px; animation-duration: 5s; animation-delay: 2s; }
+.bubble:nth-child(4) { left: 55%; width: 8px; height: 8px; animation-duration: 7s; animation-delay: 0.5s; }
+.bubble:nth-child(5) { left: 70%; width: 12px; height: 12px; animation-duration: 9s; animation-delay: 3s; }
+.bubble:nth-child(6) { left: 85%; width: 7px; height: 7px; animation-duration: 6.5s; animation-delay: 1.5s; }
+.bubble:nth-child(7) { left: 15%; width: 9px; height: 9px; animation-duration: 7.5s; animation-delay: 4s; }
+.bubble:nth-child(8) { left: 60%; width: 6px; height: 6px; animation-duration: 5.5s; animation-delay: 2.5s; }
+
+@keyframes bubble-rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateY(-400px) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SCORE PULSE — Gauge number
+   ═══════════════════════════════════════════════════════════ */
+@keyframes score-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.score-pulse {
+  animation: score-pulse 0.6s ease-in-out 1.2s 1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GAUGE BOUNCE — initial load
+   ═══════════════════════════════════════════════════════════ */
+@keyframes gauge-bounce {
+  0% { transform: scale(0.95); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.gauge-bounce {
+  animation: gauge-bounce 0.5s ease-in-out 0.3s 1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   IRRELEVANCE ALERT PULSE
+   ═══════════════════════════════════════════════════════════ */
+@keyframes alert-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--neon-pink-rgb), 0.3); }
+  50% { box-shadow: 0 0 20px 4px rgba(var(--neon-pink-rgb), 0.15); }
+}
+
+.alert-pulse {
+  animation: alert-pulse 2s ease-in-out 3;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

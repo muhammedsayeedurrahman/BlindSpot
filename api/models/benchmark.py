@@ -4,33 +4,13 @@ Compares user's profile against industry averages for their role across
 5 dimensions, producing normalized 0-100 scores for a radar chart.
 """
 
-import csv
-import os
-
-SKILLS_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "skills.csv")
-ROLES_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "roles.csv")
-
-
-def _load_skills():
-    skills = {}
-    with open(SKILLS_PATH, newline="", encoding="utf-8") as f:
-        for row in csv.DictReader(f):
-            skills[row["skill"]] = row
-    return skills
-
-
-def _load_roles():
-    roles = {}
-    with open(ROLES_PATH, newline="", encoding="utf-8") as f:
-        for row in csv.DictReader(f):
-            roles[row["role"]] = row
-    return roles
+from .data_loader import load_skills_dict, load_roles_dict
 
 
 class BenchmarkEngine:
     def __init__(self):
-        self.skills_db = _load_skills()
-        self.roles_db = _load_roles()
+        self.skills_db = load_skills_dict()
+        self.roles_db = load_roles_dict()
 
     def compare(self, user_skills, current_role):
         """

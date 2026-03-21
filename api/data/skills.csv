@@ -29,3 +29,69 @@ Manual Testing,QA,65,40,-0.15,0.70
 Data Entry,Admin,50,20,-0.25,0.85
 Bookkeeping,Finance,55,30,-0.18,0.75
 Technical Writing,Content,60,50,-0.05,0.45
+Apache Spark,Data Engineering,62,78,0.22,0.12
+Apache Kafka,Data Engineering,58,76,0.25,0.10
+Apache Airflow,Data Engineering,50,72,0.30,0.11
+dbt,Data Engineering,38,68,0.42,0.09
+Snowflake,Data Engineering,55,75,0.28,0.13
+Data Warehousing,Data Engineering,60,65,0.06,0.22
+ETL Pipelines,Data Engineering,58,62,0.04,0.28
+MLflow,MLOps,35,70,0.48,0.08
+Kubeflow,MLOps,28,62,0.45,0.09
+Feature Stores,MLOps,22,58,0.52,0.07
+Model Monitoring,MLOps,30,65,0.46,0.08
+Solidity,Blockchain,32,50,0.20,0.06
+Web3 Development,Blockchain,28,48,0.22,0.07
+Smart Contracts,Blockchain,30,52,0.24,0.06
+Unity,AR/VR,48,62,0.18,0.14
+Unreal Engine,AR/VR,40,58,0.22,0.12
+3D Modeling,AR/VR,42,55,0.15,0.18
+AR Development,AR/VR,30,55,0.32,0.10
+VR Development,AR/VR,28,50,0.30,0.11
+Embedded Systems,IoT,52,65,0.18,0.08
+Edge Computing,IoT,35,62,0.35,0.07
+MQTT,IoT,30,48,0.25,0.10
+IoT Security,IoT,32,58,0.33,0.06
+React Native,Mobile,62,68,0.08,0.18
+Flutter,Mobile,50,70,0.24,0.15
+Swift,Mobile,58,62,0.05,0.16
+Kotlin,Mobile,55,65,0.12,0.14
+MongoDB,Databases,68,72,0.05,0.18
+PostgreSQL,Databases,72,80,0.10,0.15
+Redis,Databases,55,68,0.16,0.12
+Neo4j,Databases,28,48,0.30,0.10
+Playwright,Testing,35,65,0.40,0.12
+Cypress,Testing,48,58,0.12,0.18
+Jest,Testing,60,62,0.03,0.20
+Network Security,Networking,65,82,0.20,0.08
+DNS Management,Networking,50,45,-0.04,0.35
+Load Balancing,Networking,52,60,0.10,0.20
+AWS,Cloud,80,88,0.12,0.10
+Azure,Cloud,72,82,0.14,0.11
+GCP,Cloud,60,75,0.18,0.10
+Terraform,Cloud,55,78,0.28,0.09
+Pulumi,Cloud,22,50,0.45,0.08
+Computer Vision,AI/ML,52,78,0.32,0.07
+NLP,AI/ML,58,82,0.30,0.08
+Reinforcement Learning,AI/ML,35,60,0.35,0.06
+RAG Architecture,AI/ML,20,72,0.58,0.05
+AI Agents,AI/ML,15,70,0.62,0.04
+Generative AI,AI/ML,25,80,0.55,0.05
+GraphQL,Backend,50,60,0.12,0.16
+gRPC,Backend,35,52,0.22,0.12
+WebSockets,Backend,42,50,0.10,0.14
+Docker,Infrastructure,75,82,0.08,0.12
+Linux Administration,Infrastructure,72,70,-0.01,0.18
+Git,DevTools,88,88,0.00,0.10
+Microservices,Architecture,68,75,0.10,0.15
+API Design,Architecture,70,78,0.12,0.14
+System Design,Architecture,65,80,0.18,0.08
+Event-Driven Architecture,Architecture,42,62,0.25,0.10
+CI/CD,DevOps,72,80,0.10,0.15
+Site Reliability Engineering,DevOps,55,75,0.24,0.09
+Observability,DevOps,45,70,0.28,0.10
+Rust for WebAssembly,Programming,20,48,0.42,0.05
+HTMX,Frontend,18,42,0.38,0.12
+Svelte,Frontend,25,45,0.32,0.14
+Vue.js,Frontend,55,52,-0.02,0.20
+Angular,Frontend,60,48,-0.08,0.22

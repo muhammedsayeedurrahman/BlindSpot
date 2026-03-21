@@ -86,8 +86,8 @@ function CourseCard({ course }) {
   )
 }
 
-function SkillGroup({ recommendation }) {
-  const [expanded, setExpanded] = useState(false)
+function SkillGroup({ recommendation, defaultExpanded = false }) {
+  const [expanded, setExpanded] = useState(defaultExpanded)
   const priorityColor = PRIORITY_COLORS[recommendation.priority] || 'text-white/60'
 
   return (
@@ -152,10 +152,57 @@ function SkillGroup({ recommendation }) {
 export default function CourseRecommendations({ data }) {
   if (!data || data.length === 0) return null
 
+  // Sort by priority: high first, then medium
+  const sorted = [...data].sort((a, b) => {
+    const order = { high: 0, medium: 1, low: 2 }
+    return (order[a.priority] ?? 2) - (order[b.priority] ?? 2)
+  })
+
   return (
     <div className="space-y-3">
-      {data.map((rec) => (
-        <SkillGroup key={rec.skill} recommendation={rec} />
+      {/* Top picks summary */}
+      {sorted.length > 0 && (
+        <div className="glass-card p-4 mb-4" style={{ border: '1px solid var(--border-subtle)' }}>
+          <h4 className="text-xs font-bold uppercase tracking-wider theme-text-tertiary mb-3">
+            Top Recommended Courses
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {sorted
+              .flatMap((rec) =>
+                rec.courses.slice(0, 1).map((course) => ({ ...course, forSkill: rec.skill }))
+              )
+              .slice(0, 3)
+              .map((course) => (
+                <a
+                  key={course.id}
+                  href={getCourseUrl(course)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-3 p-3 rounded-xl transition-all hover:scale-[1.02] group"
+                  style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-subtle)' }}
+                >
+                  <div className="w-8 h-8 rounded-lg bg-neon-cyan/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-neon-cyan">
+                      <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z" />
+                    </svg>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold theme-text group-hover:text-neon-cyan transition-colors leading-snug">
+                      {course.title}
+                    </p>
+                    <p className="text-[10px] theme-text-muted mt-0.5">
+                      {course.provider} &middot; For <span className="text-neon-cyan">{course.forSkill}</span>
+                    </p>
+                  </div>
+                </a>
+              ))}
+          </div>
+        </div>
+      )}
+
+      {/* All skill groups — first 2 expanded by default */}
+      {sorted.map((rec, i) => (
+        <SkillGroup key={rec.skill} recommendation={rec} defaultExpanded={i < 2} />
       ))}
     </div>
   )

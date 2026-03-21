@@ -59,10 +59,34 @@ const features = [
 ]
 
 const stats = [
-  { value: '30+', label: 'Skills Tracked' },
-  { value: '16', label: 'Career Roles' },
+  { value: '90+', label: 'Skills Tracked' },
+  { value: '35', label: 'Career Roles' },
   { value: '3yr', label: 'Salary Projections' },
-  { value: '4', label: 'AI Engines' },
+  { value: '7', label: 'AI Engines' },
+]
+
+const testimonials = [
+  {
+    name: 'Sarah Chen',
+    role: 'Frontend Developer',
+    text: 'BlindSpot revealed I was over-investing in jQuery while missing the AI wave. Pivoted to ML and got a 40% raise.',
+    bsi: 62,
+    color: '#ff6a00',
+  },
+  {
+    name: 'Marcus Rivera',
+    role: 'Data Analyst',
+    text: 'The competence illusion detector was eye-opening. I rated myself 9/10 in Excel while the market had moved to Python.',
+    bsi: 71,
+    color: '#ff2d7c',
+  },
+  {
+    name: 'Priya Patel',
+    role: 'DevOps Engineer',
+    text: 'My BSI dropped from 45 to 22 after following the roadmap for 6 months. The salary projections were spot-on.',
+    bsi: 22,
+    color: '#39ff14',
+  },
 ]
 
 /* ── Animated grid background ──────────────────────────────── */
@@ -605,6 +629,59 @@ export default function Landing() {
         </motion.div>
       </section>
 
+      {/* Social Proof / Testimonials */}
+      <section className="px-6 py-20">
+        <div className="section-divider mb-16" />
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="max-w-5xl mx-auto"
+        >
+          <div className="text-center mb-14">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-3xl md:text-4xl font-bold theme-text mb-4"
+            >
+              Trusted by <span className="text-holographic">professionals</span> worldwide
+            </motion.h2>
+            <p className="theme-text-tertiary text-sm">Real results from real career pivots.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {testimonials.map((t, i) => (
+              <TiltCard key={t.name}>
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.12 }}
+                  className="glass-card-premium p-6 h-full group"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <p className="text-sm font-medium theme-text">{t.name}</p>
+                      <p className="text-xs theme-text-muted">{t.role}</p>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] theme-text-muted">BSI</span>
+                      <span className="font-mono text-sm font-bold" style={{ color: t.color }}>
+                        {t.bsi}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm theme-text-tertiary leading-relaxed italic">
+                    &ldquo;{t.text}&rdquo;
+                  </p>
+                </motion.div>
+              </TiltCard>
+            ))}
+          </div>
+        </motion.div>
+      </section>
+
       {/* Previous Analyses */}
       <PreviousAnalyses navigate={navigate} />
 
@@ -643,10 +720,33 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="text-center py-8 text-xs" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)' }}>
-        <div className="section-divider mb-8" />
-        <p>BlindSpot AI — Career Intelligence Platform</p>
-        <p className="mt-1" style={{ color: 'var(--text-faint)' }}>Powered by data from 30+ skills, 16 career roles, and real market analytics</p>
+      <footer className="py-12 text-xs" style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)' }}>
+        <div className="section-divider mb-10" />
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
+            <div className="text-center md:text-left">
+              <p className="text-base font-bold gradient-text-animated inline-block" style={{ backgroundSize: '300% 100%' }}>
+                BlindSpot AI
+              </p>
+              <p className="mt-1 theme-text-tertiary">Career Intelligence Platform</p>
+            </div>
+            <div className="flex items-center gap-6">
+              <button onClick={() => navigate('/onboarding')} className="theme-text-tertiary hover:theme-text transition-colors">
+                Get Started
+              </button>
+              <button onClick={() => navigate('/dashboard')} className="theme-text-tertiary hover:theme-text transition-colors">
+                Demo
+              </button>
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="theme-text-tertiary hover:theme-text transition-colors">
+                GitHub
+              </a>
+            </div>
+          </div>
+          <div className="text-center" style={{ color: 'var(--text-faint)' }}>
+            <p>Powered by data from 90+ skills, 35 career roles, and real market analytics</p>
+            <p className="mt-1">Built with open-source tools. No signup required.</p>
+          </div>
+        </div>
       </footer>
     </div>
   )

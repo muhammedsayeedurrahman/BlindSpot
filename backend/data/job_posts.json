@@ -98,5 +98,425 @@
     "salary_range": [140000, 175000],
     "posted_date": "2024-12-01",
     "category": "Management"
+  },
+  {
+    "id": 11,
+    "title": "Senior Data Engineer",
+    "company": "DataPipeline Co",
+    "required_skills": ["Python", "Apache Spark", "Kafka", "SQL"],
+    "nice_to_have": ["Cloud Architecture", "Docker", "Terraform"],
+    "salary_range": [140000, 170000],
+    "posted_date": "2024-11-08",
+    "category": "Data"
+  },
+  {
+    "id": 12,
+    "title": "Data Engineer",
+    "company": "StreamData Inc",
+    "required_skills": ["Python", "SQL", "Apache Spark", "Cloud Architecture"],
+    "nice_to_have": ["Kafka", "Docker", "Go"],
+    "salary_range": [120000, 155000],
+    "posted_date": "2024-11-14",
+    "category": "Data"
+  },
+  {
+    "id": 13,
+    "title": "Platform Engineer",
+    "company": "InfraScale",
+    "required_skills": ["Docker", "Kubernetes", "Terraform", "Cloud Architecture"],
+    "nice_to_have": ["Go", "Python", "Cybersecurity"],
+    "salary_range": [135000, 165000],
+    "posted_date": "2024-11-19",
+    "category": "Infrastructure"
+  },
+  {
+    "id": 14,
+    "title": "Senior Platform Engineer",
+    "company": "CloudNative Corp",
+    "required_skills": ["Kubernetes", "Terraform", "Docker", "DevOps"],
+    "nice_to_have": ["Cloud Architecture", "Python", "Go"],
+    "salary_range": [150000, 180000],
+    "posted_date": "2024-12-02",
+    "category": "Infrastructure"
+  },
+  {
+    "id": 15,
+    "title": "Mobile Developer - React Native",
+    "company": "AppForge",
+    "required_skills": ["React Native", "TypeScript", "React", "API Design"],
+    "nice_to_have": ["Flutter", "GraphQL", "UI/UX Design"],
+    "salary_range": [110000, 140000],
+    "posted_date": "2024-11-16",
+    "category": "Engineering"
+  },
+  {
+    "id": 16,
+    "title": "Senior Mobile Developer",
+    "company": "MobiTech",
+    "required_skills": ["Flutter", "React Native", "TypeScript"],
+    "nice_to_have": ["GraphQL", "Cloud Architecture", "Figma"],
+    "salary_range": [125000, 155000],
+    "posted_date": "2024-11-24",
+    "category": "Engineering"
+  },
+  {
+    "id": 17,
+    "title": "Site Reliability Engineer",
+    "company": "UptimeHQ",
+    "required_skills": ["Kubernetes", "Docker", "Cloud Architecture", "Python"],
+    "nice_to_have": ["Terraform", "Go", "Cybersecurity"],
+    "salary_range": [140000, 172000],
+    "posted_date": "2024-11-21",
+    "category": "Infrastructure"
+  },
+  {
+    "id": 18,
+    "title": "SRE - Infrastructure",
+    "company": "ReliableSys",
+    "required_skills": ["Docker", "Kubernetes", "DevOps", "Cloud Architecture"],
+    "nice_to_have": ["Python", "Terraform", "Machine Learning"],
+    "salary_range": [135000, 165000],
+    "posted_date": "2024-12-03",
+    "category": "Infrastructure"
+  },
+  {
+    "id": 19,
+    "title": "Security Engineer",
+    "company": "CyberShield",
+    "required_skills": ["Cybersecurity", "Python", "Cloud Architecture", "Docker"],
+    "nice_to_have": ["Kubernetes", "DevOps", "Go"],
+    "salary_range": [130000, 165000],
+    "posted_date": "2024-11-26",
+    "category": "Security"
+  },
+  {
+    "id": 20,
+    "title": "Application Security Engineer",
+    "company": "SecureCode Labs",
+    "required_skills": ["Cybersecurity", "Python", "DevOps"],
+    "nice_to_have": ["Cloud Architecture", "Docker", "Kubernetes"],
+    "salary_range": [135000, 168000],
+    "posted_date": "2024-12-05",
+    "category": "Security"
+  },
+  {
+    "id": 21,
+    "title": "AI Ethics Officer",
+    "company": "ResponsibleAI Inc",
+    "required_skills": ["Prompt Engineering", "Communication", "Critical Thinking"],
+    "nice_to_have": ["Machine Learning", "Leadership", "Technical Writing"],
+    "salary_range": [135000, 175000],
+    "posted_date": "2024-11-27",
+    "category": "AI/ML"
+  },
+  {
+    "id": 22,
+    "title": "AI Ethics & Governance Lead",
+    "company": "EthicsTech",
+    "required_skills": ["Communication", "Critical Thinking", "Leadership", "Prompt Engineering"],
+    "nice_to_have": ["Deep Learning", "LLM Fine-tuning", "Data Analysis"],
+    "salary_range": [145000, 180000],
+    "posted_date": "2024-12-04",
+    "category": "AI/ML"
+  },
+  {
+    "id": 23,
+    "title": "Blockchain Developer",
+    "company": "ChainLogic",
+    "required_skills": ["Rust", "TypeScript", "Cybersecurity"],
+    "nice_to_have": ["Go", "System Design", "Cloud Architecture"],
+    "salary_range": [130000, 165000],
+    "posted_date": "2024-11-13",
+    "category": "Engineering"
+  },
+  {
+    "id": 24,
+    "title": "Senior Blockchain Engineer",
+    "company": "Web3 Foundry",
+    "required_skills": ["Rust", "TypeScript", "System Design", "Cybersecurity"],
+    "nice_to_have": ["Go", "Python", "Cloud Architecture"],
+    "salary_range": [140000, 175000],
+    "posted_date": "2024-12-01",
+    "category": "Engineering"
+  },
+  {
+    "id": 25,
+    "title": "Solutions Architect",
+    "company": "EnterpriseCloud",
+    "required_skills": ["Cloud Architecture", "System Design", "Communication", "API Design"],
+    "nice_to_have": ["Kubernetes", "Terraform", "Leadership"],
+    "salary_range": [150000, 185000],
+    "posted_date": "2024-11-17",
+    "category": "Infrastructure"
+  },
+  {
+    "id": 26,
+    "title": "Solutions Architect - AWS",
+    "company": "Nimbus Systems",
+    "required_skills": ["Cloud Architecture", "System Design", "API Design"],
+    "nice_to_have": ["Docker", "Terraform", "Python"],
+    "salary_range": [155000, 190000],
+    "posted_date": "2024-12-06",
+    "category": "Infrastructure"
+  },
+  {
+    "id": 27,
+    "title": "Engineering Manager",
+    "company": "ScaleUp Tech",
+    "required_skills": ["Leadership", "Communication", "Agile/Scrum", "System Design"],
+    "nice_to_have": ["Python", "Cloud Architecture", "Data Analysis"],
+    "salary_range": [160000, 195000],
+    "posted_date": "2024-11-23",
+    "category": "Management"
+  },
+  {
+    "id": 28,
+    "title": "Senior Engineering Manager",
+    "company": "MegaTech Corp",
+    "required_skills": ["Leadership", "Communication", "System Design"],
+    "nice_to_have": ["Agile/Scrum", "Cloud Architecture", "Problem Solving"],
+    "salary_range": [175000, 210000],
+    "posted_date": "2024-12-07",
+    "category": "Management"
+  },
+  {
+    "id": 29,
+    "title": "GraphQL API Developer",
+    "company": "APIFirst",
+    "required_skills": ["GraphQL", "TypeScript", "API Design", "Python"],
+    "nice_to_have": ["React", "Docker", "PostgreSQL"],
+    "salary_range": [115000, 145000],
+    "posted_date": "2024-11-29",
+    "category": "Engineering"
+  },
+  {
+    "id": 30,
+    "title": "Backend Developer - Go",
+    "company": "Microservices Ltd",
+    "required_skills": ["Go", "Docker", "Microservices", "API Design"],
+    "nice_to_have": ["Kubernetes", "GraphQL", "Cloud Architecture"],
+    "salary_range": [125000, 158000],
+    "posted_date": "2024-12-02",
+    "category": "Engineering"
+  },
+  {
+    "id": 31,
+    "title": "MLOps Engineer",
+    "company": "ML Factory",
+    "required_skills": ["MLflow", "Docker", "Kubernetes", "Python"],
+    "nice_to_have": ["Cloud Architecture", "Machine Learning", "Terraform"],
+    "salary_range": [135000, 168000],
+    "posted_date": "2024-11-11",
+    "category": "AI/ML"
+  },
+  {
+    "id": 32,
+    "title": "Senior MLOps Engineer",
+    "company": "DeepScale AI",
+    "required_skills": ["MLflow", "Kubernetes", "Cloud Architecture", "Python"],
+    "nice_to_have": ["Docker", "Deep Learning", "Terraform"],
+    "salary_range": [150000, 185000],
+    "posted_date": "2024-12-08",
+    "category": "AI/ML"
+  },
+  {
+    "id": 33,
+    "title": "Technical Product Manager",
+    "company": "ProductVision",
+    "required_skills": ["Communication", "Leadership", "Data Analysis", "System Design"],
+    "nice_to_have": ["Agile/Scrum", "SQL", "API Design"],
+    "salary_range": [140000, 170000],
+    "posted_date": "2024-11-09",
+    "category": "Management"
+  },
+  {
+    "id": 34,
+    "title": "Technical Product Manager - Platform",
+    "company": "PlatformWorks",
+    "required_skills": ["Communication", "System Design", "Leadership"],
+    "nice_to_have": ["Data Analysis", "Cloud Architecture", "Agile/Scrum"],
+    "salary_range": [145000, 175000],
+    "posted_date": "2024-12-03",
+    "category": "Management"
+  },
+  {
+    "id": 35,
+    "title": "Research Scientist - NLP",
+    "company": "LanguageAI",
+    "required_skills": ["Deep Learning", "Machine Learning", "Python"],
+    "nice_to_have": ["LLM Fine-tuning", "Prompt Engineering", "Critical Thinking"],
+    "salary_range": [145000, 185000],
+    "posted_date": "2024-11-07",
+    "category": "AI/ML"
+  },
+  {
+    "id": 36,
+    "title": "Research Scientist - Computer Vision",
+    "company": "VisionLabs",
+    "required_skills": ["Deep Learning", "Python", "Machine Learning", "Cloud Architecture"],
+    "nice_to_have": ["Kubernetes", "Docker", "Critical Thinking"],
+    "salary_range": [150000, 190000],
+    "posted_date": "2024-12-05",
+    "category": "AI/ML"
+  },
+  {
+    "id": 37,
+    "title": "Developer Advocate",
+    "company": "DevToolsCo",
+    "required_skills": ["Communication", "Technical Writing", "Python"],
+    "nice_to_have": ["React", "TypeScript", "Docker"],
+    "salary_range": [115000, 145000],
+    "posted_date": "2024-11-19",
+    "category": "Content"
+  },
+  {
+    "id": 38,
+    "title": "Senior Developer Advocate",
+    "company": "OpenSourceHub",
+    "required_skills": ["Communication", "Technical Writing", "React", "Python"],
+    "nice_to_have": ["TypeScript", "Cloud Architecture", "Leadership"],
+    "salary_range": [130000, 160000],
+    "posted_date": "2024-12-09",
+    "category": "Content"
+  },
+  {
+    "id": 39,
+    "title": "Database Engineer",
+    "company": "DataStore Systems",
+    "required_skills": ["PostgreSQL", "MongoDB", "SQL", "Python"],
+    "nice_to_have": ["Redis", "Docker", "Cloud Architecture"],
+    "salary_range": [115000, 148000],
+    "posted_date": "2024-11-22",
+    "category": "Data"
+  },
+  {
+    "id": 40,
+    "title": "Growth Engineer",
+    "company": "RapidGrowth",
+    "required_skills": ["Python", "SQL", "Data Analysis", "React"],
+    "nice_to_have": ["TypeScript", "Machine Learning", "Communication"],
+    "salary_range": [120000, 150000],
+    "posted_date": "2024-11-25",
+    "category": "Engineering"
+  },
+  {
+    "id": 41,
+    "title": "Infrastructure Engineer",
+    "company": "BareMetal Cloud",
+    "required_skills": ["Terraform", "Docker", "Cloud Architecture", "Kubernetes"],
+    "nice_to_have": ["Python", "Go", "Cybersecurity"],
+    "salary_range": [128000, 160000],
+    "posted_date": "2024-11-28",
+    "category": "Infrastructure"
+  },
+  {
+    "id": 42,
+    "title": "Senior Infrastructure Engineer",
+    "company": "GlobalInfra",
+    "required_skills": ["Terraform", "Docker", "Kubernetes", "Cloud Architecture"],
+    "nice_to_have": ["DevOps", "Python", "Cybersecurity"],
+    "salary_range": [145000, 178000],
+    "posted_date": "2024-12-10",
+    "category": "Infrastructure"
+  },
+  {
+    "id": 43,
+    "title": "React Native Developer",
+    "company": "CrossPlatform Inc",
+    "required_skills": ["React Native", "TypeScript", "React"],
+    "nice_to_have": ["GraphQL", "API Design", "Figma"],
+    "salary_range": [108000, 138000],
+    "posted_date": "2024-11-14",
+    "category": "Engineering"
+  },
+  {
+    "id": 44,
+    "title": "Flutter Developer",
+    "company": "FlutterApps",
+    "required_skills": ["Flutter", "TypeScript", "API Design"],
+    "nice_to_have": ["React Native", "UI/UX Design", "GraphQL"],
+    "salary_range": [105000, 135000],
+    "posted_date": "2024-12-01",
+    "category": "Engineering"
+  },
+  {
+    "id": 45,
+    "title": "Game Developer",
+    "company": "PixelForge Studios",
+    "required_skills": ["Python", "Problem Solving", "System Design"],
+    "nice_to_have": ["Cloud Architecture", "Rust", "Communication"],
+    "salary_range": [100000, 135000],
+    "posted_date": "2024-11-18",
+    "category": "Engineering"
+  },
+  {
+    "id": 46,
+    "title": "Senior Data Analyst",
+    "company": "AnalyticsHub",
+    "required_skills": ["SQL", "Python", "Data Analysis"],
+    "nice_to_have": ["Machine Learning", "Communication", "PostgreSQL"],
+    "salary_range": [95000, 120000],
+    "posted_date": "2024-12-04",
+    "category": "Data"
+  },
+  {
+    "id": 47,
+    "title": "Streaming Data Engineer",
+    "company": "RealTimeData",
+    "required_skills": ["Kafka", "Python", "Apache Spark", "SQL"],
+    "nice_to_have": ["Docker", "Cloud Architecture", "Redis"],
+    "salary_range": [135000, 165000],
+    "posted_date": "2024-11-30",
+    "category": "Data"
+  },
+  {
+    "id": 48,
+    "title": "Microservices Architect",
+    "company": "DistributedSys",
+    "required_skills": ["Microservices", "Docker", "Kubernetes", "System Design"],
+    "nice_to_have": ["Go", "API Design", "Cloud Architecture"],
+    "salary_range": [155000, 190000],
+    "posted_date": "2024-12-06",
+    "category": "Infrastructure"
+  },
+  {
+    "id": 49,
+    "title": "Full Stack Engineer - Next.js",
+    "company": "ModernWeb Co",
+    "required_skills": ["TypeScript", "Next.js", "React", "PostgreSQL"],
+    "nice_to_have": ["GraphQL", "Docker", "Cloud Architecture"],
+    "salary_range": [120000, 150000],
+    "posted_date": "2024-12-02",
+    "category": "Engineering"
+  },
+  {
+    "id": 50,
+    "title": "Senior Backend Engineer - Python",
+    "company": "PyServices",
+    "required_skills": ["Python", "PostgreSQL", "Redis", "Docker"],
+    "nice_to_have": ["Kafka", "Kubernetes", "API Design"],
+    "salary_range": [135000, 168000],
+    "posted_date": "2024-12-08",
+    "category": "Engineering"
+  },
+  {
+    "id": 51,
+    "title": "Cloud Infrastructure Analyst",
+    "company": "SkyNet Ops",
+    "required_skills": ["Cloud Architecture", "Terraform", "Docker"],
+    "nice_to_have": ["Kubernetes", "Python", "Cybersecurity"],
+    "salary_range": [118000, 148000],
+    "posted_date": "2024-12-09",
+    "category": "Infrastructure"
+  },
+  {
+    "id": 52,
+    "title": "AI Research Engineer",
+    "company": "FutureMinds AI",
+    "required_skills": ["Python", "Deep Learning", "Machine Learning", "MLflow"],
+    "nice_to_have": ["LLM Fine-tuning", "Cloud Architecture", "Docker"],
+    "salary_range": [155000, 195000],
+    "posted_date": "2024-12-10",
+    "category": "AI/ML"
   }
 ]

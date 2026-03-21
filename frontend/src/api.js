@@ -10,4 +10,19 @@ export async function analyzeProfile(profile) {
   return response.data
 }
 
+export async function fetchSkills() {
+  const response = await api.get('/skills')
+  return response.data
+}
+
+export async function fetchRoles() {
+  const response = await api.get('/roles')
+  return response.data
+}
+
+export async function checkHealth() {
+  const response = await api.get('/health')
+  return response.data
+}
+
 export default api

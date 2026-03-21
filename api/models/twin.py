@@ -2,45 +2,17 @@
 Career Twin Engine
 Creates a "digital twin" projection of the user's career 3 years into the future.
 Generates two paths: current trajectory vs optimized trajectory.
+Uses compound growth modeling with confidence intervals.
 """
 
-import csv
-import json
-import os
-
-SKILLS_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "skills.csv")
-ROLES_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "roles.csv")
-JOBS_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "job_posts.json")
-
-
-def _load_skills():
-    skills = {}
-    with open(SKILLS_PATH, newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            skills[row["skill"]] = row
-    return skills
-
-
-def _load_roles():
-    roles = []
-    with open(ROLES_PATH, newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            roles.append(row)
-    return roles
-
-
-def _load_jobs():
-    with open(JOBS_PATH, encoding="utf-8") as f:
-        return json.load(f)
+from .data_loader import load_skills_dict, load_roles_list, load_jobs
 
 
 class CareerTwinEngine:
     def __init__(self):
-        self.skills_db = _load_skills()
-        self.roles = _load_roles()
-        self.jobs = _load_jobs()
+        self.skills_db = load_skills_dict()
+        self.roles = list(load_roles_list())
+        self.jobs = list(load_jobs())
 
     def _best_matching_role(self, user_skills):
         """Find the role that best matches the user's current skills."""
@@ -75,19 +47,37 @@ class CareerTwinEngine:
         return sorted(recommendations, key=lambda x: -x["growth_rate"])
 
     def _salary_projection(self, role, optimized=False):
-        """Project salary over 3 years."""
+        """
+        Project salary over 3 years using compound growth with automation decay.
+        Returns projection with confidence intervals (optimistic/pessimistic).
+        """
         base = float(role["avg_salary_2024"])
         projected = float(role["projected_salary_2027"])
+        automation = float(role["automation_exposure"])
+
+        # Compound growth rate from projected salary
         annual_growth = ((projected / base) ** (1 / 3)) - 1
 
-        if optimized:
+        # Apply automation exposure as a decay factor on current path
+        if not optimized:
+            decay = automation * 0.03  # High automation = salary drag
+            annual_growth -= decay
+        else:
             annual_growth += 0.03  # Upskilling bonus
+
+        # Confidence intervals: +/- based on market volatility
+        volatility = 0.02 + automation * 0.02  # More automation = more uncertainty
 
         years = []
         for y in range(4):
+            base_salary = round(base * ((1 + annual_growth) ** y))
+            optimistic = round(base * ((1 + annual_growth + volatility) ** y))
+            pessimistic = round(base * ((1 + annual_growth - volatility) ** y))
             years.append({
                 "year": 2024 + y,
-                "salary": round(base * ((1 + annual_growth) ** y)),
+                "salary": base_salary,
+                "optimistic": optimistic,
+                "pessimistic": pessimistic,
             })
         return years
 
@@ -117,18 +107,20 @@ class CareerTwinEngine:
         role_name = matched_role["role"]
         recommended = self._recommend_skills(user_skills, matched_role)
 
+        current_projection = self._salary_projection(matched_role, optimized=False)
         current_path = {
             "role": role_name,
-            "salary_projection": self._salary_projection(matched_role, optimized=False),
+            "salary_projection": current_projection,
             "automation_exposure": float(matched_role["automation_exposure"]),
             "risk_level": "high" if float(matched_role["automation_exposure"]) > 0.3 else "moderate",
         }
 
         # Optimized path: assumes user learns recommended skills
         optimized_role = self._find_optimal_role(user_skills, recommended)
+        optimized_projection = self._salary_projection(optimized_role, optimized=True)
         optimized_path = {
             "role": optimized_role["role"],
-            "salary_projection": self._salary_projection(optimized_role, optimized=True),
+            "salary_projection": optimized_projection,
             "automation_exposure": float(optimized_role["automation_exposure"]),
             "risk_level": "low" if float(optimized_role["automation_exposure"]) < 0.15 else "moderate",
         }

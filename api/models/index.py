@@ -13,11 +13,9 @@ Where:
   - concentration_risk: how concentrated skills are in one category (0-100)
 """
 
-import json
-import os
 from collections import Counter
 
-JOBS_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "job_posts.json")
+from .data_loader import load_jobs
 
 WEIGHTS = {
     "skill_decay": 0.30,
@@ -27,14 +25,9 @@ WEIGHTS = {
 }
 
 
-def _load_jobs():
-    with open(JOBS_PATH, encoding="utf-8") as f:
-        return json.load(f)
-
-
 class BlindSpotIndex:
     def __init__(self):
-        self.jobs = _load_jobs()
+        self.jobs = list(load_jobs())
 
     def _skill_decay_score(self, survival_results):
         """Average automation risk across user skills, scaled 0-100."""
