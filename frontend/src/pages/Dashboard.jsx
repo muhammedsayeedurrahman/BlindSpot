@@ -351,42 +351,91 @@ export default function Dashboard() {
       )}
 
       <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-6 space-y-6">
-        {/* Profile header + quick stats */}
-        <motion.div {...fadeUp(0)} data-export-section className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold theme-text">
-              {profile.name}
-            </h1>
-            <p className="text-sm mt-0.5 theme-text-tertiary">
-              {profile.current_role} &bull; {profile.years_experience} years experience
-            </p>
-          </div>
-          <div className="flex items-center gap-4">
+        {/* HERO SECTION — Unforgettable first impression */}
+        <motion.div
+          {...fadeUp(0)}
+          data-export-section
+          className="hero-section glass-card-premium neon-border p-8 md:p-12 text-center relative overflow-hidden"
+        >
+          {/* Radial glow behind score */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `radial-gradient(circle at 50% 40%, ${LEVEL_COLOR_MAP[bsi.level] || '#00f0ff'}15, transparent 60%)`,
+            }}
+          />
+
+          <p className="text-sm theme-text-tertiary mb-2 relative z-10">
+            {profile.name} &bull; {profile.current_role} &bull; {profile.years_experience}yr exp
+          </p>
+
+          {/* Giant BSI Score */}
+          <motion.div
+            className="relative z-10 score-pulse"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <span
+              className="text-7xl md:text-8xl lg:text-9xl font-black font-mono leading-none hero-score-gradient"
+              style={{
+                background: `linear-gradient(135deg, ${LEVEL_COLOR_MAP[bsi.level] || '#00f0ff'}, #b44aff, ${LEVEL_COLOR_MAP[bsi.level] || '#00f0ff'})`,
+                backgroundSize: '200% 200%',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                filter: `drop-shadow(0 0 30px ${LEVEL_COLOR_MAP[bsi.level] || '#00f0ff'}40)`,
+              }}
+            >
+              {bsi.score.toFixed(1)}
+            </span>
+          </motion.div>
+
+          {/* Risk level badge */}
+          <motion.p
+            className="text-sm md:text-base font-bold uppercase tracking-[0.25em] mt-3 relative z-10"
+            style={{ color: LEVEL_COLOR_MAP[bsi.level] || '#00f0ff' }}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            {bsi.level === 'critical' ? 'CRITICAL RISK' : bsi.level === 'warning' ? 'HIGH RISK' : bsi.level === 'moderate' ? 'MODERATE RISK' : 'LOW RISK'}
+          </motion.p>
+
+          {/* Emotional shock line */}
+          <motion.p
+            className="text-base md:text-lg mt-4 relative z-10 max-w-md mx-auto leading-relaxed"
+            style={{ color: 'var(--text-secondary)' }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+          >
+            {bsi.level === 'critical'
+              ? 'You are falling behind — silently.'
+              : bsi.level === 'warning'
+                ? 'Your skills are decaying faster than the market demands.'
+                : bsi.level === 'moderate'
+                  ? 'Some of your skills are losing relevance. Act before it compounds.'
+                  : 'Your career foundation is strong — keep building momentum.'}
+          </motion.p>
+
+          {/* Quick stats row */}
+          <motion.div
+            className="flex items-center justify-center gap-6 mt-6 relative z-10"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1 }}
+          >
             {[
               { value: thriving, label: 'Thriving', color: 'text-neon-green' },
               { value: atRisk, label: 'At Risk', color: 'text-neon-orange' },
             ].map((stat) => (
-              <motion.div
-                key={stat.label}
-                whileHover={{ scale: 1.08, y: -3 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                className="stat-card"
-              >
-                <p className={`text-lg font-bold font-mono ${stat.color}`}>{stat.value}</p>
-                <p className="text-[10px] theme-text-muted uppercase">{stat.label}</p>
-              </motion.div>
+              <div key={stat.label} className="text-center">
+                <p className={`text-2xl font-bold font-mono ${stat.color}`}>{stat.value}</p>
+                <p className="text-[10px] theme-text-muted uppercase tracking-wider">{stat.label}</p>
+              </div>
             ))}
-            <motion.div
-              whileHover={{ scale: 1.08, y: -3 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-              className="stat-card"
-            >
-              <p className="text-lg font-bold font-mono" style={{ color: LEVEL_COLOR_MAP[bsi.level] || '#39ff14' }}>
-                {bsi.score.toFixed(0)}
-              </p>
-              <p className="text-[10px] theme-text-muted uppercase">BSI Score</p>
-            </motion.div>
-          </div>
+          </motion.div>
         </motion.div>
 
         {/* TL;DR Summary */}
@@ -432,7 +481,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-lg font-semibold theme-text">Skill Iceberg</h2>
-              <p className="text-xs theme-text-muted mt-0.5">Above water = thriving &bull; Below = at risk</p>
+              <p className="text-xs theme-text-muted mt-0.5">What you see vs. what the market sees about your skills</p>
             </div>
             <IcebergToggle mode={icebergMode} onToggle={setIcebergMode} />
           </div>

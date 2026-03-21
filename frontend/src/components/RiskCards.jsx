@@ -88,9 +88,12 @@ function RiskCard({ name, value, index }) {
         scale: 1.01,
         boxShadow: '0 8px 32px rgba(0,0,0,0.3), 0 0 20px ' + meta.glowColor,
       }}
-      className="relative glass-card-premium p-4 rounded-xl cursor-default transition-all duration-300"
+      className="relative p-4 rounded-xl cursor-default transition-all duration-300"
       style={{
-        borderColor: 'rgba(255,255,255,0.08)',
+        background: 'rgba(30,30,50,0.6)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(255,255,255,0.1)',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
       }}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}

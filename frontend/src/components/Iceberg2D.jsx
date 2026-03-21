@@ -168,10 +168,10 @@ export default function Iceberg2D({ survivalData }) {
             <stop offset="0%" stopColor="rgba(0, 240, 255, 0.08)" />
             <stop offset="100%" stopColor="rgba(0, 240, 255, 0.02)" />
           </linearGradient>
-          {/* Iceberg gradient below */}
+          {/* Iceberg gradient below — danger red tint */}
           <linearGradient id="iceBelow" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(180, 74, 255, 0.05)" />
-            <stop offset="100%" stopColor="rgba(255, 45, 124, 0.08)" />
+            <stop offset="0%" stopColor="rgba(255, 45, 124, 0.06)" />
+            <stop offset="100%" stopColor="rgba(255, 45, 124, 0.14)" />
           </linearGradient>
         </defs>
 
@@ -192,11 +192,11 @@ export default function Iceberg2D({ survivalData }) {
           transition={{ duration: 0.8 }}
         />
 
-        {/* Iceberg shape — below water (much larger) */}
+        {/* Iceberg shape — below water (much larger, red danger tint) */}
         <motion.path
           d="M 210 230 L 170 290 L 150 350 L 200 400 L 300 415 L 400 400 L 450 350 L 430 290 L 390 230 Z"
           fill="url(#iceBelow)"
-          stroke="rgba(180, 74, 255, 0.15)"
+          stroke="rgba(255, 45, 124, 0.2)"
           strokeWidth="1"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -214,12 +214,18 @@ export default function Iceberg2D({ survivalData }) {
           transition={{ duration: 1.2, ease: 'easeOut' }}
         />
 
-        {/* Water line label — left */}
-        <text x="38" y="225" fill="rgba(0, 240, 255, 0.5)" fontSize="9" fontFamily="Inter, system-ui, sans-serif" fontWeight="500">
-          VISIBLE
+        {/* Water line labels — left side */}
+        <text x="38" y="218" fill="rgba(0, 240, 255, 0.7)" fontSize="10" fontFamily="Inter, system-ui, sans-serif" fontWeight="700">
+          ABOVE WATER
         </text>
-        <text x="38" y="244" fill="rgba(180, 74, 255, 0.5)" fontSize="9" fontFamily="Inter, system-ui, sans-serif" fontWeight="500">
-          HIDDEN
+        <text x="38" y="228" fill="rgba(0, 240, 255, 0.4)" fontSize="8" fontFamily="Inter, system-ui, sans-serif" fontWeight="500">
+          Safe Skills
+        </text>
+        <text x="38" y="248" fill="rgba(255, 45, 124, 0.7)" fontSize="10" fontFamily="Inter, system-ui, sans-serif" fontWeight="700">
+          BELOW WATER
+        </text>
+        <text x="38" y="258" fill="rgba(255, 45, 124, 0.4)" fontSize="8" fontFamily="Inter, system-ui, sans-serif" fontWeight="500">
+          Hidden Risks
         </text>
 
         {/* Rising bubbles */}
