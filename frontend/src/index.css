@@ -861,8 +861,14 @@
 }
 
 @keyframes hero-score-glow {
-  0%, 100% { filter: drop-shadow(0 0 30px rgba(var(--neon-cyan-rgb), 0.3)); }
-  50% { filter: drop-shadow(0 0 60px rgba(var(--neon-cyan-rgb), 0.5)); }
+  0%, 100% {
+    filter: drop-shadow(0 0 30px rgba(var(--neon-cyan-rgb), 0.3));
+    background-position: 0% 50%;
+  }
+  50% {
+    filter: drop-shadow(0 0 60px rgba(var(--neon-cyan-rgb), 0.5));
+    background-position: 100% 50%;
+  }
 }
 
 .hero-section {

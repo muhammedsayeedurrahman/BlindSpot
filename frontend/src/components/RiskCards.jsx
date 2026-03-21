@@ -90,9 +90,10 @@ function RiskCard({ name, value, index }) {
       }}
       className="relative p-4 rounded-xl cursor-default transition-all duration-300"
       style={{
-        background: 'rgba(30,30,50,0.6)',
+        background: 'var(--glass-from)',
         backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(255,255,255,0.1)',
+        WebkitBackdropFilter: 'blur(10px)',
+        border: '1px solid var(--border-default)',
         boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
       }}
       onMouseEnter={() => setShowTooltip(true)}
