@@ -226,65 +226,55 @@ beforeEach(() => {
 
 describe('Dashboard — Hero Section', () => {
   describe('BSI score display', () => {
-    it('renders the BSI score element with text-7xl class', () => {
+    it('renders the BSI score element with text-8xl class', () => {
       // Render with default mocked useLocation that returns null state
       // Dashboard falls back to DEMO_DATA which has score 58.2
       render(<Dashboard />)
 
-      // The score span uses text-7xl as the base responsive class
-      // We query by the numeric value present in DEMO_DATA
-      const scoreEl = screen.getByText(/58\.2/)
+      // The score span uses text-8xl as the base responsive class
+      // useCountUp starts at 0 in test env (no real timers), so initial value is "0.0"
+      const scoreEl = screen.getByText('0.0')
       expect(scoreEl).toBeInTheDocument()
-      expect(scoreEl.className).toMatch(/text-7xl/)
+      expect(scoreEl.className).toMatch(/text-8xl/)
     })
 
-    it('displays the numeric score from the provided data', () => {
+    it('displays the animated score element (starts at 0.0 due to count-up)', () => {
       render(<Dashboard />)
-      // DEMO_DATA score is 58.2 — toFixed(1) renders "58.2"
-      expect(screen.getByText('58.2')).toBeInTheDocument()
+      // useCountUp starts at 0 in jsdom (no real timers running)
+      // The score element exists with initial value
+      expect(screen.getByText('0.0')).toBeInTheDocument()
     })
   })
 
   describe('hero section alignment', () => {
-    it('hero section has text-center class', () => {
+    it('hero section contains text-center inner div', () => {
       render(<Dashboard />)
 
-      // The hero section div has the class hero-section AND text-center
-      // We locate it by the hero-section class which is unique on the page.
+      // The hero section outer div has hero-section class
+      // text-center is on the inner content div
       const heroSection = document.querySelector('.hero-section')
       expect(heroSection).not.toBeNull()
-      expect(heroSection.className).toMatch(/text-center/)
+      const innerCenter = heroSection.querySelector('.text-center')
+      expect(innerCenter).not.toBeNull()
     })
   })
 
   describe('emotional shock line — all four levels', () => {
-    it('shows the critical shock line when bsi.level is "critical"', () => {
-      // DEMO_DATA has level "warning"; we need to verify the critical branch.
-      // The Dashboard reads data from location.state?.data || DEMO_DATA.
-      // Because useLocation is mocked to return { state: null }, Dashboard
-      // will use DEMO_DATA (level: "warning").
-      // To test the critical branch we verify the text node that the component
-      // would render — the source code on line 413 of Dashboard.jsx reads:
-      //   bsi.level === 'critical' ? 'You are falling behind — silently.'
-      //
-      // KNOWN GAP (RED): Dashboard does not currently accept a `data` prop, it
-      // reads from router state only.  This test will FAIL until either:
-      //   (a) Dashboard is given a testable data injection mechanism, OR
-      //   (b) the mock for useLocation is upgraded to return per-test data.
-      //
-      // This failure documents the gap explicitly.
+    it('shows the critical consequence headline is absent when bsi.level is "warning"', () => {
+      // DEMO_DATA has level "warning", so the critical headline should NOT appear.
       render(<Dashboard />)
 
-      // With DEMO_DATA (level: warning) the critical line must NOT appear.
-      expect(screen.queryByText('You are falling behind — silently.')).not.toBeInTheDocument()
+      // Critical CONSEQUENCE_COPY headline
+      expect(screen.queryByText('Your career is in danger.')).not.toBeInTheDocument()
     })
 
-    it('shows the warning shock line when bsi.level is "warning"', () => {
+    it('shows the warning consequence headline when bsi.level is "warning"', () => {
       render(<Dashboard />)
 
       // DEMO_DATA.blindspot_index.level === 'warning'
+      // New CONSEQUENCE_COPY uses emotional headline
       expect(
-        screen.getByText('Your skills are decaying faster than the market demands.')
+        screen.getByText("You're falling behind \u2014 silently.")
       ).toBeInTheDocument()
     })
 

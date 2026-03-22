@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Gauge from '../components/Gauge'
@@ -28,6 +28,48 @@ import VerificationInsight from '../components/VerificationInsight'
 import RoadmapTimeline from '../components/RoadmapTimeline'
 import RevealAnimation from '../components/RevealAnimation'
 // === END new imports ===
+
+/* Count-up animation hook — numbers build up, not just appear */
+function useCountUp(end, duration = 2000) {
+  const [value, setValue] = useState(0)
+
+  useEffect(() => {
+    setValue(0)
+    const start = Date.now()
+    const timer = setInterval(() => {
+      const elapsed = Date.now() - start
+      const progress = Math.min(elapsed / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setValue(Math.round(end * eased * 10) / 10)
+      if (progress >= 1) clearInterval(timer)
+    }, 16)
+    return () => clearInterval(timer)
+  }, [end, duration])
+
+  return value
+}
+
+/* Emotional consequence messaging — shows impact, not data */
+const CONSEQUENCE_COPY = {
+  critical: {
+    headline: 'Your career is in danger.',
+    subline: 'Multiple critical vulnerabilities detected. Without action, your market value will erode rapidly.',
+  },
+  warning: {
+    headline: "You're falling behind — silently.",
+    subline: 'Your skills are decaying faster than the market demands. The gap is widening every month.',
+  },
+  moderate: {
+    headline: 'Blind spots are forming.',
+    subline: 'Some of your skills are losing relevance. Address them now before they compound.',
+  },
+  healthy: {
+    headline: 'You\'re ahead of the curve.',
+    subline: 'Your career foundation is strong. Keep building momentum and stay vigilant.',
+  },
+}
+
+const TOAST_DURATION_MS = 2000
 
 const LEVEL_COLOR_MAP = {
   critical: '#FB7185',
@@ -251,6 +293,97 @@ function IcebergToggle({ mode, onToggle }) {
   )
 }
 
+/* "What Should I Do Next?" — The product moment */
+function NextStepCTA({ twin, survival, delay = 0 }) {
+  const topSkill = twin?.recommended_skills?.[0]
+  const criticalSkills = survival.filter((s) => s.status === 'critical')
+  const optimizedRole = twin?.optimized_path?.role
+  const currentSalary = twin?.current_path?.salary_projection?.at(-1)?.salary || 0
+  const optimizedSalary = twin?.optimized_path?.salary_projection?.at(-1)?.salary || 0
+  const salaryDelta = optimizedSalary - currentSalary
+
+  if (!topSkill) return null
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24, filter: 'blur(4px)' }}
+      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      transition={{ delay, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      className="glass-card-premium neon-border relative overflow-hidden"
+    >
+      {/* Accent gradient */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle at 80% 50%, rgba(52,211,153,0.08), transparent 60%)',
+        }}
+      />
+
+      <div className="relative z-10 p-8 md:p-10">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-8 h-8 rounded-lg bg-neon-green/10 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 text-neon-green">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-neon-green">What Should I Do Next?</span>
+        </div>
+
+        <h3 className="text-xl md:text-2xl font-bold theme-text mb-2">
+          Start learning <span className="text-neon-green">{topSkill.skill}</span> this quarter
+        </h3>
+        <p className="text-sm theme-text-tertiary leading-relaxed mb-6 max-w-xl">
+          {topSkill.skill} is the highest-impact skill for your career trajectory.
+          {optimizedRole && ` It's essential for transitioning to ${optimizedRole}`}
+          {salaryDelta > 0 && `, which could unlock +$${(salaryDelta / 1000).toFixed(0)}k in annual salary`}.
+          {criticalSkills.length > 0 && ` Meanwhile, ${criticalSkills.map((s) => s.skill).join(', ')} ${criticalSkills.length === 1 ? 'needs' : 'need'} urgent attention.`}
+        </p>
+
+        <div className="flex flex-wrap gap-3">
+          {(twin?.recommended_skills ?? []).slice(0, 4).map((skill, i) => (
+            <motion.span
+              key={skill.skill}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: delay + 0.1 + i * 0.08 }}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${
+                i === 0
+                  ? 'bg-neon-green/10 text-neon-green border-neon-green/30'
+                  : 'theme-text-tertiary border-[var(--border-default)]'
+              }`}
+            >
+              {skill.priority === 'high' && <span className="mr-1">!</span>}
+              {skill.skill}
+            </motion.span>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+/* Narrative section divider with label */
+function NarrativeDivider({ label, delay = 0 }) {
+  return (
+    <motion.div
+      className="flex items-center gap-4 py-2"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay, duration: 0.4 }}
+    >
+      <div className="flex-1 h-px" style={{
+        background: 'linear-gradient(90deg, transparent, rgba(var(--neon-cyan-rgb), 0.15), transparent)',
+      }} />
+      <span className="text-[10px] font-bold uppercase tracking-[0.3em] theme-text-muted whitespace-nowrap">
+        {label}
+      </span>
+      <div className="flex-1 h-px" style={{
+        background: 'linear-gradient(90deg, transparent, rgba(var(--neon-cyan-rgb), 0.15), transparent)',
+      }} />
+    </motion.div>
+  )
+}
+
 /* Stagger animation variants */
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24, filter: 'blur(4px)' },
@@ -273,10 +406,10 @@ export default function Dashboard() {
 
   const { profile, blindspot_index: bsi, skill_survival, competence_illusion, career_twin } = data
 
-  const thriving = skill_survival.filter((s) => s.status === 'thriving').length
-  const atRisk = skill_survival.filter((s) => s.status === 'at_risk' || s.status === 'critical').length
-
-  const TOAST_DURATION_MS = 2000
+  const animatedScore = useCountUp(bsi.score, 2200)
+  const criticalSkills = skill_survival.filter((s) => s.status === 'critical')
+  const atRiskSkills = skill_survival.filter((s) => s.status === 'at_risk')
+  const consequence = CONSEQUENCE_COPY[bsi.level] || CONSEQUENCE_COPY.moderate
 
   const handleSave = useCallback(() => {
     saveAnalysis(data)
@@ -301,14 +434,17 @@ export default function Dashboard() {
       transition={{ duration: 0.3 }}
     >
       {/* === NEW: Reveal Animation (delete block to revert) === */}
-      {showReveal && (
-        <RevealAnimation
-          score={bsi.score}
-          level={bsi.level}
-          onComplete={() => setShowReveal(false)}
-          hasAssessment={!!assessmentData}
-        />
-      )}
+      <AnimatePresence>
+        {showReveal && (
+          <RevealAnimation
+            key="reveal"
+            score={bsi.score}
+            level={bsi.level}
+            onComplete={() => setShowReveal(false)}
+            hasAssessment={!!assessmentData}
+          />
+        )}
+      </AnimatePresence>
       {/* === END Reveal Animation === */}
 
       {/* Top Navigation Bar */}
@@ -373,182 +509,125 @@ export default function Dashboard() {
       )}
 
       <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-6 space-y-6">
-        {/* HERO SECTION — Unforgettable first impression */}
+
+        {/* ═══════════════════════════════════════════════════
+           ACT 1: THE WAKE-UP CALL — Score dominates everything
+           ═══════════════════════════════════════════════════ */}
         <motion.div
           {...fadeUp(0)}
           data-export-section
-          className="hero-section glass-card-premium neon-border p-8 md:p-12 text-center relative overflow-hidden"
+          className="hero-section glass-card-premium neon-border relative overflow-hidden"
+          style={{ minHeight: '420px' }}
         >
-          {/* Radial glow behind score */}
+          {/* Layered depth: radial glow background (Layer 0) */}
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: `radial-gradient(circle at 50% 40%, ${LEVEL_COLOR_MAP[bsi.level] || '#38BDF8'}15, transparent 60%)`,
+              background: `radial-gradient(circle at 50% 35%, ${LEVEL_COLOR_MAP[bsi.level] || '#38BDF8'}18, transparent 55%),
+                           radial-gradient(circle at 30% 80%, rgba(167,139,250,0.06), transparent 50%),
+                           radial-gradient(circle at 70% 80%, rgba(52,211,153,0.04), transparent 50%)`,
             }}
           />
 
-          <p className="text-sm theme-text-tertiary mb-2 relative z-10">
-            {profile.name} &bull; {profile.current_role} &bull; {profile.years_experience}yr exp
-          </p>
-
-          {/* Giant BSI Score */}
-          <motion.div
-            className="relative z-10 score-pulse"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <span
-              className="text-7xl md:text-8xl lg:text-9xl font-black font-mono leading-none hero-score-gradient"
-              style={{
-                background: `linear-gradient(135deg, ${LEVEL_COLOR_MAP[bsi.level] || '#38BDF8'}, #A78BFA, ${LEVEL_COLOR_MAP[bsi.level] || '#38BDF8'})`,
-                backgroundSize: '200% 200%',
-                WebkitBackgroundClip: 'text',
-                backgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                filter: `drop-shadow(0 0 30px ${LEVEL_COLOR_MAP[bsi.level] || '#38BDF8'}40)`,
-              }}
+          {/* Content (Layer 1) */}
+          <div className="relative z-10 py-12 md:py-16 px-8 md:px-12 text-center">
+            <motion.p
+              className="text-xs theme-text-muted uppercase tracking-[0.2em] mb-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
             >
-              {bsi.score.toFixed(1)}
-            </span>
-          </motion.div>
+              {profile.name} &bull; {profile.current_role} &bull; {profile.years_experience}yr experience
+            </motion.p>
 
-          {/* Risk level badge */}
-          <motion.p
-            className="text-sm md:text-base font-bold uppercase tracking-[0.25em] mt-3 relative z-10"
-            style={{ color: LEVEL_COLOR_MAP[bsi.level] || '#38BDF8' }}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-          >
-            {bsi.level === 'critical' ? 'CRITICAL RISK' : bsi.level === 'warning' ? 'HIGH RISK' : bsi.level === 'moderate' ? 'MODERATE RISK' : 'LOW RISK'}
-          </motion.p>
+            {/* THE SCORE — The center of everything */}
+            <motion.div
+              className="score-pulse mb-2"
+              initial={{ scale: 0.6, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <span
+                className="text-8xl md:text-[10rem] lg:text-[12rem] font-black font-mono leading-none hero-score-gradient inline-block"
+                style={{
+                  background: `linear-gradient(135deg, ${LEVEL_COLOR_MAP[bsi.level] || '#38BDF8'}, #A78BFA, ${LEVEL_COLOR_MAP[bsi.level] || '#38BDF8'})`,
+                  backgroundSize: '200% 200%',
+                  WebkitBackgroundClip: 'text',
+                  backgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  filter: `drop-shadow(0 0 50px ${LEVEL_COLOR_MAP[bsi.level] || '#38BDF8'}35)`,
+                }}
+              >
+                {animatedScore.toFixed(1)}
+              </span>
+            </motion.div>
 
-          {/* Emotional shock line */}
-          <motion.p
-            className="text-base md:text-lg mt-4 relative z-10 max-w-md mx-auto leading-relaxed"
-            style={{ color: 'var(--text-secondary)' }}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
-          >
-            {bsi.level === 'critical'
-              ? 'You are falling behind — silently.'
-              : bsi.level === 'warning'
-                ? 'Your skills are decaying faster than the market demands.'
-                : bsi.level === 'moderate'
-                  ? 'Some of your skills are losing relevance. Act before it compounds.'
-                  : 'Your career foundation is strong — keep building momentum.'}
-          </motion.p>
+            {/* Risk level badge */}
+            <motion.div
+              className="flex items-center justify-center gap-2 mb-6"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+            >
+              <span
+                className="inline-block w-2 h-2 rounded-full animate-pulse"
+                style={{ backgroundColor: LEVEL_COLOR_MAP[bsi.level] || '#38BDF8' }}
+              />
+              <span
+                className="text-xs md:text-sm font-bold uppercase tracking-[0.3em]"
+                style={{ color: LEVEL_COLOR_MAP[bsi.level] || '#38BDF8' }}
+              >
+                {bsi.level === 'critical' ? 'CRITICAL RISK' : bsi.level === 'warning' ? 'HIGH RISK' : bsi.level === 'moderate' ? 'MODERATE RISK' : 'LOW RISK'}
+              </span>
+            </motion.div>
 
-          {/* Quick stats row */}
-          <motion.div
-            className="flex items-center justify-center gap-6 mt-6 relative z-10"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.1 }}
-          >
-            {[
-              { value: thriving, label: 'Thriving', color: 'text-neon-green' },
-              { value: atRisk, label: 'At Risk', color: 'text-neon-orange' },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <p className={`text-2xl font-bold font-mono ${stat.color}`}>{stat.value}</p>
-                <p className="text-[10px] theme-text-muted uppercase tracking-wider">{stat.label}</p>
-              </div>
-            ))}
-          </motion.div>
+            {/* EMOTIONAL CONSEQUENCE — This is what judges remember */}
+            <motion.h2
+              className="text-2xl md:text-3xl lg:text-4xl font-bold max-w-2xl mx-auto leading-tight mb-3"
+              style={{ color: 'var(--text-primary)' }}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.1, duration: 0.6 }}
+            >
+              {consequence.headline}
+            </motion.h2>
+            <motion.p
+              className="text-sm md:text-base max-w-lg mx-auto leading-relaxed"
+              style={{ color: 'var(--text-tertiary)' }}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.4 }}
+            >
+              {consequence.subline}
+            </motion.p>
+          </div>
         </motion.div>
 
-        {/* TL;DR Summary */}
-        <TldrSummary bsi={bsi} survival={skill_survival} twin={career_twin} illusion={competence_illusion} />
+        {/* THE WARNING — Time-to-Irrelevance, unmissable */}
+        <TimeToIrrelevanceAlert bsi={bsi} survival={skill_survival} />
 
-        {/* Alert Panel */}
-        <motion.div {...fadeUp(0.08)}>
+        {/* Alert Panel — Critical warnings */}
+        <motion.div {...fadeUp(0.12)}>
           <AlertPanel bsi={bsi} illusions={competence_illusion} survival={skill_survival} />
         </motion.div>
 
-        {/* Time-to-Irrelevance Alert */}
-        <TimeToIrrelevanceAlert bsi={bsi} survival={skill_survival} />
+        {/* ═══════════════════════════════════════════════════
+           ACT 2: THE EVIDENCE — Show proof, guide the eye
+           ═══════════════════════════════════════════════════ */}
+        <NarrativeDivider label="The Evidence" delay={0.14} />
 
-        {/* AI Insights */}
-        {data.ai_insights && (
-          <CollapsibleSection
-            title="AI Career Insights"
-            subtitle="Personalized intelligence from your analysis"
-            delay={0.12}
-            exportSection
-          >
-            <AIInsights data={data.ai_insights} />
-          </CollapsibleSection>
-        )}
+        {/* Risk Factor Cards — Your top vulnerabilities */}
+        <motion.div {...fadeUp(0.16)} data-export-section className="glass-card-premium neon-border p-6">
+          <SectionHeader title="Your Vulnerabilities" subtitle="Where your career is most exposed" />
+          <RiskCards components={bsi.components} />
+        </motion.div>
 
-        {/* === NEW: Assessment Results + Verification Insight (delete block to revert) === */}
-        {assessmentData && (
-          <>
-            <CollapsibleSection
-              title="AI Skill Verification"
-              subtitle="Quiz results vs. self-reported confidence"
-              delay={0.13}
-              exportSection
-            >
-              <AssessmentResults assessmentData={assessmentData} />
-            </CollapsibleSection>
-
-            <VerificationInsight
-              assessmentData={assessmentData}
-              bsiComponents={bsi.components}
-            />
-          </>
-        )}
-        {/* === END Assessment sections === */}
-
-        {/* BSI Gauge + Risk Factor Cards — 2-column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left: BSI Gauge */}
-          <motion.div {...fadeUp(0.16)} data-export-section className="glass-card-premium neon-border p-6">
-            <div className="flex items-center justify-between mb-5">
-              <div>
-                <h2 className="text-lg font-semibold theme-text">BlindSpot Index</h2>
-                <p className="text-xs theme-text-muted mt-0.5">Career vulnerability composite score</p>
-              </div>
-              {/* === NEW: AI Verified badge (delete block to revert) === */}
-              {isAiVerified && (
-                <motion.div
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neon-cyan/30 bg-neon-cyan/5"
-                  animate={{
-                    boxShadow: [
-                      '0 0 0px rgba(56,189,248,0)',
-                      '0 0 12px rgba(56,189,248,0.3)',
-                      '0 0 0px rgba(56,189,248,0)',
-                    ],
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-neon-cyan">
-                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-[10px] font-bold text-neon-cyan uppercase tracking-wider">AI Verified</span>
-                </motion.div>
-              )}
-              {/* === END AI Verified badge === */}
-            </div>
-            <Gauge score={bsi.score} level={bsi.level} />
-          </motion.div>
-
-          {/* Right: Risk Factor Cards */}
-          <motion.div {...fadeUp(0.2)} data-export-section className="glass-card-premium neon-border p-6">
-            <SectionHeader title="Risk Factors" subtitle="Component breakdown of your BSI score" />
-            <RiskCards components={bsi.components} />
-          </motion.div>
-        </div>
-
-        {/* Skill Iceberg — full width */}
-        <motion.div {...fadeUp(0.24)} data-export-section className="glass-card-premium neon-border p-6">
+        {/* Skill Iceberg — Signature visualization */}
+        <motion.div {...fadeUp(0.2)} data-export-section className="glass-card-premium neon-border p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-lg font-semibold theme-text">Skill Iceberg</h2>
-              <p className="text-xs theme-text-muted mt-0.5">What you see vs. what the market sees about your skills</p>
+              <h2 className="text-lg font-semibold theme-text">What the Market Sees</h2>
+              <p className="text-xs theme-text-muted mt-0.5">Your visible skills vs. what's silently eroding beneath the surface</p>
             </div>
             <IcebergToggle mode={icebergMode} onToggle={setIcebergMode} />
           </div>
@@ -561,12 +640,102 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
+        {/* ═══════════════════════════════════════════════════
+           ACT 3: THE PATH FORWARD — Action, not just data
+           ═══════════════════════════════════════════════════ */}
+        <NarrativeDivider label="Your Path Forward" delay={0.24} />
+
+        {/* What Should I Do Next? — THE product moment */}
+        <NextStepCTA twin={career_twin} survival={skill_survival} delay={0.26} />
+
+        {/* Career Twin Projection — Two futures side by side */}
+        <CollapsibleSection
+          title="Your Two Futures"
+          subtitle="Current trajectory vs. what's possible if you act now"
+          delay={0.3}
+          exportSection
+        >
+          <CareerTwin data={career_twin} />
+        </CollapsibleSection>
+
+        {/* ═══════════════════════════════════════════════════
+           ACT 4: THE DEEP DIVE — For the curious (collapsed)
+           ═══════════════════════════════════════════════════ */}
+        <NarrativeDivider label="Deep Dive" delay={0.34} />
+
+        {/* AI Insights */}
+        {data.ai_insights && (
+          <CollapsibleSection
+            title="AI Career Insights"
+            subtitle="Personalized intelligence from your analysis"
+            delay={0.36}
+            defaultOpen={false}
+            exportSection
+          >
+            <AIInsights data={data.ai_insights} />
+          </CollapsibleSection>
+        )}
+
+        {/* Assessment Results + Verification Insight */}
+        {assessmentData && (
+          <>
+            <CollapsibleSection
+              title="AI Skill Verification"
+              subtitle="Quiz results vs. self-reported confidence"
+              delay={0.38}
+              defaultOpen={false}
+              exportSection
+            >
+              <AssessmentResults assessmentData={assessmentData} />
+            </CollapsibleSection>
+
+            <VerificationInsight
+              assessmentData={assessmentData}
+              bsiComponents={bsi.components}
+            />
+          </>
+        )}
+
+        {/* BSI Gauge — Detailed score breakdown */}
+        <CollapsibleSection
+          title="BlindSpot Index Detail"
+          subtitle="Career vulnerability composite score"
+          delay={0.4}
+          defaultOpen={false}
+          exportSection
+        >
+          <div className="flex justify-center">
+            <Gauge score={bsi.score} level={bsi.level} />
+          </div>
+          {isAiVerified && (
+            <div className="flex justify-center mt-4">
+              <motion.div
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neon-cyan/30 bg-neon-cyan/5"
+                animate={{
+                  boxShadow: [
+                    '0 0 0px rgba(56,189,248,0)',
+                    '0 0 12px rgba(56,189,248,0.3)',
+                    '0 0 0px rgba(56,189,248,0)',
+                  ],
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-neon-cyan">
+                  <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
+                </svg>
+                <span className="text-[10px] font-bold text-neon-cyan uppercase tracking-wider">AI Verified</span>
+              </motion.div>
+            </div>
+          )}
+        </CollapsibleSection>
+
         {/* Benchmark */}
         {data.benchmarks && (
           <CollapsibleSection
             title="Industry Benchmark"
             subtitle="Your profile vs. industry average across 5 dimensions"
-            delay={0.28}
+            delay={0.42}
+            defaultOpen={false}
             exportSection
           >
             <BenchmarkComparison data={data.benchmarks} />
@@ -578,7 +747,8 @@ export default function Dashboard() {
           <CollapsibleSection
             title="Skill Half-Life"
             subtitle="Years until 50% market value loss"
-            delay={0.32}
+            delay={0.44}
+            defaultOpen={false}
             exportSection
           >
             <SkillSurvivalChart data={skill_survival} />
@@ -587,52 +757,47 @@ export default function Dashboard() {
           <CollapsibleSection
             title="Competence Illusion"
             subtitle="Confidence vs. actual market relevance"
-            delay={0.36}
+            delay={0.46}
+            defaultOpen={false}
             exportSection
           >
             <IllusionChart data={competence_illusion} />
           </CollapsibleSection>
         </div>
 
-        {/* Career Twin */}
-        <CollapsibleSection
-          title="Career Twin Projection"
-          subtitle="Current path vs. optimized trajectory"
-          delay={0.4}
-          exportSection
-        >
-          <CareerTwin data={career_twin} />
-        </CollapsibleSection>
-
-        {/* === NEW: Phase Timeline (delete block to revert) === */}
+        {/* Roadmap Timeline */}
         {career_twin?.roadmap?.length > 0 && (
           <CollapsibleSection
             title="Career Roadmap Timeline"
             subtitle="Phase-based career development plan"
-            delay={0.42}
+            delay={0.48}
+            defaultOpen={false}
             exportSection
           >
             <RoadmapTimeline roadmap={career_twin.roadmap} />
           </CollapsibleSection>
         )}
-        {/* === END Phase Timeline === */}
 
         {/* Roadmap */}
-        <CollapsibleSection
-          title="Upskilling Roadmap"
-          subtitle="Quarter-by-quarter learning plan + job matches"
-          delay={0.44}
-          exportSection
-        >
-          <Roadmap data={career_twin.roadmap} jobs={career_twin.matching_jobs} />
-        </CollapsibleSection>
+        {career_twin?.roadmap && career_twin?.matching_jobs && (
+          <CollapsibleSection
+            title="Upskilling Roadmap"
+            subtitle="Quarter-by-quarter learning plan + job matches"
+            delay={0.5}
+            defaultOpen={false}
+            exportSection
+          >
+            <Roadmap data={career_twin.roadmap} jobs={career_twin.matching_jobs} />
+          </CollapsibleSection>
+        )}
 
         {/* Course Recommendations */}
         {data.course_recommendations && data.course_recommendations.length > 0 && (
           <CollapsibleSection
             title="Recommended Courses"
             subtitle="Context-aware learning resources for your target role"
-            delay={0.48}
+            delay={0.52}
+            defaultOpen={false}
             exportSection
           >
             <CourseRecommendations data={data.course_recommendations} />
@@ -644,7 +809,7 @@ export default function Dashboard() {
           <CollapsibleSection
             title="Share Your Score"
             subtitle="Generate a shareable career score card"
-            delay={0.52}
+            delay={0.54}
             defaultOpen={false}
           >
             <ShareCard bsi={bsi} profile={profile} survival={skill_survival} />
@@ -661,10 +826,10 @@ export default function Dashboard() {
         </div>
 
         {/* Footer */}
-        <div className="text-center py-6">
+        <div className="text-center py-8">
           <div className="section-divider mb-6" />
           <span className="text-xs" style={{ color: 'var(--text-faint)' }}>
-            BlindSpot AI — Career Intelligence Platform
+            BlindSpot AI — Career Warning System
           </span>
         </div>
       </div>

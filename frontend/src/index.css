@@ -876,6 +876,18 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
+   ICEBERG 2D — Wave Drift Animation
+   ═══════════════════════════════════════════════════════════ */
+.iceberg-wave-drift {
+  animation: iceberg-wave-drift linear infinite;
+}
+
+@keyframes iceberg-wave-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(-700px); }
+}
+
+/* ═══════════════════════════════════════════════════════════
    HERO SCORE — Giant gradient number
    ═══════════════════════════════════════════════════════════ */
 .hero-score-gradient {
@@ -884,17 +896,33 @@
 
 @keyframes hero-score-glow {
   0%, 100% {
-    filter: drop-shadow(0 0 30px rgba(var(--neon-cyan-rgb), 0.3));
+    filter: drop-shadow(0 0 40px rgba(var(--neon-cyan-rgb), 0.3));
     background-position: 0% 50%;
   }
   50% {
-    filter: drop-shadow(0 0 60px rgba(var(--neon-cyan-rgb), 0.5));
+    filter: drop-shadow(0 0 80px rgba(var(--neon-cyan-rgb), 0.5));
     background-position: 100% 50%;
   }
 }
 
 .hero-section {
-  min-height: 280px;
+  min-height: 420px;
+}
+
+/* Hero elevated card — floats above everything */
+.hero-section.glass-card-premium {
+  box-shadow:
+    var(--card-shadow),
+    0 30px 60px -15px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(var(--neon-cyan-rgb), calc(0.04 * var(--glow-opacity)));
+}
+
+.hero-section.glass-card-premium:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    var(--card-shadow-hover),
+    0 40px 80px -15px rgba(0, 0, 0, 0.35),
+    0 0 60px rgba(var(--neon-cyan-rgb), calc(0.08 * var(--glow-opacity)));
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -927,12 +955,12 @@
    IRRELEVANCE ALERT PULSE
    ═══════════════════════════════════════════════════════════ */
 @keyframes alert-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--neon-pink-rgb), 0.3); }
-  50% { box-shadow: 0 0 20px 4px rgba(var(--neon-pink-rgb), 0.15); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--neon-pink-rgb), 0.25); }
+  50% { box-shadow: 0 0 30px 6px rgba(var(--neon-pink-rgb), 0.12); }
 }
 
 .alert-pulse {
-  animation: alert-pulse 2s ease-in-out 3;
+  animation: alert-pulse 2.5s ease-in-out infinite;
 }
 
 /* ═══════════════════════════════════════════════════════════
