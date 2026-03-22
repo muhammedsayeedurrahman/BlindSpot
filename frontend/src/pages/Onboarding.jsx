@@ -4,8 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { analyzeProfile, fetchSkills, fetchRoles } from '../api'
 import { useTheme } from '../context/ThemeContext'
 import ThemeToggle from '../components/ThemeToggle'
-// === NEW: Quiz import (delete line to revert) ===
 import SkillQuiz from '../components/SkillQuiz'
+import useAnalysisStore from '../store/useAnalysisStore'
+import useJourneyStore from '../store/useJourneyStore'
 
 // Fallback data if API is unreachable
 const FALLBACK_SKILL_CATEGORIES = {
@@ -154,6 +155,7 @@ function ConfidenceSlider({ skill, value, onChange }) {
 export default function Onboarding() {
   const navigate = useNavigate()
   const { isDark } = useTheme()
+  const setData = useAnalysisStore((s) => s.setData)
   const [step, setStep] = useState(0)
   const [name, setName] = useState('')
   const [role, setRole] = useState('')
@@ -269,7 +271,10 @@ export default function Onboarding() {
         result.assessment_data = effectiveAssessment
       }
       // === END assessment dashboard passthrough ===
-      navigate('/dashboard', { state: { data: result } })
+      setData(result)
+      useAnalysisStore.getState().resetJourney()
+      useJourneyStore.getState().resetJourney()
+      navigate('/dashboard')
     } catch (err) {
       // Parse structured validation errors from API
       if (err.response?.data?.error) {

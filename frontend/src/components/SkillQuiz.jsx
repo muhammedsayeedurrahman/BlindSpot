@@ -6,6 +6,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { generateAssessment } from '../api'
+import useJourneyStore from '../store/useJourneyStore'
 
 const ANSWER_COLORS = {
   correct: '#34D399',
@@ -60,6 +61,9 @@ function QuizProgress({ current, total }) {
   )
 }
 
+const DIFFICULTY_LABELS = { easy: 'Easy', medium: 'Medium', hard: 'Hard' }
+const DIFFICULTY_COLORS = { easy: '#34D399', medium: '#38BDF8', hard: '#A78BFA' }
+
 function ScoreSummary({ results, onContinue }) {
   const [displayAccuracy, setDisplayAccuracy] = useState(0)
 
@@ -75,6 +79,8 @@ function ScoreSummary({ results, onContinue }) {
     }, 16)
     return () => clearInterval(timer)
   }, [results.overall_accuracy])
+
+  const maxLevel = results.max_difficulty || 'easy'
 
   return (
     <motion.div
@@ -97,8 +103,15 @@ function ScoreSummary({ results, onContinue }) {
         {displayAccuracy}%
       </motion.div>
 
-      <p className="theme-text-secondary text-sm mb-6">
+      <p className="theme-text-secondary text-sm mb-2">
         {results.total_correct} of {results.total_questions} correct
+      </p>
+
+      <p className="text-xs theme-text-muted mb-6">
+        Max difficulty reached:{' '}
+        <span className="font-bold" style={{ color: DIFFICULTY_COLORS[maxLevel] }}>
+          {DIFFICULTY_LABELS[maxLevel]}
+        </span>
       </p>
 
       <div className="space-y-2 mb-6 max-w-sm mx-auto">
@@ -144,6 +157,8 @@ function ScoreSummary({ results, onContinue }) {
   )
 }
 
+const DIFFICULTY_ORDER = ['easy', 'medium', 'hard']
+
 export default function SkillQuiz({ skills, onComplete, onSkip }) {
   const [questions, setQuestions] = useState([])
   const [loading, setLoading] = useState(true)
@@ -153,6 +168,13 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
   const [feedback, setFeedback] = useState(null) // { index, isCorrect }
   const [results, setResults] = useState(null)
   const [error, setError] = useState(null)
+
+  // Adaptive difficulty state
+  const [currentDifficulty, setCurrentDifficulty] = useState('easy')
+  const [consecutiveCorrect, setConsecutiveCorrect] = useState(0)
+  const [consecutiveIncorrect, setConsecutiveIncorrect] = useState(0)
+  const [maxDifficultyReached, setMaxDifficultyReached] = useState('easy')
+  const [questionDetails, setQuestionDetails] = useState([]) // { difficulty, timeTaken, correct }
 
   useEffect(() => {
     let cancelled = false
@@ -198,6 +220,36 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
 
     const newAnswers = [...userAnswers, answerIndex]
     setUserAnswers(newAnswers)
+
+    // Track question details for adaptive difficulty
+    const newDetail = { difficulty: currentDifficulty, correct: isCorrect }
+    const newDetails = [...questionDetails, newDetail]
+    setQuestionDetails(newDetails)
+
+    // Adaptive difficulty logic
+    let newConsCorrect = isCorrect ? consecutiveCorrect + 1 : 0
+    let newConsIncorrect = isCorrect ? 0 : consecutiveIncorrect + 1
+    let newDifficulty = currentDifficulty
+    const currentIdx = DIFFICULTY_ORDER.indexOf(currentDifficulty)
+
+    if (newConsCorrect >= 2 && currentIdx < DIFFICULTY_ORDER.length - 1) {
+      newDifficulty = DIFFICULTY_ORDER[currentIdx + 1]
+      newConsCorrect = 0
+    } else if (newConsIncorrect >= 2 && currentIdx > 0) {
+      newDifficulty = DIFFICULTY_ORDER[currentIdx - 1]
+      newConsIncorrect = 0
+    }
+
+    setConsecutiveCorrect(newConsCorrect)
+    setConsecutiveIncorrect(newConsIncorrect)
+    setCurrentDifficulty(newDifficulty)
+
+    const newMaxIdx = Math.max(
+      DIFFICULTY_ORDER.indexOf(maxDifficultyReached),
+      DIFFICULTY_ORDER.indexOf(newDifficulty),
+    )
+    const newMaxDifficulty = DIFFICULTY_ORDER[newMaxIdx]
+    setMaxDifficultyReached(newMaxDifficulty)
 
     // Show feedback briefly then advance
     setTimeout(() => {
@@ -247,16 +299,31 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
           gapCount++
         }
 
+        const overallAccuracy = Math.round((totalCorrect / totalQ) * 1000) / 10
+
+        // Save to journey store
+        const journeyStore = useJourneyStore.getState()
+        for (const ps of perSkill) {
+          journeyStore.setQuizScore(ps.skill, {
+            score: ps.verified_score,
+            maxLevel: newMaxDifficulty,
+          })
+          if (ps.verified_score >= 70) {
+            journeyStore.addCompletedSkill(ps.skill)
+          }
+        }
+
         setResults({
           per_skill: perSkill.sort((a, b) => Math.abs(b.gap) - Math.abs(a.gap)),
-          overall_accuracy: Math.round((totalCorrect / totalQ) * 1000) / 10,
+          overall_accuracy: overallAccuracy,
           verification_gap: Math.round((totalGap / gapCount) * 10) / 10,
           total_correct: totalCorrect,
           total_questions: totalQ,
+          max_difficulty: newMaxDifficulty,
         })
       }
     }, 800)
-  }, [feedback, questions, currentIndex, userAnswers, skills])
+  }, [feedback, questions, currentIndex, userAnswers, skills, currentDifficulty, consecutiveCorrect, consecutiveIncorrect, maxDifficultyReached, questionDetails])
 
   if (loading) {
     return (
@@ -316,9 +383,18 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
           exit={{ x: -100, opacity: 0 }}
           transition={{ duration: 0.3, ease: 'easeOut' }}
         >
-          <div className="mb-2">
+          <div className="mb-2 flex items-center gap-2">
             <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-neon-cyan/10 text-neon-cyan uppercase tracking-wider">
               {q.skill}
+            </span>
+            <span
+              className="text-[10px] font-medium px-2 py-0.5 rounded-full uppercase tracking-wider"
+              style={{
+                backgroundColor: `${DIFFICULTY_COLORS[currentDifficulty]}15`,
+                color: DIFFICULTY_COLORS[currentDifficulty],
+              }}
+            >
+              {DIFFICULTY_LABELS[currentDifficulty]}
             </span>
           </div>
 

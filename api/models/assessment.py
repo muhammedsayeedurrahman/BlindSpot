@@ -639,7 +639,7 @@ GENERIC_QUESTIONS = [
 ]
 
 
-def _try_gemini_questions(skills, count_per_skill):
+def _try_gemini_questions(skills, count_per_skill, difficulty=None):
     """Attempt to generate questions via Gemini AI with timeout."""
     try:
         import google.generativeai as genai
@@ -653,14 +653,15 @@ def _try_gemini_questions(skills, count_per_skill):
         model = genai.GenerativeModel("gemini-2.0-flash")
 
         skill_list = ", ".join(s["skill"] for s in skills)
-        prompt = f"""Generate {count_per_skill} multiple-choice quiz questions for EACH of these skills: {skill_list}.
+        difficulty_instruction = f"\nGenerate {difficulty}-level questions." if difficulty else ""
+        prompt = f"""Generate {count_per_skill} multiple-choice quiz questions for EACH of these skills: {skill_list}.{difficulty_instruction}
 
 For each question return a JSON object with:
 - "skill": the skill name
 - "question": the question text
 - "options": array of exactly 4 answer options
 - "correct": index (0-3) of the correct answer
-- "difficulty": "easy" or "medium"
+- "difficulty": "easy", "medium", or "hard"
 
 Requirements:
 - Questions should test practical knowledge, not trivia
@@ -728,12 +729,16 @@ def _shuffle_options(question):
     return {**question, "options": options, "correct": new_correct}
 
 
-def _get_fallback_questions(skills, count_per_skill):
+def _get_fallback_questions(skills, count_per_skill, difficulty=None):
     """Generate rule-based fallback questions for given skills."""
     questions = []
     for skill_entry in skills:
         skill_name = skill_entry["skill"]
         pool = FALLBACK_QUESTIONS.get(skill_name, GENERIC_QUESTIONS)
+        # Filter by difficulty if specified
+        if difficulty:
+            filtered = [q for q in pool if q.get("difficulty") == difficulty]
+            pool = filtered if filtered else pool
         # Shuffle and pick up to count_per_skill
         sampled = random.sample(pool, min(count_per_skill, len(pool)))
         for q in sampled:
@@ -746,13 +751,14 @@ def _get_fallback_questions(skills, count_per_skill):
 class AssessmentEngine:
     """AI-powered skill assessment with Gemini + rule-based fallback."""
 
-    def generate_questions(self, skills, count_per_skill=QUESTIONS_PER_SKILL):
+    def generate_questions(self, skills, count_per_skill=QUESTIONS_PER_SKILL, difficulty=None):
         """
         Generate quiz questions for the given skills.
 
         Args:
             skills: list of {"skill": str, "confidence": int}
             count_per_skill: questions per skill (default 2)
+            difficulty: optional filter — "easy", "medium", or "hard"
 
         Returns:
             list of question dicts with: skill, question, options, correct, difficulty
@@ -763,14 +769,16 @@ class AssessmentEngine:
 
         # Try Gemini with retries
         for attempt in range(MAX_RETRIES):
-            ai_questions = _try_gemini_questions(skills, count_per_skill)
+            ai_questions = _try_gemini_questions(skills, count_per_skill, difficulty)
             if ai_questions:
                 logger.info("Gemini generated %d questions (attempt %d)", len(ai_questions), attempt + 1)
+                if difficulty:
+                    ai_questions = [q for q in ai_questions if q.get("difficulty") == difficulty] or ai_questions
                 return ai_questions[:MAX_QUESTIONS_TOTAL]
 
         # Fallback to rule-based
         logger.info("Using fallback question set")
-        fallback = _get_fallback_questions(skills, count_per_skill)
+        fallback = _get_fallback_questions(skills, count_per_skill, difficulty)
         return fallback[:MAX_QUESTIONS_TOTAL]
 
     def score_answers(self, questions, user_answers, skills_with_confidence):

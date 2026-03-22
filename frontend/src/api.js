@@ -37,4 +37,15 @@ export async function scoreAssessment(questions, answers, skills) {
 }
 // === END Assessment API ===
 
+export async function fetchEvolutionPaths(skill) {
+  const params = skill ? { skill } : {}
+  const response = await api.get('/evolution', { params })
+  return response.data
+}
+
+export async function fetchExplanation(contextType, data) {
+  const response = await api.post('/explain', { context_type: contextType, data })
+  return response.data
+}
+
 export default api

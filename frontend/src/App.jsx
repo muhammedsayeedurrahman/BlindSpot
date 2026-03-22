@@ -5,6 +5,11 @@ import FloatingOrbs from './components/FloatingOrbs'
 import Landing from './pages/Landing'
 import Onboarding from './pages/Onboarding'
 import Dashboard from './pages/Dashboard'
+import Analysis from './pages/Analysis'
+import Explore from './pages/Explore'
+import RoadmapPage from './pages/RoadmapPage'
+import Opportunities from './pages/Opportunities'
+import JourneyLayout from './layouts/JourneyLayout'
 
 export default function App() {
   return (
@@ -17,7 +22,14 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              {/* Journey routes — wrapped in JourneyLayout with sidebar */}
+              <Route element={<JourneyLayout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/analysis" element={<Analysis />} />
+                <Route path="/explore" element={<Explore />} />
+                <Route path="/roadmap" element={<RoadmapPage />} />
+                <Route path="/opportunities" element={<Opportunities />} />
+              </Route>
             </Routes>
           </div>
         </div>

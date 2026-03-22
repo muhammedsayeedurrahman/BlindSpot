@@ -81,6 +81,32 @@ const DEMO_DATA = {
       { quarter: 'Q4 2025', skill: 'Cloud Architecture', priority: 'medium', action: 'Learn Cloud Architecture through projects and courses', milestone: 'Build a project using Cloud Architecture' },
     ],
   },
+  evolution_paths: [
+    {
+      skill: 'Excel',
+      paths: [
+        { type: 'upgrade', label: 'Advanced Excel', skills: ['Power Query', 'VBA', 'DAX'], months: 2 },
+        { type: 'expand', label: 'Data Tools', skills: ['SQL', 'Power BI', 'Tableau'], months: 4 },
+        { type: 'career', label: 'Data Analyst', role: 'Data Analyst', skills: ['SQL', 'Python', 'Statistics', 'Data Visualization'], months: 8 },
+      ],
+    },
+    {
+      skill: 'JavaScript',
+      paths: [
+        { type: 'upgrade', label: 'Modern JavaScript', skills: ['ES2024+', 'Web APIs', 'Performance Optimization'], months: 2 },
+        { type: 'expand', label: 'Full Stack JS', skills: ['TypeScript', 'Node.js', 'Next.js'], months: 4 },
+        { type: 'career', label: 'AI Engineer', role: 'AI Engineer', skills: ['TypeScript', 'LangChain', 'Prompt Engineering', 'Vector DBs'], months: 8 },
+      ],
+    },
+    {
+      skill: 'SQL',
+      paths: [
+        { type: 'upgrade', label: 'Advanced SQL', skills: ['Window Functions', 'CTEs', 'Query Optimization'], months: 2 },
+        { type: 'expand', label: 'Data Engineering', skills: ['dbt', 'Airflow', 'Spark'], months: 5 },
+        { type: 'career', label: 'Data Engineer', role: 'Data Engineer', skills: ['Python', 'dbt', 'Kafka', 'Cloud Data Warehouses'], months: 9 },
+      ],
+    },
+  ],
   ai_insights: {
     source: 'rule_based',
     insights: [

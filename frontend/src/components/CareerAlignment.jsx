@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import JobLinks from './JobLinks'
 
 function scoreColor(score) {
   if (score >= 60) return { ring: '#34D399', text: 'text-neon-green', bg: 'bg-neon-green/10', border: 'border-neon-green/30' }
@@ -78,6 +79,12 @@ function HeroCard({ item, delay }) {
                   </span>
                 ))}
               </div>
+            </div>
+          )}
+
+          {item.match_score >= 60 && (
+            <div className="mt-4 pt-3 border-t border-[var(--border-subtle)]">
+              <JobLinks role={item.role} />
             </div>
           )}
         </div>

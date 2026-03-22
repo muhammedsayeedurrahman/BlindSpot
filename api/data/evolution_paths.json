@@ -1,0 +1,122 @@
+[
+  {
+    "skill": "Excel",
+    "paths": [
+      { "type": "upgrade", "label": "Advanced Excel", "skills": ["Power Query", "VBA", "DAX"], "months": 2 },
+      { "type": "expand", "label": "Data Tools", "skills": ["SQL", "Power BI", "Tableau"], "months": 4 },
+      { "type": "career", "label": "Data Analyst", "role": "Data Analyst", "skills": ["SQL", "Python", "Statistics", "Data Visualization"], "months": 8 }
+    ]
+  },
+  {
+    "skill": "JavaScript",
+    "paths": [
+      { "type": "upgrade", "label": "Modern JavaScript", "skills": ["ES2024+", "Web APIs", "Performance Optimization"], "months": 2 },
+      { "type": "expand", "label": "Full Stack JS", "skills": ["TypeScript", "Node.js", "Next.js"], "months": 4 },
+      { "type": "career", "label": "AI Engineer", "role": "AI Engineer", "skills": ["TypeScript", "LangChain", "Prompt Engineering", "Vector DBs"], "months": 8 }
+    ]
+  },
+  {
+    "skill": "React",
+    "paths": [
+      { "type": "upgrade", "label": "Advanced React", "skills": ["Server Components", "Suspense", "React Compiler"], "months": 2 },
+      { "type": "expand", "label": "Frontend Architecture", "skills": ["Next.js", "Testing", "Design Systems"], "months": 4 },
+      { "type": "career", "label": "Frontend Architect", "role": "Frontend Architect", "skills": ["Next.js", "Micro-frontends", "Performance", "A11y"], "months": 8 }
+    ]
+  },
+  {
+    "skill": "SQL",
+    "paths": [
+      { "type": "upgrade", "label": "Advanced SQL", "skills": ["Window Functions", "CTEs", "Query Optimization"], "months": 2 },
+      { "type": "expand", "label": "Data Engineering", "skills": ["dbt", "Airflow", "Spark"], "months": 5 },
+      { "type": "career", "label": "Data Engineer", "role": "Data Engineer", "skills": ["Python", "dbt", "Kafka", "Cloud Data Warehouses"], "months": 9 }
+    ]
+  },
+  {
+    "skill": "Python",
+    "paths": [
+      { "type": "upgrade", "label": "Advanced Python", "skills": ["Async/Await", "Type Hints", "Metaclasses"], "months": 2 },
+      { "type": "expand", "label": "ML & Data Science", "skills": ["NumPy", "Pandas", "Scikit-learn", "PyTorch"], "months": 5 },
+      { "type": "career", "label": "ML Engineer", "role": "ML Engineer", "skills": ["PyTorch", "MLOps", "Feature Engineering", "Model Serving"], "months": 10 }
+    ]
+  },
+  {
+    "skill": "TypeScript",
+    "paths": [
+      { "type": "upgrade", "label": "Advanced TypeScript", "skills": ["Generics", "Mapped Types", "Type Guards"], "months": 2 },
+      { "type": "expand", "label": "Full Stack TS", "skills": ["tRPC", "Prisma", "Zod", "Next.js"], "months": 4 },
+      { "type": "career", "label": "Platform Engineer", "role": "Platform Engineer", "skills": ["Node.js", "Docker", "Kubernetes", "Terraform"], "months": 8 }
+    ]
+  },
+  {
+    "skill": "Cloud Architecture",
+    "paths": [
+      { "type": "upgrade", "label": "Multi-Cloud", "skills": ["AWS", "GCP", "Azure", "IaC"], "months": 3 },
+      { "type": "expand", "label": "DevOps & SRE", "skills": ["Kubernetes", "Terraform", "Monitoring", "CI/CD"], "months": 5 },
+      { "type": "career", "label": "Cloud Architect", "role": "Cloud Architect", "skills": ["Multi-cloud", "Security", "Cost Optimization", "Serverless"], "months": 10 }
+    ]
+  },
+  {
+    "skill": "Machine Learning",
+    "paths": [
+      { "type": "upgrade", "label": "Applied ML", "skills": ["Feature Engineering", "Model Selection", "Evaluation"], "months": 3 },
+      { "type": "expand", "label": "Deep Learning", "skills": ["PyTorch", "Transformers", "Computer Vision"], "months": 6 },
+      { "type": "career", "label": "AI Researcher", "role": "AI Researcher", "skills": ["Research Methods", "Paper Writing", "Novel Architectures"], "months": 12 }
+    ]
+  },
+  {
+    "skill": "Data Analysis",
+    "paths": [
+      { "type": "upgrade", "label": "Advanced Analytics", "skills": ["Statistical Testing", "Regression", "A/B Testing"], "months": 3 },
+      { "type": "expand", "label": "Data Science", "skills": ["Machine Learning", "Python", "R", "Visualization"], "months": 6 },
+      { "type": "career", "label": "Data Scientist", "role": "Data Scientist", "skills": ["ML", "Statistics", "Python", "SQL", "Storytelling"], "months": 10 }
+    ]
+  },
+  {
+    "skill": "DevOps",
+    "paths": [
+      { "type": "upgrade", "label": "Advanced DevOps", "skills": ["GitOps", "Policy as Code", "Observability"], "months": 3 },
+      { "type": "expand", "label": "Platform Engineering", "skills": ["Backstage", "Internal Developer Platforms", "Service Mesh"], "months": 5 },
+      { "type": "career", "label": "SRE Lead", "role": "SRE Lead", "skills": ["Incident Management", "SLO Design", "Chaos Engineering"], "months": 8 }
+    ]
+  },
+  {
+    "skill": "Cybersecurity",
+    "paths": [
+      { "type": "upgrade", "label": "Security Engineering", "skills": ["SAST/DAST", "Threat Modeling", "Pen Testing"], "months": 3 },
+      { "type": "expand", "label": "Cloud Security", "skills": ["IAM", "Zero Trust", "CSPM", "Container Security"], "months": 5 },
+      { "type": "career", "label": "Security Architect", "role": "Security Architect", "skills": ["Risk Assessment", "Compliance", "Security Architecture", "Red Team"], "months": 10 }
+    ]
+  },
+  {
+    "skill": "Prompt Engineering",
+    "paths": [
+      { "type": "upgrade", "label": "Advanced Prompting", "skills": ["Chain-of-Thought", "Few-Shot", "System Prompts"], "months": 1 },
+      { "type": "expand", "label": "AI Application Dev", "skills": ["LangChain", "RAG", "Vector DBs", "Agents"], "months": 4 },
+      { "type": "career", "label": "AI Engineer", "role": "AI Engineer", "skills": ["LLM Fine-tuning", "MLOps", "Evaluation", "Production AI"], "months": 8 }
+    ]
+  },
+  {
+    "skill": "Docker",
+    "paths": [
+      { "type": "upgrade", "label": "Container Expert", "skills": ["Multi-stage Builds", "Compose", "Security Scanning"], "months": 2 },
+      { "type": "expand", "label": "Container Orchestration", "skills": ["Kubernetes", "Helm", "Service Mesh"], "months": 4 },
+      { "type": "career", "label": "Platform Engineer", "role": "Platform Engineer", "skills": ["K8s", "Terraform", "CI/CD", "Observability"], "months": 8 }
+    ]
+  },
+  {
+    "skill": "Kubernetes",
+    "paths": [
+      { "type": "upgrade", "label": "K8s Advanced", "skills": ["Operators", "CRDs", "Network Policies"], "months": 3 },
+      { "type": "expand", "label": "Cloud Native", "skills": ["Service Mesh", "GitOps", "Serverless Containers"], "months": 5 },
+      { "type": "career", "label": "Platform Engineer", "role": "Platform Engineer", "skills": ["Multi-cluster", "Security", "Cost Optimization", "Developer Experience"], "months": 9 }
+    ]
+  },
+  {
+    "skill": "Next.js",
+    "paths": [
+      { "type": "upgrade", "label": "Advanced Next.js", "skills": ["App Router", "Server Actions", "Middleware"], "months": 2 },
+      { "type": "expand", "label": "Full Stack Next.js", "skills": ["Prisma", "Auth.js", "tRPC", "Edge Runtime"], "months": 4 },
+      { "type": "career", "label": "Full Stack Lead", "role": "Full Stack Developer", "skills": ["System Design", "DevOps", "Performance", "Team Leadership"], "months": 8 }
+    ]
+  }
+]

@@ -6,6 +6,10 @@
     { "source": "/api/analyze", "destination": "/api/analyze" },
     { "source": "/api/assess", "destination": "/api/assess" },
     { "source": "/api/health", "destination": "/api/health" },
+    { "source": "/api/roles", "destination": "/api/roles" },
+    { "source": "/api/skills", "destination": "/api/skills" },
+    { "source": "/api/evolution", "destination": "/api/evolution" },
+    { "source": "/api/explain", "destination": "/api/explain" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
