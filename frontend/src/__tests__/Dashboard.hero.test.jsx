@@ -132,6 +132,7 @@ vi.mock('../components/ExportButton', () => ({ default: () => <div data-testid="
 vi.mock('../components/AnalysisHistory', () => ({ default: () => <div data-testid="stub-analysis-history" /> }))
 vi.mock('../components/ShareCard', () => ({ default: () => <div data-testid="stub-share-card" /> }))
 vi.mock('../components/ProgressView', () => ({ default: () => <div data-testid="stub-progress-view" /> }))
+vi.mock('../components/CareerAlignment', () => ({ default: () => <div data-testid="stub-alignment" /> }))
 vi.mock('../components/Skeleton', () => ({ DashboardSkeleton: () => <div data-testid="stub-skeleton" /> }))
 vi.mock('../utils/storage', () => ({
   saveAnalysis: vi.fn(),

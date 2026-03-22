@@ -27,6 +27,7 @@ import AssessmentResults from '../components/AssessmentResults'
 import VerificationInsight from '../components/VerificationInsight'
 import RoadmapTimeline from '../components/RoadmapTimeline'
 import RevealAnimation from '../components/RevealAnimation'
+import CareerAlignment from '../components/CareerAlignment'
 // === END new imports ===
 
 /* Count-up animation hook — numbers build up, not just appear */
@@ -384,6 +385,63 @@ function NarrativeDivider({ label, delay = 0 }) {
   )
 }
 
+/* Action Plan — tabbed section merging Timeline, Jobs, and Courses */
+function ActionPlanTabs({ roadmap, jobs, courses, delay = 0 }) {
+  const [tab, setTab] = useState('timeline')
+  const hasTimeline = roadmap?.length > 0
+  const hasJobs = roadmap && jobs?.length > 0
+  const hasCourses = courses?.length > 0
+
+  if (!hasTimeline && !hasJobs && !hasCourses) return null
+
+  const tabs = [
+    hasTimeline && { key: 'timeline', label: 'Timeline' },
+    hasJobs && { key: 'jobs', label: 'Jobs' },
+    hasCourses && { key: 'courses', label: 'Courses' },
+  ].filter(Boolean)
+
+  // Default to first available tab
+  const activeTab = tabs.find((t) => t.key === tab) ? tab : tabs[0]?.key
+
+  return (
+    <CollapsibleSection
+      title="Action Plan"
+      subtitle="Your roadmap, job matches, and learning resources"
+      delay={delay}
+      defaultOpen={false}
+      exportSection
+    >
+      {/* Tab buttons */}
+      <div className="flex gap-1 mb-5 p-0.5 rounded-lg bg-[var(--card-bg)] border border-[var(--border-default)] w-fit">
+        {tabs.map((t) => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            className={`px-4 py-1.5 rounded-md text-xs font-medium transition-all ${
+              activeTab === t.key
+                ? 'bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/30'
+                : 'theme-text-muted border border-transparent hover:border-[var(--border-default)]'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab content */}
+      {activeTab === 'timeline' && hasTimeline && (
+        <RoadmapTimeline roadmap={roadmap} />
+      )}
+      {activeTab === 'jobs' && hasJobs && (
+        <Roadmap data={roadmap} jobs={jobs} />
+      )}
+      {activeTab === 'courses' && hasCourses && (
+        <CourseRecommendations data={courses} />
+      )}
+    </CollapsibleSection>
+  )
+}
+
 /* Stagger animation variants */
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24, filter: 'blur(4px)' },
@@ -648,6 +706,11 @@ export default function Dashboard() {
         {/* What Should I Do Next? — THE product moment */}
         <NextStepCTA twin={career_twin} survival={skill_survival} delay={0.26} />
 
+        {/* Career Alignment — Where do you fit in the future? */}
+        {career_twin?.career_alignments?.length > 0 && (
+          <CareerAlignment alignments={career_twin.career_alignments} />
+        )}
+
         {/* Career Twin Projection — Two futures side by side */}
         <CollapsibleSection
           title="Your Two Futures"
@@ -663,86 +726,73 @@ export default function Dashboard() {
            ═══════════════════════════════════════════════════ */}
         <NarrativeDivider label="Deep Dive" delay={0.34} />
 
-        {/* AI Insights */}
-        {data.ai_insights && (
+        {/* ── Group 1: AI Insights (insights + assessment + verification) ── */}
+        {(data.ai_insights || assessmentData) && (
           <CollapsibleSection
-            title="AI Career Insights"
-            subtitle="Personalized intelligence from your analysis"
+            title="AI Insights"
+            subtitle="Personalized intelligence, skill verification, and assessment"
             delay={0.36}
             defaultOpen={false}
             exportSection
           >
-            <AIInsights data={data.ai_insights} />
+            <div className="space-y-6">
+              {data.ai_insights && <AIInsights data={data.ai_insights} />}
+              {assessmentData && (
+                <>
+                  <div className="section-divider" />
+                  <AssessmentResults assessmentData={assessmentData} />
+                  <VerificationInsight
+                    assessmentData={assessmentData}
+                    bsiComponents={bsi.components}
+                  />
+                </>
+              )}
+            </div>
           </CollapsibleSection>
         )}
 
-        {/* Assessment Results + Verification Insight */}
-        {assessmentData && (
-          <>
-            <CollapsibleSection
-              title="AI Skill Verification"
-              subtitle="Quiz results vs. self-reported confidence"
-              delay={0.38}
-              defaultOpen={false}
-              exportSection
-            >
-              <AssessmentResults assessmentData={assessmentData} />
-            </CollapsibleSection>
-
-            <VerificationInsight
-              assessmentData={assessmentData}
-              bsiComponents={bsi.components}
-            />
-          </>
-        )}
-
-        {/* BSI Gauge — Detailed score breakdown */}
+        {/* ── Group 2: Score Breakdown (BSI Gauge + Benchmark) ── */}
         <CollapsibleSection
-          title="BlindSpot Index Detail"
-          subtitle="Career vulnerability composite score"
+          title="Score Breakdown"
+          subtitle="Career vulnerability score and industry comparison"
           delay={0.4}
           defaultOpen={false}
           exportSection
         >
-          <div className="flex justify-center">
-            <Gauge score={bsi.score} level={bsi.level} />
-          </div>
-          {isAiVerified && (
-            <div className="flex justify-center mt-4">
-              <motion.div
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neon-cyan/30 bg-neon-cyan/5"
-                animate={{
-                  boxShadow: [
-                    '0 0 0px rgba(56,189,248,0)',
-                    '0 0 12px rgba(56,189,248,0.3)',
-                    '0 0 0px rgba(56,189,248,0)',
-                  ],
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-neon-cyan">
-                  <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
-                </svg>
-                <span className="text-[10px] font-bold text-neon-cyan uppercase tracking-wider">AI Verified</span>
-              </motion.div>
+          <div className="space-y-6">
+            <div className="flex justify-center">
+              <Gauge score={bsi.score} level={bsi.level} />
             </div>
-          )}
+            {isAiVerified && (
+              <div className="flex justify-center">
+                <motion.div
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neon-cyan/30 bg-neon-cyan/5"
+                  animate={{
+                    boxShadow: [
+                      '0 0 0px rgba(56,189,248,0)',
+                      '0 0 12px rgba(56,189,248,0.3)',
+                      '0 0 0px rgba(56,189,248,0)',
+                    ],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-neon-cyan">
+                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-[10px] font-bold text-neon-cyan uppercase tracking-wider">AI Verified</span>
+                </motion.div>
+              </div>
+            )}
+            {data.benchmarks && (
+              <>
+                <div className="section-divider" />
+                <BenchmarkComparison data={data.benchmarks} />
+              </>
+            )}
+          </div>
         </CollapsibleSection>
 
-        {/* Benchmark */}
-        {data.benchmarks && (
-          <CollapsibleSection
-            title="Industry Benchmark"
-            subtitle="Your profile vs. industry average across 5 dimensions"
-            delay={0.42}
-            defaultOpen={false}
-            exportSection
-          >
-            <BenchmarkComparison data={data.benchmarks} />
-          </CollapsibleSection>
-        )}
-
-        {/* Charts Row */}
+        {/* ── Group 3: Skill Analysis (Half-Life + Illusion) — existing 2-col grid ── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <CollapsibleSection
             title="Skill Half-Life"
@@ -765,46 +815,15 @@ export default function Dashboard() {
           </CollapsibleSection>
         </div>
 
-        {/* Roadmap Timeline */}
-        {career_twin?.roadmap?.length > 0 && (
-          <CollapsibleSection
-            title="Career Roadmap Timeline"
-            subtitle="Phase-based career development plan"
-            delay={0.48}
-            defaultOpen={false}
-            exportSection
-          >
-            <RoadmapTimeline roadmap={career_twin.roadmap} />
-          </CollapsibleSection>
-        )}
+        {/* ── Group 4: Action Plan (Timeline / Jobs / Courses — tabbed) ── */}
+        <ActionPlanTabs
+          roadmap={career_twin?.roadmap}
+          jobs={career_twin?.matching_jobs}
+          courses={data.course_recommendations}
+          delay={0.48}
+        />
 
-        {/* Roadmap */}
-        {career_twin?.roadmap && career_twin?.matching_jobs && (
-          <CollapsibleSection
-            title="Upskilling Roadmap"
-            subtitle="Quarter-by-quarter learning plan + job matches"
-            delay={0.5}
-            defaultOpen={false}
-            exportSection
-          >
-            <Roadmap data={career_twin.roadmap} jobs={career_twin.matching_jobs} />
-          </CollapsibleSection>
-        )}
-
-        {/* Course Recommendations */}
-        {data.course_recommendations && data.course_recommendations.length > 0 && (
-          <CollapsibleSection
-            title="Recommended Courses"
-            subtitle="Context-aware learning resources for your target role"
-            delay={0.52}
-            defaultOpen={false}
-            exportSection
-          >
-            <CourseRecommendations data={data.course_recommendations} />
-          </CollapsibleSection>
-        )}
-
-        {/* Share + Progress Row */}
+        {/* ── Group 5: Share & Track — existing 2-col grid ── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <CollapsibleSection
             title="Share Your Score"

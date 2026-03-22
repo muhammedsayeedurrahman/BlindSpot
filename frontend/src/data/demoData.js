@@ -67,6 +67,13 @@ const DEMO_DATA = {
       { title: 'Frontend Architect', company: 'PixelPerfect', match_percentage: 50, missing_skills: ['Next.js', 'UI/UX Design'], salary_range: [125000, 155000] },
       { title: 'Data Scientist', company: 'InsightAI', match_percentage: 50, missing_skills: ['Machine Learning', 'Data Analysis'], salary_range: [120000, 155000] },
     ],
+    career_alignments: [
+      { role: 'AI Engineer', category: 'AI/ML', match_score: 68, missing_skills: ['Prompt Engineering', 'LLM Fine-tuning', 'Deep Learning'], missing_count: 3, salary_range: [150000, 175000], growth_trend: 0.28, automation_exposure: 0.08 },
+      { role: 'ML Engineer', category: 'AI/ML', match_score: 55, missing_skills: ['Deep Learning', 'LLM Fine-tuning', 'Cloud Architecture'], missing_count: 3, salary_range: [145000, 165000], growth_trend: 0.22, automation_exposure: 0.10 },
+      { role: 'Full Stack Developer', category: 'Engineering', match_score: 52, missing_skills: ['Next.js', 'Cloud Architecture'], missing_count: 2, salary_range: [125000, 145000], growth_trend: 0.08, automation_exposure: 0.20 },
+      { role: 'Data Scientist', category: 'Data', match_score: 45, missing_skills: ['Machine Learning', 'Deep Learning', 'Statistics'], missing_count: 3, salary_range: [130000, 150000], growth_trend: 0.12, automation_exposure: 0.18 },
+      { role: 'Platform Engineer', category: 'Infrastructure', match_score: 38, missing_skills: ['Docker', 'Terraform', 'Kubernetes'], missing_count: 3, salary_range: [135000, 155000], growth_trend: 0.18, automation_exposure: 0.12 },
+    ],
     roadmap: [
       { quarter: 'Q1 2025', skill: 'Prompt Engineering', priority: 'high', action: 'Learn Prompt Engineering through projects and courses', milestone: 'Build a project using Prompt Engineering' },
       { quarter: 'Q2 2025', skill: 'LLM Fine-tuning', priority: 'high', action: 'Learn LLM Fine-tuning through projects and courses', milestone: 'Build a project using LLM Fine-tuning' },

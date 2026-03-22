@@ -29,6 +29,33 @@ class CareerTwinEngine:
 
         return best_role
 
+    def _top_matching_roles(self, user_skills, n=5):
+        """Return top N career directions with alignment scores."""
+        user_set = set(user_skills)
+        scored = []
+        for role in self.roles:
+            emerging = role["emerging_skills"].split(";")
+            emerging_set = set(emerging)
+            # 50% skill overlap + 25% market growth + 25% future alignment
+            overlap = len(user_set & emerging_set) / max(len(emerging_set), 1)
+            growth_norm = max(0, min(1, (float(role["openings_trend"]) + 0.1) / 0.4))
+            future = sum(float(self.skills_db.get(s, {}).get("growth_rate", 0))
+                         for s in (user_set & emerging_set))
+            future_norm = min(1, future / max(len(emerging_set), 1))
+            match_score = round((overlap * 0.5 + growth_norm * 0.25 + future_norm * 0.25) * 100)
+            missing = list(emerging_set - user_set)
+            scored.append({
+                "role": role["role"], "category": role["category"],
+                "match_score": match_score, "missing_skills": missing,
+                "missing_count": len(missing),
+                "salary_range": [int(float(role["avg_salary_2024"])),
+                                 int(float(role["projected_salary_2027"]))],
+                "growth_trend": float(role["openings_trend"]),
+                "automation_exposure": float(role["automation_exposure"]),
+            })
+        scored.sort(key=lambda x: -x["match_score"])
+        return scored[:n]
+
     def _recommend_skills(self, user_skills, target_role):
         """Identify skills the user should learn for a target role."""
         emerging = target_role["emerging_skills"].split(";")
@@ -130,6 +157,7 @@ class CareerTwinEngine:
             "optimized_path": optimized_path,
             "recommended_skills": recommended[:5],
             "matching_jobs": self._matching_jobs(user_skills),
+            "career_alignments": self._top_matching_roles(user_skills, n=5),
             "roadmap": self._build_roadmap(recommended[:5]),
         }
 
