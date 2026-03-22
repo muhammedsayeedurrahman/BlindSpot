@@ -175,7 +175,7 @@ function IcebergBody() {
           metalness={0.4}
           clearcoat={1}
           clearcoatRoughness={0.1}
-          emissive="#00f0ff"
+          emissive="#38BDF8"
           emissiveIntensity={0.15}
         />
       </mesh>
@@ -189,7 +189,7 @@ function IcebergBody() {
           opacity={0.4}
           roughness={0.3}
           metalness={0.5}
-          emissive="#b44aff"
+          emissive="#A78BFA"
           emissiveIntensity={0.08}
         />
       </mesh>
@@ -197,7 +197,7 @@ function IcebergBody() {
       {/* Ice core glow */}
       <mesh position={[0, -0.2, 0]}>
         <sphereGeometry args={[0.5, 16, 16]} />
-        <meshBasicMaterial color="#00f0ff" transparent opacity={0.06} />
+        <meshBasicMaterial color="#38BDF8" transparent opacity={0.06} />
       </mesh>
     </>
   )
@@ -212,7 +212,7 @@ function UnderwaterParticles() {
         scale={[8, 4, 8]}
         size={1.5}
         speed={0.3}
-        color="#b44aff"
+        color="#A78BFA"
         opacity={0.3}
       />
     </group>
@@ -228,7 +228,7 @@ function SurfaceSparkles() {
         scale={[6, 2, 6]}
         size={1}
         speed={0.5}
-        color="#00f0ff"
+        color="#38BDF8"
         opacity={0.4}
       />
     </group>
@@ -285,8 +285,8 @@ function IcebergScene({ survivalData }) {
           <SkillNode
             position={abovePositions[i]}
             label={s.skill}
-            color="#39ff14"
-            glowColor="#39ff14"
+            color="#34D399"
+            glowColor="#34D399"
             size={s.status === 'thriving' ? 0.22 : 0.16}
             status={s.status}
           />
@@ -299,8 +299,8 @@ function IcebergScene({ survivalData }) {
           <SkillNode
             position={belowPositions[i]}
             label={s.skill}
-            color={s.status === 'critical' ? '#ff2d7c' : '#ff6a00'}
-            glowColor={s.status === 'critical' ? '#ff2d7c' : '#ff6a00'}
+            color={s.status === 'critical' ? '#FB7185' : '#FB923C'}
+            glowColor={s.status === 'critical' ? '#FB7185' : '#FB923C'}
             size={s.status === 'critical' ? 0.14 : 0.18}
             status={s.status}
           />
@@ -314,7 +314,7 @@ function IcebergScene({ survivalData }) {
             key={`above-${i}`}
             start={abovePositions[i]}
             end={abovePositions[i + 1]}
-            color="#39ff14"
+            color="#34D399"
           />
         ))}
 
@@ -325,7 +325,7 @@ function IcebergScene({ survivalData }) {
             key={`below-${i}`}
             start={belowPositions[i]}
             end={belowPositions[i + 1]}
-            color="#ff6a00"
+            color="#FB923C"
           />
         ))}
 
@@ -336,10 +336,10 @@ function IcebergScene({ survivalData }) {
       {/* Lighting */}
       <ambientLight intensity={0.3} />
       <directionalLight position={[5, 8, 5]} intensity={0.9} color="#ffffff" />
-      <pointLight position={[0, 4, 0]} color="#00f0ff" intensity={0.8} distance={10} />
-      <pointLight position={[0, -4, 0]} color="#b44aff" intensity={0.5} distance={10} />
-      <pointLight position={[3, 0, 3]} color="#39ff14" intensity={0.3} distance={8} />
-      <pointLight position={[-3, 0, -3]} color="#ff2d7c" intensity={0.3} distance={8} />
+      <pointLight position={[0, 4, 0]} color="#38BDF8" intensity={0.8} distance={10} />
+      <pointLight position={[0, -4, 0]} color="#A78BFA" intensity={0.5} distance={10} />
+      <pointLight position={[3, 0, 3]} color="#34D399" intensity={0.3} distance={8} />
+      <pointLight position={[-3, 0, -3]} color="#FB7185" intensity={0.3} distance={8} />
 
       {/* Fog for depth */}
       <fog attach="fog" args={['#0a0a1a', 8, 18]} />
@@ -362,19 +362,19 @@ function IcebergLegend({ survivalData }) {
     <div className="absolute bottom-3 left-3 right-3 flex justify-between items-end pointer-events-none">
       <div className="flex items-center gap-4 text-xs">
         <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-neon-green shadow-[0_0_6px_#39ff14]" />
+          <span className="w-2 h-2 rounded-full bg-neon-green shadow-[0_0_6px_#34D399]" />
           <span className="theme-text-tertiary">Thriving ({above.filter(s => s.status === 'thriving').length})</span>
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-neon-cyan shadow-[0_0_6px_#00f0ff]" />
+          <span className="w-2 h-2 rounded-full bg-neon-cyan shadow-[0_0_6px_#38BDF8]" />
           <span className="theme-text-tertiary">Stable ({above.filter(s => s.status === 'stable').length})</span>
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-neon-orange shadow-[0_0_6px_#ff6a00]" />
+          <span className="w-2 h-2 rounded-full bg-neon-orange shadow-[0_0_6px_#FB923C]" />
           <span className="theme-text-tertiary">At Risk ({below.filter(s => s.status === 'at_risk').length})</span>
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-neon-pink shadow-[0_0_6px_#ff2d7c]" />
+          <span className="w-2 h-2 rounded-full bg-neon-pink shadow-[0_0_6px_#FB7185]" />
           <span className="theme-text-tertiary">Critical ({below.filter(s => s.status === 'critical').length})</span>
         </span>
       </div>

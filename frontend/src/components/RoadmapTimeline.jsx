@@ -7,10 +7,10 @@ import { motion, useInView } from 'framer-motion'
 import { useRef, useMemo } from 'react'
 
 const PHASE_CONFIG = [
-  { label: 'Foundation Gaps', tag: 'Current', color: '#ff2d7c', quarter: 'Q1' },
-  { label: 'Core Competencies', tag: 'Q2', color: '#ff6a00', quarter: 'Q2' },
-  { label: 'Advanced Skills', tag: 'Q3', color: '#b44aff', quarter: 'Q3' },
-  { label: 'Career Ready', tag: 'Q4', color: '#39ff14', quarter: 'Q4' },
+  { label: 'Foundation Gaps', tag: 'Current', color: '#FB7185', quarter: 'Q1' },
+  { label: 'Core Competencies', tag: 'Q2', color: '#FB923C', quarter: 'Q2' },
+  { label: 'Advanced Skills', tag: 'Q3', color: '#A78BFA', quarter: 'Q3' },
+  { label: 'Career Ready', tag: 'Q4', color: '#34D399', quarter: 'Q4' },
 ]
 
 function PhaseCard({ phase, items, index }) {
@@ -149,7 +149,7 @@ export default function RoadmapTimeline({ roadmap }) {
         <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bg-quaternary)' }}>
           <motion.div
             className="h-full rounded-full"
-            style={{ background: 'linear-gradient(90deg, #00f0ff, #39ff14)' }}
+            style={{ background: 'linear-gradient(90deg, #38BDF8, #34D399)' }}
             initial={{ width: '0%' }}
             animate={{ width: `${completionPct}%` }}
             transition={{ duration: 1, ease: 'easeOut' }}

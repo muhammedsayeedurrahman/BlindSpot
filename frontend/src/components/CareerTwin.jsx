@@ -25,7 +25,7 @@ export default function CareerTwin({ data }) {
   const textColor = isDark ? 'rgba(255,255,255,0.6)' : 'rgba(26,26,46,0.6)'
   const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(26,26,46,0.06)'
   const tooltipBg = isDark ? '#1a1a2e' : '#ffffff'
-  const tooltipBorder = isDark ? 'rgba(0, 240, 255, 0.3)' : 'rgba(0, 160, 190, 0.3)'
+  const tooltipBorder = isDark ? 'rgba(56, 189, 248, 0.3)' : 'rgba(14, 165, 233, 0.3)'
 
   const chartData = useMemo(() => ({
     labels: current_path.salary_projection.map((p) => p.year),
@@ -33,8 +33,8 @@ export default function CareerTwin({ data }) {
       {
         label: `Current: ${current_path.role}`,
         data: current_path.salary_projection.map((p) => p.salary),
-        borderColor: '#ff6a00',
-        backgroundColor: 'rgba(255, 106, 0, 0.1)',
+        borderColor: '#FB923C',
+        backgroundColor: 'rgba(251, 146, 60, 0.1)',
         borderDash: [5, 5],
         fill: true,
         tension: 0.3,
@@ -43,8 +43,8 @@ export default function CareerTwin({ data }) {
       {
         label: `Optimized: ${optimized_path.role}`,
         data: optimized_path.salary_projection.map((p) => p.salary),
-        borderColor: '#39ff14',
-        backgroundColor: 'rgba(57, 255, 20, 0.1)',
+        borderColor: '#34D399',
+        backgroundColor: 'rgba(52, 211, 153, 0.1)',
         fill: true,
         tension: 0.3,
         pointRadius: 4,

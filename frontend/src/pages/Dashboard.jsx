@@ -518,9 +518,9 @@ export default function Dashboard() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neon-cyan/30 bg-neon-cyan/5"
                   animate={{
                     boxShadow: [
-                      '0 0 0px rgba(0,240,255,0)',
-                      '0 0 12px rgba(0,240,255,0.3)',
-                      '0 0 0px rgba(0,240,255,0)',
+                      '0 0 0px rgba(56,189,248,0)',
+                      '0 0 12px rgba(56,189,248,0.3)',
+                      '0 0 0px rgba(56,189,248,0)',
                     ],
                   }}
                   transition={{ duration: 2, repeat: Infinity }}

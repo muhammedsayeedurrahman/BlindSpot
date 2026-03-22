@@ -16,7 +16,7 @@ const RISK_META = {
       </svg>
     ),
 
-    glowColor: 'rgba(255, 106, 0, 0.15)',
+    glowColor: 'rgba(var(--neon-orange-rgb), 0.12)',
     barColor: 'bg-neon-orange',
     textColor: 'text-neon-orange',
   },
@@ -32,7 +32,7 @@ const RISK_META = {
       </svg>
     ),
 
-    glowColor: 'rgba(180, 74, 255, 0.15)',
+    glowColor: 'rgba(var(--neon-purple-rgb), 0.12)',
     barColor: 'bg-neon-purple',
     textColor: 'text-neon-purple',
   },
@@ -48,7 +48,7 @@ const RISK_META = {
       </svg>
     ),
 
-    glowColor: 'rgba(255, 45, 124, 0.15)',
+    glowColor: 'rgba(var(--neon-pink-rgb), 0.12)',
     barColor: 'bg-neon-pink',
     textColor: 'text-neon-pink',
   },
@@ -64,7 +64,7 @@ const RISK_META = {
       </svg>
     ),
 
-    glowColor: 'rgba(0, 240, 255, 0.15)',
+    glowColor: 'rgba(var(--neon-cyan-rgb), 0.12)',
     barColor: 'bg-neon-cyan',
     textColor: 'text-neon-cyan',
   },
@@ -94,7 +94,7 @@ function RiskCard({ name, value, index }) {
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
         border: '1px solid var(--border-default)',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+        boxShadow: 'var(--card-shadow)',
       }}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
@@ -106,8 +106,8 @@ function RiskCard({ name, value, index }) {
           animate={{ opacity: 1, y: 0 }}
           className="absolute -top-12 left-1/2 -translate-x-1/2 z-20 px-3 py-1.5 rounded-lg text-[11px] whitespace-nowrap"
           style={{
-            background: 'rgba(15, 23, 42, 0.95)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'var(--overlay-bg)',
+            border: '1px solid var(--border-default)',
             color: 'var(--text-secondary)',
           }}
         >

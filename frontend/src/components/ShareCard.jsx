@@ -2,10 +2,10 @@ import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 
 function getBsiColor(score) {
-  if (score >= 70) return '#ff2d7c'
-  if (score >= 45) return '#ff6a00'
-  if (score >= 25) return '#00f0ff'
-  return '#39ff14'
+  if (score >= 70) return '#FB7185'
+  if (score >= 45) return '#FB923C'
+  if (score >= 25) return '#38BDF8'
+  return '#34D399'
 }
 
 function getBsiLabel(level) {
@@ -87,7 +87,7 @@ export default function ShareCard({ bsi, profile, survival }) {
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: '#00f0ff' }}>
+              <h3 className="text-xs font-medium uppercase tracking-wider" style={{ color: '#38BDF8' }}>
                 BlindSpot AI
               </h3>
               <p className="text-[10px] mt-0.5" style={{ color: '#666' }}>
@@ -119,11 +119,11 @@ export default function ShareCard({ bsi, profile, survival }) {
           {/* Stats row */}
           <div className="flex justify-center gap-8 mb-4">
             <div className="text-center">
-              <div className="text-lg font-bold font-mono text-[#39ff14]">{thriving}</div>
+              <div className="text-lg font-bold font-mono text-[#34D399]">{thriving}</div>
               <div className="text-[10px] uppercase" style={{ color: '#666' }}>Thriving</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-bold font-mono text-[#ff6a00]">{atRisk}</div>
+              <div className="text-lg font-bold font-mono text-[#FB923C]">{atRisk}</div>
               <div className="text-[10px] uppercase" style={{ color: '#666' }}>At Risk</div>
             </div>
           </div>
@@ -147,9 +147,9 @@ export default function ShareCard({ bsi, profile, survival }) {
         disabled={generating}
         className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-colors disabled:opacity-40"
         style={{
-          borderColor: copied ? '#39ff1440' : 'var(--border-default)',
-          color: copied ? '#39ff14' : 'var(--text-tertiary)',
-          backgroundColor: copied ? '#39ff1408' : 'transparent',
+          borderColor: copied ? '#34D39940' : 'var(--border-default)',
+          color: copied ? '#34D399' : 'var(--text-tertiary)',
+          backgroundColor: copied ? '#34D39908' : 'transparent',
         }}
       >
         {generating ? (

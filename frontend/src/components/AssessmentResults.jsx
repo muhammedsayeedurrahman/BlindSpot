@@ -48,7 +48,7 @@ function MiniGauge({ accuracy }) {
   const radius = 36
   const circumference = 2 * Math.PI * radius
   const offset = circumference - (accuracy / 100) * circumference
-  const color = accuracy >= 70 ? '#39ff14' : accuracy >= 40 ? '#ff6a00' : '#ff2d7c'
+  const color = accuracy >= 70 ? '#34D399' : accuracy >= 40 ? '#FB923C' : '#FB7185'
 
   return (
     <div className="relative w-24 h-24 mx-auto">
@@ -152,9 +152,9 @@ export default function AssessmentResults({ assessmentData }) {
             className="text-neon-pink font-bold"
             animate={{
               textShadow: [
-                '0 0 0px rgba(255,45,124,0)',
-                '0 0 8px rgba(255,45,124,0.5)',
-                '0 0 0px rgba(255,45,124,0)',
+                '0 0 0px rgba(251,113,133,0)',
+                '0 0 8px rgba(251,113,133,0.5)',
+                '0 0 0px rgba(251,113,133,0)',
               ],
             }}
             transition={{ duration: 2, repeat: Infinity }}

@@ -2,10 +2,10 @@ import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 
 const STATUS_CONFIG = {
-  thriving: { color: '#39ff14', glow: 'rgba(57, 255, 20, 0.3)', label: 'Thriving' },
-  stable: { color: '#00f0ff', glow: 'rgba(0, 240, 255, 0.3)', label: 'Stable' },
-  at_risk: { color: '#ff6a00', glow: 'rgba(255, 106, 0, 0.3)', label: 'At Risk' },
-  critical: { color: '#ff2d7c', glow: 'rgba(255, 45, 124, 0.3)', label: 'Critical' },
+  thriving: { color: '#34D399', glow: 'rgba(52, 211, 153, 0.25)', label: 'Thriving' },
+  stable: { color: '#38BDF8', glow: 'rgba(56, 189, 248, 0.25)', label: 'Stable' },
+  at_risk: { color: '#FB923C', glow: 'rgba(251, 146, 60, 0.25)', label: 'At Risk' },
+  critical: { color: '#FB7185', glow: 'rgba(251, 113, 133, 0.25)', label: 'Critical' },
 }
 
 const WATER_Y = 240
@@ -160,8 +160,8 @@ function RisingBubble({ x, delay, size, duration }) {
     <motion.circle
       cx={x}
       r={size}
-      fill="rgba(0, 240, 255, 0.06)"
-      stroke="rgba(0, 240, 255, 0.12)"
+      fill="rgba(56, 189, 248, 0.06)"
+      stroke="rgba(56, 189, 248, 0.12)"
       strokeWidth="0.5"
       initial={{ cy: VIEW_H - 20, opacity: 0 }}
       animate={{
@@ -182,7 +182,7 @@ function LightRay({ x, delay, width }) {
   return (
     <motion.polygon
       points={`${x},${WATER_Y} ${x - width},${VIEW_H} ${x + width},${VIEW_H}`}
-      fill="rgba(0, 240, 255, 0.012)"
+      fill="rgba(56, 189, 248, 0.012)"
       initial={{ opacity: 0 }}
       animate={{ opacity: [0, 1, 0] }}
       transition={{
@@ -255,15 +255,15 @@ export default function Iceberg2D({ survivalData }) {
           </linearGradient>
 
           <linearGradient id="iceAbove2" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(0, 240, 255, 0.15)" />
+            <stop offset="0%" stopColor="rgba(56, 189, 248, 0.15)" />
             <stop offset="50%" stopColor="rgba(0, 220, 240, 0.08)" />
-            <stop offset="100%" stopColor="rgba(0, 240, 255, 0.03)" />
+            <stop offset="100%" stopColor="rgba(56, 189, 248, 0.03)" />
           </linearGradient>
 
           <linearGradient id="iceBelow2" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="rgba(180, 40, 100, 0.05)" />
-            <stop offset="50%" stopColor="rgba(255, 45, 124, 0.08)" />
-            <stop offset="100%" stopColor="rgba(255, 45, 124, 0.14)" />
+            <stop offset="50%" stopColor="rgba(251, 113, 133, 0.08)" />
+            <stop offset="100%" stopColor="rgba(251, 113, 133, 0.14)" />
           </linearGradient>
 
           <filter id="iceGlow" x="-20%" y="-20%" width="140%" height="140%">
@@ -295,7 +295,7 @@ export default function Iceberg2D({ survivalData }) {
         <motion.path
           d={`M ${CENTER_X - 60} ${WATER_Y} C ${CENTER_X - 55} ${WATER_Y - 25}, ${CENTER_X - 30} ${WATER_Y - 75}, ${CENTER_X - 10} ${WATER_Y - 95} C ${CENTER_X} ${WATER_Y - 102}, ${CENTER_X + 12} ${WATER_Y - 98}, ${CENTER_X + 20} ${WATER_Y - 90} C ${CENTER_X + 40} ${WATER_Y - 68}, ${CENTER_X + 58} ${WATER_Y - 22}, ${CENTER_X + 65} ${WATER_Y} Z`}
           fill="url(#iceAbove2)"
-          stroke="rgba(0, 240, 255, 0.2)"
+          stroke="rgba(56, 189, 248, 0.2)"
           strokeWidth="0.8"
           strokeLinejoin="round"
           filter="url(#iceGlow)"
@@ -308,7 +308,7 @@ export default function Iceberg2D({ survivalData }) {
         <motion.path
           d={`M ${CENTER_X - 90} ${WATER_Y} C ${CENTER_X - 115} ${WATER_Y + 35}, ${CENTER_X - 145} ${WATER_Y + 80}, ${CENTER_X - 150} ${WATER_Y + 110} C ${CENTER_X - 155} ${WATER_Y + 140}, ${CENTER_X - 140} ${WATER_Y + 165}, ${CENTER_X - 110} ${WATER_Y + 185} C ${CENTER_X - 70} ${WATER_Y + 205}, ${CENTER_X - 20} ${WATER_Y + 215}, ${CENTER_X} ${WATER_Y + 218} C ${CENTER_X + 20} ${WATER_Y + 215}, ${CENTER_X + 70} ${WATER_Y + 205}, ${CENTER_X + 110} ${WATER_Y + 185} C ${CENTER_X + 140} ${WATER_Y + 165}, ${CENTER_X + 155} ${WATER_Y + 140}, ${CENTER_X + 150} ${WATER_Y + 110} C ${CENTER_X + 145} ${WATER_Y + 80}, ${CENTER_X + 115} ${WATER_Y + 35}, ${CENTER_X + 90} ${WATER_Y} Z`}
           fill="url(#iceBelow2)"
-          stroke="rgba(255, 45, 124, 0.1)"
+          stroke="rgba(251, 113, 133, 0.1)"
           strokeWidth="0.8"
           strokeLinejoin="round"
           initial={{ opacity: 0, scale: 0.95 }}
@@ -320,7 +320,7 @@ export default function Iceberg2D({ survivalData }) {
         <motion.path
           d={`M ${CENTER_X - 70} ${WATER_Y + 20} C ${CENTER_X - 90} ${WATER_Y + 55}, ${CENTER_X - 110} ${WATER_Y + 100}, ${CENTER_X - 100} ${WATER_Y + 145} C ${CENTER_X - 85} ${WATER_Y + 175}, ${CENTER_X} ${WATER_Y + 190}, ${CENTER_X + 85} ${WATER_Y + 175} C ${CENTER_X + 100} ${WATER_Y + 145}, ${CENTER_X + 110} ${WATER_Y + 100}, ${CENTER_X + 90} ${WATER_Y + 55} C ${CENTER_X + 80} ${WATER_Y + 35}, ${CENTER_X + 70} ${WATER_Y + 20}, ${CENTER_X + 70} ${WATER_Y + 20}`}
           fill="none"
-          stroke="rgba(255, 45, 124, 0.05)"
+          stroke="rgba(251, 113, 133, 0.05)"
           strokeWidth="0.6"
           strokeDasharray="4 10"
           initial={{ opacity: 0 }}
@@ -329,14 +329,14 @@ export default function Iceberg2D({ survivalData }) {
         />
 
         {/* Water surface waves */}
-        <WavePath id={0} amplitude={2} frequency={85} opacity={0.35} yBase={WATER_Y - 1} color="rgba(0, 240, 255, 0.35)" />
-        <WavePath id={1} amplitude={1.5} frequency={65} opacity={0.2} yBase={WATER_Y + 1} color="rgba(0, 240, 255, 0.2)" />
-        <WavePath id={2} amplitude={1} frequency={110} opacity={0.12} yBase={WATER_Y + 3} color="rgba(0, 200, 220, 0.12)" />
+        <WavePath id={0} amplitude={2} frequency={85} opacity={0.35} yBase={WATER_Y - 1} color="rgba(56, 189, 248, 0.35)" />
+        <WavePath id={1} amplitude={1.5} frequency={65} opacity={0.2} yBase={WATER_Y + 1} color="rgba(56, 189, 248, 0.2)" />
+        <WavePath id={2} amplitude={1} frequency={110} opacity={0.12} yBase={WATER_Y + 3} color="rgba(56, 170, 220, 0.12)" />
 
         {/* Water line — primary dashed */}
         <motion.line
           x1="30" y1={WATER_Y} x2={VIEW_W - 30} y2={WATER_Y}
-          stroke="rgba(0, 240, 255, 0.25)"
+          stroke="rgba(56, 189, 248, 0.25)"
           strokeWidth="1"
           strokeDasharray="10 8"
           initial={{ pathLength: 0, opacity: 0 }}
@@ -352,12 +352,12 @@ export default function Iceberg2D({ survivalData }) {
         >
           {/* SAFE ZONE label — above water, left side */}
           <rect x="40" y={WATER_Y - 30} width="88" height="22" rx="4"
-            fill="rgba(0, 240, 255, 0.06)"
-            stroke="rgba(0, 240, 255, 0.12)"
+            fill="rgba(56, 189, 248, 0.06)"
+            stroke="rgba(56, 189, 248, 0.12)"
             strokeWidth="0.5"
           />
           <text x="84" y={WATER_Y - 18} textAnchor="middle" dominantBaseline="middle"
-            fill="rgba(0, 240, 255, 0.7)"
+            fill="rgba(56, 189, 248, 0.7)"
             fontSize="7.5" fontFamily="Inter, system-ui, sans-serif"
             fontWeight="700" letterSpacing="1.8"
           >
@@ -366,12 +366,12 @@ export default function Iceberg2D({ survivalData }) {
 
           {/* RISK ZONE label — below water, left side */}
           <rect x="40" y={WATER_Y + 8} width="88" height="22" rx="4"
-            fill="rgba(255, 45, 124, 0.06)"
-            stroke="rgba(255, 45, 124, 0.12)"
+            fill="rgba(251, 113, 133, 0.06)"
+            stroke="rgba(251, 113, 133, 0.12)"
             strokeWidth="0.5"
           />
           <text x="84" y={WATER_Y + 20} textAnchor="middle" dominantBaseline="middle"
-            fill="rgba(255, 45, 124, 0.7)"
+            fill="rgba(251, 113, 133, 0.7)"
             fontSize="7.5" fontFamily="Inter, system-ui, sans-serif"
             fontWeight="700" letterSpacing="1.8"
           >

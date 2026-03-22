@@ -58,8 +58,8 @@ function ProgressBar({ currentStep, totalSteps }) {
             <motion.div
               className="absolute inset-y-0 left-0 rounded-full"
               style={{
-                background: 'linear-gradient(90deg, #00f0ff, #b44aff)',
-                boxShadow: i <= currentStep ? '0 0 10px rgba(0, 240, 255, 0.3)' : 'none',
+                background: 'linear-gradient(90deg, #38BDF8, #A78BFA)',
+                boxShadow: i <= currentStep ? '0 0 10px rgba(56, 189, 248, 0.3)' : 'none',
               }}
               initial={{ width: '0%' }}
               animate={{ width: i <= currentStep ? '100%' : '0%' }}
@@ -79,7 +79,7 @@ function ProgressBar({ currentStep, totalSteps }) {
             } : undefined}
             whileHover={{ scale: 1.15 }}
             animate={i <= currentStep ? {
-              boxShadow: ['0 0 0px rgba(0,240,255,0)', '0 0 12px rgba(0,240,255,0.2)', '0 0 0px rgba(0,240,255,0)'],
+              boxShadow: ['0 0 0px rgba(56,189,248,0)', '0 0 12px rgba(56,189,248,0.2)', '0 0 0px rgba(56,189,248,0)'],
             } : {}}
             transition={{ duration: 2, repeat: Infinity }}
           >
@@ -106,10 +106,10 @@ function ProgressBar({ currentStep, totalSteps }) {
 
 function ConfidenceSlider({ skill, value, onChange }) {
   const getColor = (v) => {
-    if (v <= 3) return '#ff2d7c'
-    if (v <= 5) return '#ff6a00'
-    if (v <= 7) return '#00f0ff'
-    return '#39ff14'
+    if (v <= 3) return '#FB7185'
+    if (v <= 5) return '#FB923C'
+    if (v <= 7) return '#38BDF8'
+    return '#34D399'
   }
   const color = getColor(value)
 
@@ -307,11 +307,11 @@ export default function Onboarding() {
       <div className="fixed inset-0 pointer-events-none">
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px] animate-aurora-slow"
-          style={{ background: isDark ? 'rgba(0,240,255,0.04)' : 'rgba(0,180,220,0.05)' }}
+          style={{ background: isDark ? 'rgba(56,189,248,0.04)' : 'rgba(14,165,233,0.05)' }}
         />
         <div
           className="absolute top-1/4 right-1/3 w-[400px] h-[400px] rounded-full blur-[100px] animate-aurora"
-          style={{ background: isDark ? 'rgba(180,74,255,0.03)' : 'rgba(140,50,200,0.03)' }}
+          style={{ background: isDark ? 'rgba(167,139,250,0.03)' : 'rgba(124,58,237,0.03)' }}
         />
       </div>
 
@@ -383,7 +383,7 @@ export default function Onboarding() {
                       onChange={(e) => setExperience(Number(e.target.value))}
                       className="flex-1 h-1.5 rounded-full appearance-none cursor-pointer"
                       style={{
-                        background: `linear-gradient(to right, #00f0ff ${(experience / 20) * 100}%, var(--bg-quaternary) ${(experience / 20) * 100}%)`,
+                        background: `linear-gradient(to right, #38BDF8 ${(experience / 20) * 100}%, var(--bg-quaternary) ${(experience / 20) * 100}%)`,
                       }}
                       aria-label="Years of experience"
                     />
@@ -467,7 +467,7 @@ export default function Onboarding() {
                   whileTap={{ scale: 0.95 }}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                     activeCategory === null
-                      ? 'bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/30 shadow-[0_0_10px_rgba(0,240,255,0.08)]'
+                      ? 'bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/30 shadow-[0_0_10px_rgba(56,189,248,0.08)]'
                       : 'border'
                   }`}
                   style={activeCategory !== null ? {
@@ -486,7 +486,7 @@ export default function Onboarding() {
                     whileTap={{ scale: 0.95 }}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                       activeCategory === cat
-                        ? 'bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/30 shadow-[0_0_10px_rgba(0,240,255,0.08)]'
+                        ? 'bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/30 shadow-[0_0_10px_rgba(56,189,248,0.08)]'
                         : 'border'
                     }`}
                     style={activeCategory !== cat ? {
@@ -526,7 +526,7 @@ export default function Onboarding() {
                     transition={{ delay: i * 0.02 }}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/50 ${
                       selectedSkills.includes(skill)
-                        ? 'bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/40 shadow-[0_0_12px_rgba(0,240,255,0.12)]'
+                        ? 'bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/40 shadow-[0_0_12px_rgba(56,189,248,0.12)]'
                         : 'border'
                     }`}
                     style={!selectedSkills.includes(skill) ? {

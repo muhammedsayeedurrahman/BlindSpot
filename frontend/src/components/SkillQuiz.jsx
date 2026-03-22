@@ -8,8 +8,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { generateAssessment } from '../api'
 
 const ANSWER_COLORS = {
-  correct: '#39ff14',
-  incorrect: '#ff2d7c',
+  correct: '#34D399',
+  incorrect: '#FB7185',
 }
 
 function SkeletonLoader() {
@@ -50,7 +50,7 @@ function QuizProgress({ current, total }) {
       <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--bg-quaternary)' }}>
         <motion.div
           className="h-full rounded-full"
-          style={{ background: 'linear-gradient(90deg, #00f0ff, #b44aff)' }}
+          style={{ background: 'linear-gradient(90deg, #38BDF8, #A78BFA)' }}
           initial={{ width: '0%' }}
           animate={{ width: `${pct}%` }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
@@ -88,7 +88,7 @@ function ScoreSummary({ results, onContinue }) {
       <motion.div
         className="text-6xl font-black font-mono my-6"
         style={{
-          background: 'linear-gradient(135deg, #00f0ff, #b44aff)',
+          background: 'linear-gradient(135deg, #38BDF8, #A78BFA)',
           WebkitBackgroundClip: 'text',
           backgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
@@ -114,7 +114,7 @@ function ScoreSummary({ results, onContinue }) {
             <span className="text-sm theme-text-secondary">{s.skill}</span>
             <div className="flex items-center gap-2">
               <span className="text-sm font-mono font-bold" style={{
-                color: s.status === 'verified' ? '#39ff14' : s.status === 'hidden_strength' ? '#00f0ff' : '#ff2d7c',
+                color: s.status === 'verified' ? '#34D399' : s.status === 'hidden_strength' ? '#38BDF8' : '#FB7185',
               }}>
                 {s.verified_score.toFixed(0)}%
               </span>
@@ -332,10 +332,10 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
               if (feedback) {
                 if (i === q.correct) {
                   borderColor = ANSWER_COLORS.correct
-                  bgColor = 'rgba(57, 255, 20, 0.08)'
+                  bgColor = 'rgba(52, 211, 153, 0.08)'
                 } else if (i === feedback.index && !feedback.isCorrect) {
                   borderColor = ANSWER_COLORS.incorrect
-                  bgColor = 'rgba(255, 45, 124, 0.08)'
+                  bgColor = 'rgba(251, 113, 133, 0.08)'
                 }
               }
 

@@ -75,7 +75,7 @@ export default function VerificationInsight({ assessmentData, bsiComponents }) {
       transition={{ duration: 0.6, delay: 0.2 }}
       className="relative rounded-2xl p-[1px] overflow-hidden"
       style={{
-        background: 'linear-gradient(135deg, #00f0ff, #b44aff, #ff2d7c)',
+        background: 'linear-gradient(135deg, #38BDF8, #A78BFA, #FB7185)',
       }}
     >
       {/* Pulsating glow */}
@@ -83,9 +83,9 @@ export default function VerificationInsight({ assessmentData, bsiComponents }) {
         className="absolute inset-0 rounded-2xl"
         animate={{
           boxShadow: [
-            '0 0 15px rgba(0,240,255,0.3)',
-            '0 0 25px rgba(0,240,255,0.5)',
-            '0 0 15px rgba(0,240,255,0.3)',
+            '0 0 15px rgba(56,189,248,0.3)',
+            '0 0 25px rgba(56,189,248,0.5)',
+            '0 0 15px rgba(56,189,248,0.3)',
           ],
         }}
         transition={{ duration: 3, repeat: Infinity }}
@@ -135,9 +135,9 @@ export default function VerificationInsight({ assessmentData, bsiComponents }) {
                       className="text-neon-pink font-bold"
                       animate={{
                         textShadow: [
-                          '0 0 0px rgba(255,45,124,0)',
-                          '0 0 8px rgba(255,45,124,0.6)',
-                          '0 0 0px rgba(255,45,124,0)',
+                          '0 0 0px rgba(251,113,133,0)',
+                          '0 0 8px rgba(251,113,133,0.6)',
+                          '0 0 0px rgba(251,113,133,0)',
                         ],
                       }}
                       transition={{ duration: 2, repeat: Infinity }}

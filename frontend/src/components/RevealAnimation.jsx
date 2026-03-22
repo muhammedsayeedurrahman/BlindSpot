@@ -8,10 +8,10 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const LEVEL_COLORS = {
-  critical: '#ff2d7c',
-  warning: '#ff6a00',
-  moderate: '#00f0ff',
-  healthy: '#39ff14',
+  critical: '#FB7185',
+  warning: '#FB923C',
+  moderate: '#38BDF8',
+  healthy: '#34D399',
 }
 
 const LEVEL_LABELS = {

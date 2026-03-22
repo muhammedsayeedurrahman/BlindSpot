@@ -3,10 +3,10 @@ import { motion } from 'framer-motion'
 import { listAnalyses } from '../utils/storage'
 
 function getBsiColor(score) {
-  if (score >= 70) return '#ff2d7c'
-  if (score >= 45) return '#ff6a00'
-  if (score >= 25) return '#00f0ff'
-  return '#39ff14'
+  if (score >= 70) return '#FB7185'
+  if (score >= 45) return '#FB923C'
+  if (score >= 25) return '#38BDF8'
+  return '#34D399'
 }
 
 function MiniLineChart({ data }) {
@@ -37,7 +37,7 @@ function MiniLineChart({ data }) {
     <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-16">
       <defs>
         <linearGradient id="line-grad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#00f0ff" stopOpacity="0.3" />
+          <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.3" />
           <stop offset="100%" stopColor={getBsiColor(lastScore)} />
         </linearGradient>
       </defs>
@@ -86,7 +86,7 @@ export default function ProgressView() {
           <span className="text-xs theme-text-muted uppercase tracking-wider">BSI Score Trend</span>
           <span
             className="text-xs font-bold font-mono"
-            style={{ color: improving ? '#39ff14' : '#ff6a00' }}
+            style={{ color: improving ? '#34D399' : '#FB923C' }}
           >
             {scoreDelta > 0 ? '+' : ''}{scoreDelta.toFixed(1)}
           </span>

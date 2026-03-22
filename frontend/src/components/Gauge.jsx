@@ -1,17 +1,17 @@
 import { motion } from 'framer-motion'
 
 const LEVEL_COLORS = {
-  healthy: '#39ff14',
-  moderate: '#00f0ff',
-  warning: '#ff6a00',
-  critical: '#ff2d7c',
+  healthy: '#34D399',
+  moderate: '#38BDF8',
+  warning: '#FB923C',
+  critical: '#FB7185',
 }
 
 const LEVEL_BG = {
-  healthy: 'rgba(57, 255, 20, 0.08)',
-  moderate: 'rgba(0, 240, 255, 0.08)',
-  warning: 'rgba(255, 106, 0, 0.08)',
-  critical: 'rgba(255, 45, 124, 0.08)',
+  healthy: 'rgba(52, 211, 153, 0.08)',
+  moderate: 'rgba(56, 189, 248, 0.08)',
+  warning: 'rgba(251, 146, 60, 0.08)',
+  critical: 'rgba(251, 113, 133, 0.08)',
 }
 
 const LEVEL_LABELS = {
@@ -30,10 +30,10 @@ const INSIGHT_TEXT = {
 
 // Arc segment colors from green (low) to red (high risk)
 const SEGMENT_COLORS = [
-  { offset: 0, color: '#39ff14' },
-  { offset: 0.25, color: '#00f0ff' },
-  { offset: 0.5, color: '#ff6a00' },
-  { offset: 0.75, color: '#ff2d7c' },
+  { offset: 0, color: '#34D399' },
+  { offset: 0.25, color: '#38BDF8' },
+  { offset: 0.5, color: '#FB923C' },
+  { offset: 0.75, color: '#FB7185' },
 ]
 
 export default function Gauge({ score, level }) {
@@ -60,7 +60,7 @@ export default function Gauge({ score, level }) {
               {SEGMENT_COLORS.map((seg) => (
                 <stop key={seg.offset} offset={`${seg.offset * 100}%`} stopColor={seg.color} />
               ))}
-              <stop offset="100%" stopColor="#ff2d7c" />
+              <stop offset="100%" stopColor="#FB7185" />
             </linearGradient>
             <filter id="glow">
               <feGaussianBlur stdDeviation="3" result="coloredBlur" />

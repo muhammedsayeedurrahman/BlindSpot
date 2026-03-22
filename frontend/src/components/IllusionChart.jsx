@@ -20,7 +20,7 @@ export default function IllusionChart({ data }) {
   const textColorFaint = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(26,26,46,0.4)'
   const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(26,26,46,0.06)'
   const tooltipBg = isDark ? '#1a1a2e' : '#ffffff'
-  const tooltipBorder = isDark ? 'rgba(0, 240, 255, 0.3)' : 'rgba(0, 160, 190, 0.3)'
+  const tooltipBorder = isDark ? 'rgba(56, 189, 248, 0.3)' : 'rgba(14, 165, 233, 0.3)'
   const legendColor = isDark ? 'rgba(255,255,255,0.6)' : 'rgba(26,26,46,0.6)'
 
   const chartData = useMemo(() => ({
@@ -29,16 +29,16 @@ export default function IllusionChart({ data }) {
       {
         label: 'Your Confidence',
         data: data.map((d) => d.confidence * 10),
-        backgroundColor: 'rgba(180, 74, 255, 0.6)',
-        borderColor: '#b44aff',
+        backgroundColor: 'rgba(167, 139, 250, 0.6)',
+        borderColor: '#A78BFA',
         borderWidth: 1,
         borderRadius: 4,
       },
       {
         label: 'Market Relevance',
         data: data.map((d) => d.market_relevance),
-        backgroundColor: 'rgba(0, 240, 255, 0.6)',
-        borderColor: '#00f0ff',
+        backgroundColor: 'rgba(56, 189, 248, 0.6)',
+        borderColor: '#38BDF8',
         borderWidth: 1,
         borderRadius: 4,
       },

@@ -78,6 +78,7 @@ vi.mock('framer-motion', () => {
     useTransform: (_, __, mapper) => ({ get: () => (mapper ? mapper[0] : 0) }),
     useSpring: (v) => ({ get: () => v, set: vi.fn() }),
     useScroll: () => ({ scrollY: { get: () => 0 } }),
+    useInView: () => true,
   }
 })
 

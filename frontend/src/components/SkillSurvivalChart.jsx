@@ -14,10 +14,10 @@ import { useTheme } from '../context/ThemeContext'
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 const STATUS_COLORS = {
-  thriving: '#39ff14',
-  stable: '#00f0ff',
-  at_risk: '#ff6a00',
-  critical: '#ff2d7c',
+  thriving: '#34D399',
+  stable: '#38BDF8',
+  at_risk: '#FB923C',
+  critical: '#FB7185',
 }
 
 export default function SkillSurvivalChart({ data }) {
@@ -28,7 +28,7 @@ export default function SkillSurvivalChart({ data }) {
   const textColorFaint = isDark ? 'rgba(255,255,255,0.4)' : 'rgba(26,26,46,0.4)'
   const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(26,26,46,0.06)'
   const tooltipBg = isDark ? '#1a1a2e' : '#ffffff'
-  const tooltipBorder = isDark ? 'rgba(0, 240, 255, 0.3)' : 'rgba(0, 160, 190, 0.3)'
+  const tooltipBorder = isDark ? 'rgba(56, 189, 248, 0.3)' : 'rgba(14, 165, 233, 0.3)'
 
   const chartData = useMemo(() => ({
     labels: data.map((d) => d.skill),

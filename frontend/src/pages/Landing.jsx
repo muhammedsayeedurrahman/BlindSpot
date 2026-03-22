@@ -17,8 +17,8 @@ const features = [
     ),
     title: 'BlindSpot Index',
     desc: 'A single 0-100 score revealing hidden career vulnerabilities across skill decay, market mismatch, and concentration risk.',
-    color: '#00f0ff',
-    gradient: 'from-[rgba(0,240,255,0.15)] to-transparent',
+    color: '#38BDF8',
+    gradient: 'from-[rgba(56,189,248,0.15)] to-transparent',
   },
   {
     icon: (
@@ -28,8 +28,8 @@ const features = [
     ),
     title: 'Skill Iceberg',
     desc: 'Interactive 3D visualization separating your thriving skills from those silently eroding beneath the surface.',
-    color: '#b44aff',
-    gradient: 'from-[rgba(180,74,255,0.15)] to-transparent',
+    color: '#A78BFA',
+    gradient: 'from-[rgba(167,139,250,0.15)] to-transparent',
   },
   {
     icon: (
@@ -40,8 +40,8 @@ const features = [
     ),
     title: 'Skill Half-Life',
     desc: 'Precisely how many years before each skill loses 50% market value. Know when to upskill, not if.',
-    color: '#ff6a00',
-    gradient: 'from-[rgba(255,106,0,0.15)] to-transparent',
+    color: '#FB923C',
+    gradient: 'from-[rgba(251,146,60,0.15)] to-transparent',
   },
   {
     icon: (
@@ -53,8 +53,8 @@ const features = [
     ),
     title: 'Career Twin',
     desc: 'See two futures side-by-side: your current trajectory vs. an AI-optimized path with salary projections.',
-    color: '#39ff14',
-    gradient: 'from-[rgba(57,255,20,0.15)] to-transparent',
+    color: '#34D399',
+    gradient: 'from-[rgba(52,211,153,0.15)] to-transparent',
   },
 ]
 
@@ -71,21 +71,21 @@ const testimonials = [
     role: 'Frontend Developer',
     text: 'BlindSpot revealed I was over-investing in jQuery while missing the AI wave. Pivoted to ML and got a 40% raise.',
     bsi: 62,
-    color: '#ff6a00',
+    color: '#FB923C',
   },
   {
     name: 'Marcus Rivera',
     role: 'Data Analyst',
     text: 'The competence illusion detector was eye-opening. I rated myself 9/10 in Excel while the market had moved to Python.',
     bsi: 71,
-    color: '#ff2d7c',
+    color: '#FB7185',
   },
   {
     name: 'Priya Patel',
     role: 'DevOps Engineer',
     text: 'My BSI dropped from 45 to 22 after following the roadmap for 6 months. The salary projections were spot-on.',
     bsi: 22,
-    color: '#39ff14',
+    color: '#34D399',
   },
 ]
 
@@ -103,8 +103,8 @@ function GridBackground() {
 
     ctx.clearRect(0, 0, w, h)
 
-    const lineColor = isDark ? 'rgba(0, 240, 255, 0.03)' : 'rgba(0, 140, 180, 0.03)'
-    const dotColor = isDark ? [0, 240, 255] : [0, 140, 180]
+    const lineColor = isDark ? 'rgba(56, 189, 248, 0.03)' : 'rgba(14, 165, 233, 0.03)'
+    const dotColor = isDark ? [56, 189, 248] : [14, 165, 233]
 
     ctx.strokeStyle = lineColor
     ctx.lineWidth = 1
@@ -304,10 +304,10 @@ function PreviousAnalyses({ navigate }) {
   }
 
   const getBsiColor = (score) => {
-    if (score >= 70) return '#ff2d7c'
-    if (score >= 45) return '#ff6a00'
-    if (score >= 25) return '#00f0ff'
-    return '#39ff14'
+    if (score >= 70) return '#FB7185'
+    if (score >= 45) return '#FB923C'
+    if (score >= 25) return '#38BDF8'
+    return '#34D399'
   }
 
   return (
@@ -443,11 +443,11 @@ export default function Landing() {
 
         {/* Background glow orbs */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[120px] animate-aurora-slow"
-             style={{ background: isDark ? 'rgba(0,240,255,0.06)' : 'rgba(0,180,220,0.06)' }} />
+             style={{ background: isDark ? 'rgba(56,189,248,0.06)' : 'rgba(14,165,233,0.06)' }} />
         <div className="absolute top-1/3 right-1/4 w-[500px] h-[500px] rounded-full blur-[100px] animate-aurora"
-             style={{ background: isDark ? 'rgba(180,74,255,0.05)' : 'rgba(140,50,200,0.05)' }} />
+             style={{ background: isDark ? 'rgba(167,139,250,0.05)' : 'rgba(124,58,237,0.05)' }} />
         <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] rounded-full blur-[100px] animate-morph"
-             style={{ background: isDark ? 'rgba(255,45,124,0.04)' : 'rgba(200,30,100,0.03)' }} />
+             style={{ background: isDark ? 'rgba(251,113,133,0.04)' : 'rgba(200,30,100,0.03)' }} />
 
         <motion.div
           initial={{ opacity: 0, y: 50, filter: 'blur(10px)' }}
@@ -495,7 +495,7 @@ export default function Landing() {
             <motion.button
               whileHover={{
                 scale: 1.06,
-                boxShadow: '0 16px 50px rgba(0, 240, 255, 0.35)',
+                boxShadow: '0 16px 50px rgba(56, 189, 248, 0.35)',
               }}
               whileTap={{ scale: 0.96 }}
               onClick={() => navigate('/onboarding')}
@@ -619,9 +619,9 @@ export default function Landing() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { step: '01', title: 'Input Your Profile', desc: 'Select your role, skills, and rate your confidence in each one.', color: '#00f0ff' },
-              { step: '02', title: 'AI Analyzes Gaps', desc: 'Four engines scan skill decay, market mismatch, illusions, and risk concentration.', color: '#b44aff' },
-              { step: '03', title: 'Get Your Roadmap', desc: 'See your BlindSpot Index, career twin projection, and a quarter-by-quarter upskilling plan.', color: '#39ff14' },
+              { step: '01', title: 'Input Your Profile', desc: 'Select your role, skills, and rate your confidence in each one.', color: '#38BDF8' },
+              { step: '02', title: 'AI Analyzes Gaps', desc: 'Four engines scan skill decay, market mismatch, illusions, and risk concentration.', color: '#A78BFA' },
+              { step: '03', title: 'Get Your Roadmap', desc: 'See your BlindSpot Index, career twin projection, and a quarter-by-quarter upskilling plan.', color: '#34D399' },
             ].map((item, i) => (
               <ProcessStep key={item.step} item={item} index={i} />
             ))}
@@ -708,7 +708,7 @@ export default function Landing() {
           <motion.button
             whileHover={{
               scale: 1.06,
-              boxShadow: '0 16px 50px rgba(0, 240, 255, 0.35)',
+              boxShadow: '0 16px 50px rgba(56, 189, 248, 0.35)',
             }}
             whileTap={{ scale: 0.96 }}
             onClick={() => navigate('/onboarding')}
