@@ -113,3 +113,64 @@ class BlindSpotIndex:
             "components": components,
             "weights": WEIGHTS,
         }
+
+    # === NEW: Assessment-enhanced BSI (delete method to revert) ===
+    def calculate_with_assessment(self, user_skill_names, survival_results,
+                                  illusion_results, assessment_results):
+        """Calculate BSI with verification gap from skill assessment.
+
+        When assessment data is present, the formula becomes:
+        BSI = decay*0.25 + illusion*0.20 + mismatch*0.20 + concentration*0.15 + verification*0.20
+
+        If no assessment data, falls back to original calculate().
+        """
+        base = self.calculate(user_skill_names, survival_results, illusion_results)
+
+        if not assessment_results:
+            return base
+
+        # verification_gap: how much self-confidence exceeds quiz accuracy (0-100 scale)
+        verification_gap_raw = assessment_results.get("verification_gap", 0)
+        # Clamp to 0-100 and scale: positive = overconfident (adds risk)
+        verification_gap_score = round(min(100, max(0, verification_gap_raw)), 1)
+
+        components = base["components"]
+        enhanced_score = (
+            components["skill_decay"] * 0.25
+            + components["illusion_gap"] * 0.20
+            + components["market_mismatch"] * 0.20
+            + components["concentration_risk"] * 0.15
+            + verification_gap_score * 0.20
+        )
+        enhanced_score = round(min(100, max(0, enhanced_score)), 1)
+
+        if enhanced_score >= 70:
+            level = "critical"
+            message = "Significant blind spots detected. AI verification confirms immediate action needed."
+        elif enhanced_score >= 45:
+            level = "warning"
+            message = "Notable blind spots found. Assessment reveals skill gaps to address."
+        elif enhanced_score >= 25:
+            level = "moderate"
+            message = "Some blind spots present. Your verified skills show room for growth."
+        else:
+            level = "healthy"
+            message = "Minimal blind spots. AI verification confirms your skills are solid."
+
+        enhanced_weights = {
+            "skill_decay": 0.25,
+            "illusion_gap": 0.20,
+            "market_mismatch": 0.20,
+            "concentration_risk": 0.15,
+            "verification_gap": 0.20,
+        }
+
+        return {
+            "score": enhanced_score,
+            "level": level,
+            "message": message,
+            "components": {**components, "verification_gap": verification_gap_score},
+            "weights": enhanced_weights,
+            "ai_verified": True,
+        }
+    # === END Assessment-enhanced BSI ===

@@ -22,12 +22,18 @@ import ProgressView from '../components/ProgressView'
 import { DashboardSkeleton } from '../components/Skeleton'
 import { saveAnalysis, loadAnalysis } from '../utils/storage'
 import DEMO_DATA from '../data/demoData'
+// === NEW: Assessment + Roadmap + Reveal imports (delete block to revert) ===
+import AssessmentResults from '../components/AssessmentResults'
+import VerificationInsight from '../components/VerificationInsight'
+import RoadmapTimeline from '../components/RoadmapTimeline'
+import RevealAnimation from '../components/RevealAnimation'
+// === END new imports ===
 
 const LEVEL_COLOR_MAP = {
-  critical: '#ff2d7c',
-  warning: '#ff6a00',
-  healthy: '#39ff14',
-  moderate: '#00f0ff',
+  critical: '#FB7185',
+  warning: '#FB923C',
+  healthy: '#34D399',
+  moderate: '#38BDF8',
 }
 
 function SectionHeader({ title, subtitle }) {
@@ -259,6 +265,11 @@ export default function Dashboard() {
   const [saveToast, setSaveToast] = useState(false)
   const [isLoading] = useState(false)
   const [icebergMode, setIcebergMode] = useState('2d')
+  // === NEW: Reveal animation + assessment state (delete block to revert) ===
+  const [showReveal, setShowReveal] = useState(() => !!location.state?.data)
+  const assessmentData = data.assessment_data || null
+  const isAiVerified = data.ai_verified || data.blindspot_index?.ai_verified || false
+  // === END reveal + assessment state ===
 
   const { profile, blindspot_index: bsi, skill_survival, competence_illusion, career_twin } = data
 
@@ -289,6 +300,17 @@ export default function Dashboard() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
+      {/* === NEW: Reveal Animation (delete block to revert) === */}
+      {showReveal && (
+        <RevealAnimation
+          score={bsi.score}
+          level={bsi.level}
+          onComplete={() => setShowReveal(false)}
+          hasAssessment={!!assessmentData}
+        />
+      )}
+      {/* === END Reveal Animation === */}
+
       {/* Top Navigation Bar */}
       <nav className="sticky top-0 z-50 nav-glass" role="navigation" aria-label="Dashboard navigation">
         <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
@@ -361,7 +383,7 @@ export default function Dashboard() {
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: `radial-gradient(circle at 50% 40%, ${LEVEL_COLOR_MAP[bsi.level] || '#00f0ff'}15, transparent 60%)`,
+              background: `radial-gradient(circle at 50% 40%, ${LEVEL_COLOR_MAP[bsi.level] || '#38BDF8'}15, transparent 60%)`,
             }}
           />
 
@@ -379,12 +401,12 @@ export default function Dashboard() {
             <span
               className="text-7xl md:text-8xl lg:text-9xl font-black font-mono leading-none hero-score-gradient"
               style={{
-                background: `linear-gradient(135deg, ${LEVEL_COLOR_MAP[bsi.level] || '#00f0ff'}, #b44aff, ${LEVEL_COLOR_MAP[bsi.level] || '#00f0ff'})`,
+                background: `linear-gradient(135deg, ${LEVEL_COLOR_MAP[bsi.level] || '#38BDF8'}, #A78BFA, ${LEVEL_COLOR_MAP[bsi.level] || '#38BDF8'})`,
                 backgroundSize: '200% 200%',
                 WebkitBackgroundClip: 'text',
                 backgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                filter: `drop-shadow(0 0 30px ${LEVEL_COLOR_MAP[bsi.level] || '#00f0ff'}40)`,
+                filter: `drop-shadow(0 0 30px ${LEVEL_COLOR_MAP[bsi.level] || '#38BDF8'}40)`,
               }}
             >
               {bsi.score.toFixed(1)}
@@ -394,7 +416,7 @@ export default function Dashboard() {
           {/* Risk level badge */}
           <motion.p
             className="text-sm md:text-base font-bold uppercase tracking-[0.25em] mt-3 relative z-10"
-            style={{ color: LEVEL_COLOR_MAP[bsi.level] || '#00f0ff' }}
+            style={{ color: LEVEL_COLOR_MAP[bsi.level] || '#38BDF8' }}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
@@ -461,11 +483,56 @@ export default function Dashboard() {
           </CollapsibleSection>
         )}
 
+        {/* === NEW: Assessment Results + Verification Insight (delete block to revert) === */}
+        {assessmentData && (
+          <>
+            <CollapsibleSection
+              title="AI Skill Verification"
+              subtitle="Quiz results vs. self-reported confidence"
+              delay={0.13}
+              exportSection
+            >
+              <AssessmentResults assessmentData={assessmentData} />
+            </CollapsibleSection>
+
+            <VerificationInsight
+              assessmentData={assessmentData}
+              bsiComponents={bsi.components}
+            />
+          </>
+        )}
+        {/* === END Assessment sections === */}
+
         {/* BSI Gauge + Risk Factor Cards — 2-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: BSI Gauge */}
           <motion.div {...fadeUp(0.16)} data-export-section className="glass-card-premium neon-border p-6">
-            <SectionHeader title="BlindSpot Index" subtitle="Career vulnerability composite score" />
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <h2 className="text-lg font-semibold theme-text">BlindSpot Index</h2>
+                <p className="text-xs theme-text-muted mt-0.5">Career vulnerability composite score</p>
+              </div>
+              {/* === NEW: AI Verified badge (delete block to revert) === */}
+              {isAiVerified && (
+                <motion.div
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neon-cyan/30 bg-neon-cyan/5"
+                  animate={{
+                    boxShadow: [
+                      '0 0 0px rgba(0,240,255,0)',
+                      '0 0 12px rgba(0,240,255,0.3)',
+                      '0 0 0px rgba(0,240,255,0)',
+                    ],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-neon-cyan">
+                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-[10px] font-bold text-neon-cyan uppercase tracking-wider">AI Verified</span>
+                </motion.div>
+              )}
+              {/* === END AI Verified badge === */}
+            </div>
             <Gauge score={bsi.score} level={bsi.level} />
           </motion.div>
 
@@ -536,6 +603,19 @@ export default function Dashboard() {
         >
           <CareerTwin data={career_twin} />
         </CollapsibleSection>
+
+        {/* === NEW: Phase Timeline (delete block to revert) === */}
+        {career_twin?.roadmap?.length > 0 && (
+          <CollapsibleSection
+            title="Career Roadmap Timeline"
+            subtitle="Phase-based career development plan"
+            delay={0.42}
+            exportSection
+          >
+            <RoadmapTimeline roadmap={career_twin.roadmap} />
+          </CollapsibleSection>
+        )}
+        {/* === END Phase Timeline === */}
 
         {/* Roadmap */}
         <CollapsibleSection

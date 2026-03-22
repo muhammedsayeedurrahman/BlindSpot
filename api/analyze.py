@@ -124,7 +124,17 @@ class handler(BaseHTTPRequestHandler):
 
             survival = survival_analyzer.analyze(skill_names)
             illusion = illusion_detector.detect(skills_with_confidence)
-            bsi = blindspot_index.calculate(skill_names, survival, illusion)
+
+            # === NEW: Assessment-enhanced BSI (delete block to revert) ===
+            assessment_results = data.get("assessment_results")
+            if assessment_results:
+                bsi = blindspot_index.calculate_with_assessment(
+                    skill_names, survival, illusion, assessment_results
+                )
+            else:
+                bsi = blindspot_index.calculate(skill_names, survival, illusion)
+            # === END Assessment-enhanced BSI ===
+
             twin = twin_engine.project(skill_names, cleaned["current_role"])
 
             optimized_role = twin.get("optimized_path", {}).get("role", cleaned["current_role"])
@@ -153,6 +163,12 @@ class handler(BaseHTTPRequestHandler):
                 "ai_insights": ai_insights,
                 "benchmarks": benchmarks,
             }
+
+            # === NEW: Include assessment data in response (delete block to revert) ===
+            if assessment_results:
+                result["assessment_data"] = assessment_results
+                result["ai_verified"] = True
+            # === END assessment passthrough ===
 
             self.send_response(200)
             self.send_header("Content-Type", "application/json")

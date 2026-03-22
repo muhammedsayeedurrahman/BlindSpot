@@ -4,6 +4,7 @@
   "framework": null,
   "rewrites": [
     { "source": "/api/analyze", "destination": "/api/analyze" },
+    { "source": "/api/assess", "destination": "/api/assess" },
     { "source": "/api/health", "destination": "/api/health" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]

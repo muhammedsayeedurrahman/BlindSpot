@@ -7,9 +7,14 @@ GET  /api/health  — health check.
 """
 
 import logging
+import os
 import sys
 
+from dotenv import load_dotenv
 from flask import Flask, jsonify, request
+
+# Load .env from project root
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -22,6 +27,7 @@ from models.twin import CareerTwinEngine
 from models.courses import CourseRecommendationEngine
 from models.insights import InsightEngine
 from models.benchmark import BenchmarkEngine
+from models.assessment import AssessmentEngine
 
 # ── Logging ────────────────────────────────────────────────────
 logging.basicConfig(
@@ -60,6 +66,7 @@ twin_engine = CareerTwinEngine()
 course_engine = CourseRecommendationEngine()
 insight_engine = InsightEngine()
 benchmark_engine = BenchmarkEngine()
+assessment_engine = AssessmentEngine()
 
 
 # ── Validation ─────────────────────────────────────────────────
@@ -151,7 +158,17 @@ def analyze():
 
         survival = survival_analyzer.analyze(skill_names)
         illusion = illusion_detector.detect(skills_with_confidence)
-        bsi = blindspot_index.calculate(skill_names, survival, illusion)
+
+        # === NEW: Assessment-enhanced BSI (delete block to revert) ===
+        assessment_results = data.get("assessment_results")
+        if assessment_results:
+            bsi = blindspot_index.calculate_with_assessment(
+                skill_names, survival, illusion, assessment_results
+            )
+        else:
+            bsi = blindspot_index.calculate(skill_names, survival, illusion)
+        # === END Assessment-enhanced BSI ===
+
         twin = twin_engine.project(skill_names, cleaned["current_role"])
 
         optimized_role = twin.get("optimized_path", {}).get("role", cleaned["current_role"])
@@ -164,7 +181,7 @@ def analyze():
         ai_insights = insight_engine.generate(bsi, survival, illusion, twin)
         benchmarks = benchmark_engine.compare(skill_names, cleaned["current_role"])
 
-        return jsonify({
+        result = {
             "profile": {
                 "name": cleaned["name"],
                 "current_role": cleaned["current_role"],
@@ -179,7 +196,15 @@ def analyze():
             "course_recommendations": courses,
             "ai_insights": ai_insights,
             "benchmarks": benchmarks,
-        })
+        }
+
+        # === NEW: Include assessment data in response (delete block to revert) ===
+        if assessment_results:
+            result["assessment_data"] = assessment_results
+            result["ai_verified"] = True
+        # === END assessment passthrough ===
+
+        return jsonify(result)
     except Exception:
         logger.exception("Analysis failed")
         return _error_response("ANALYSIS_ERROR", "An unexpected error occurred during analysis", status_code=500)
@@ -208,6 +233,45 @@ def list_roles():
             "emerging_skills": r["emerging_skills"].split(";"),
         })
     return jsonify(result)
+
+
+# === NEW: Assessment routes (delete block to revert) ===
+@app.route("/api/assess", methods=["POST"])
+@limiter.limit("20 per minute")
+def assess():
+    """Generate quiz questions or score answers."""
+    data = request.get_json(silent=True)
+    if data is None:
+        return _error_response("INVALID_JSON", "Request body must be valid JSON")
+
+    action = data.get("action", "generate")
+
+    if action == "generate":
+        skills = data.get("skills", [])
+        if not skills or not isinstance(skills, list):
+            return _error_response("VALIDATION_ERROR", "skills must be a non-empty array", status_code=422)
+        try:
+            questions = assessment_engine.generate_questions(skills)
+            return jsonify({"questions": questions})
+        except Exception:
+            logger.exception("Question generation failed")
+            return _error_response("GENERATION_ERROR", "Failed to generate questions", status_code=500)
+
+    elif action == "score":
+        questions = data.get("questions", [])
+        answers = data.get("answers", [])
+        skills = data.get("skills", [])
+        if not questions or not answers:
+            return _error_response("VALIDATION_ERROR", "questions and answers are required", status_code=422)
+        try:
+            results = assessment_engine.score_answers(questions, answers, skills)
+            return jsonify(results)
+        except Exception:
+            logger.exception("Scoring failed")
+            return _error_response("SCORING_ERROR", "Failed to score answers", status_code=500)
+
+    return _error_response("INVALID_ACTION", f"Unknown action: {action}")
+# === END Assessment routes ===
 
 
 @app.route("/api/health", methods=["GET"])

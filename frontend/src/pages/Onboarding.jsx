@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { analyzeProfile, fetchSkills, fetchRoles } from '../api'
 import { useTheme } from '../context/ThemeContext'
 import ThemeToggle from '../components/ThemeToggle'
+// === NEW: Quiz import (delete line to revert) ===
+import SkillQuiz from '../components/SkillQuiz'
 
 // Fallback data if API is unreachable
 const FALLBACK_SKILL_CATEGORIES = {
@@ -27,6 +29,8 @@ const STEPS = [
   { id: 'profile', title: 'Your Profile', subtitle: 'Tell us about your current role' },
   { id: 'skills', title: 'Your Skills', subtitle: 'Select the skills you work with' },
   { id: 'confidence', title: 'Confidence Rating', subtitle: 'How confident are you in each skill?' },
+  // === NEW: Quiz step (delete line to revert) ===
+  { id: 'assessment', title: 'Skill Assessment', subtitle: 'Verify your skills with AI-generated questions' },
 ]
 
 const slideVariants = {
@@ -163,6 +167,8 @@ export default function Onboarding() {
   const [fieldErrors, setFieldErrors] = useState({})
   const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState(null)
+  // === NEW: Assessment state (delete block to revert) ===
+  const [assessmentResults, setAssessmentResults] = useState(null)
 
   // Dynamic data from API
   const [skillCategories, setSkillCategories] = useState(FALLBACK_SKILL_CATEGORIES)
@@ -235,7 +241,7 @@ export default function Onboarding() {
     )
   }, [debouncedSearch, activeCategory, skillCategories, allSkills])
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (assessmentData = null) => {
     setLoading(true)
     setError(null)
     setFieldErrors({})
@@ -251,7 +257,18 @@ export default function Onboarding() {
           confidence: confidences[s] || 5,
         })),
       }
+      // === NEW: Include assessment results in analysis request (delete block to revert) ===
+      const effectiveAssessment = assessmentData || assessmentResults
+      if (effectiveAssessment) {
+        profile.assessment_results = effectiveAssessment
+      }
+      // === END assessment passthrough ===
       const result = await analyzeProfile(profile)
+      // === NEW: Pass assessment data to dashboard (delete block to revert) ===
+      if (effectiveAssessment) {
+        result.assessment_data = effectiveAssessment
+      }
+      // === END assessment dashboard passthrough ===
       navigate('/dashboard', { state: { data: result } })
     } catch (err) {
       // Parse structured validation errors from API
@@ -276,6 +293,7 @@ export default function Onboarding() {
   const canProceed =
     step === 0 ? role.length > 0 :
     step === 1 ? selectedSkills.length >= 3 :
+    step === 2 ? true :
     true
 
   return (
@@ -601,6 +619,31 @@ export default function Onboarding() {
               </div>
             </motion.div>
           )}
+
+          {/* === NEW: Step 4: AI Skill Assessment (delete block to revert) === */}
+          {step === 3 && (
+            <motion.div
+              key="assessment"
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+            >
+              <SkillQuiz
+                skills={selectedSkills.map((s) => ({
+                  skill: s,
+                  confidence: confidences[s] || 5,
+                }))}
+                onComplete={(results) => {
+                  setAssessmentResults(results)
+                  handleSubmit(results)
+                }}
+                onSkip={() => handleSubmit(null)}
+              />
+            </motion.div>
+          )}
+          {/* === END Step 4 === */}
         </AnimatePresence>
 
         {error && (
@@ -631,6 +674,7 @@ export default function Onboarding() {
             {step > 0 ? 'Back' : 'Home'}
           </motion.button>
 
+          {/* === MODIFIED: Navigation updated for 4-step flow === */}
           {step < 2 ? (
             <motion.button
               whileHover={{ scale: 1.03, x: 2 }}
@@ -641,29 +685,30 @@ export default function Onboarding() {
             >
               <span className="relative z-10">Continue</span>
             </motion.button>
-          ) : (
+          ) : step === 2 ? (
             <motion.button
-              whileHover={{ scale: 1.03 }}
+              whileHover={{ scale: 1.03, x: 2 }}
               whileTap={{ scale: 0.97 }}
-              onClick={handleSubmit}
-              disabled={loading}
+              onClick={() => setStep(3)}
+              className="btn-primary text-sm"
+            >
+              <span className="relative z-10">Verify Skills</span>
+            </motion.button>
+          ) : step === 3 && loading ? (
+            <motion.button
+              disabled
               className="btn-primary text-sm disabled:opacity-30 relative"
             >
-              <span className="relative z-10">
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" opacity="0.25" />
-                      <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" fill="currentColor" />
-                    </svg>
-                    Analyzing...
-                  </span>
-                ) : (
-                  'Reveal My BlindSpots'
-                )}
+              <span className="relative z-10 flex items-center gap-2">
+                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" opacity="0.25" />
+                  <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" fill="currentColor" />
+                </svg>
+                Analyzing...
               </span>
             </motion.button>
-          )}
+          ) : null}
+          {/* === END Modified navigation === */}
         </div>
       </motion.div>
     </div>

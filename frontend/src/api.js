@@ -25,4 +25,16 @@ export async function checkHealth() {
   return response.data
 }
 
+// === NEW: Assessment API functions (delete block to revert) ===
+export async function generateAssessment(skills) {
+  const response = await api.post('/assess', { action: 'generate', skills })
+  return response.data
+}
+
+export async function scoreAssessment(questions, answers, skills) {
+  const response = await api.post('/assess', { action: 'score', questions, answers, skills })
+  return response.data
+}
+// === END Assessment API ===
+
 export default api
