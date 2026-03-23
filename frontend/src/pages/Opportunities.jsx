@@ -6,10 +6,10 @@ import ShareCard from '../components/ShareCard'
 import ProgressView from '../components/ProgressView'
 import CollapsibleSection from '../components/CollapsibleSection'
 import NarrativeDivider from '../components/NarrativeDivider'
-import RoleUnlockCard from '../components/RoleUnlockCard'
-import JobLinks from '../components/JobLinks'
+import RoleDetailCard from '../components/RoleDetailCard'
 import useAnalysisStore from '../store/useAnalysisStore'
 import useJourneyStore from '../store/useJourneyStore'
+import useRoleDetails from '../hooks/useRoleDetails'
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24, filter: 'blur(4px)' },
@@ -23,6 +23,7 @@ export default function Opportunities() {
 
   const { profile, blindspot_index: bsi, skill_survival, career_twin } = data
   const completedSkills = useJourneyStore((s) => s.completedSkills)
+  const { getDetails, isLoading, fetchRoles } = useRoleDetails()
 
   const alignments = career_twin?.career_alignments || []
   const readyRoles = alignments.filter((a) =>
@@ -36,6 +37,10 @@ export default function Opportunities() {
   useEffect(() => {
     advanceJourney(4)
   }, [advanceJourney])
+
+  const handleExpand = (role) => {
+    fetchRoles([role])
+  }
 
   return (
     <motion.div
@@ -58,7 +63,7 @@ export default function Opportunities() {
             <NarrativeDivider label="Ready to Apply" delay={0.04} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {readyRoles.map((item, i) => (
-                <RoleUnlockCard
+                <RoleDetailCard
                   key={item.role}
                   role={item.role}
                   matchScore={item.match_score}
@@ -66,7 +71,11 @@ export default function Opportunities() {
                   salaryRange={item.salary_range}
                   growthTrend={item.growth_trend}
                   category={item.category}
+                  automationRisk={item.automation_risk}
                   index={i}
+                  details={getDetails(item.role)}
+                  isLoadingDetails={isLoading(item.role)}
+                  onExpand={handleExpand}
                 />
               ))}
             </div>
@@ -85,7 +94,7 @@ export default function Opportunities() {
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {learningRoles.map((item, i) => (
-                  <RoleUnlockCard
+                  <RoleDetailCard
                     key={item.role}
                     role={item.role}
                     matchScore={item.match_score}
@@ -93,7 +102,11 @@ export default function Opportunities() {
                     salaryRange={item.salary_range}
                     growthTrend={item.growth_trend}
                     category={item.category}
+                    automationRisk={item.automation_risk}
                     index={i}
+                    details={getDetails(item.role)}
+                    isLoadingDetails={isLoading(item.role)}
+                    onExpand={handleExpand}
                   />
                 ))}
               </div>

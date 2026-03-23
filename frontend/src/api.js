@@ -37,6 +37,11 @@ export async function scoreAssessment(questions, answers, skills) {
 }
 // === END Assessment API ===
 
+export async function enrichRoles(roleNames) {
+  const response = await api.post('/roles/enrich', { roles: roleNames })
+  return response.data
+}
+
 export async function fetchEvolutionPaths(skill) {
   const params = skill ? { skill } : {}
   const response = await api.get('/evolution', { params })

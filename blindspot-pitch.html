@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlindSpot AI — Hackathon Pitch</title>
+
+<!-- Fonts: Cormorant (display) + IBM Plex Sans (body) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================
+   DARK BOTANICAL — Hackathon Pitch Deck
+   BlindSpot AI: Career Intelligence Platform
+   =========================================== */
+
+/* --- RESET & BASE --- */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  /* Dark Botanical Palette */
+  --bg-deep:     #0a0a0f;
+  --bg-card:     #111118;
+  --bg-surface:  #181820;
+  --ivory:       #f5f0e8;
+  --ivory-dim:   #d4cfc5;
+  --blush:       #c9a49a;
+  --gold:        #c9a84c;
+  --terracotta:  #b86b4a;
+  --sage:        #7a9e7e;
+  --cyan-soft:   #6ec6c8;
+  --rose:        #b5566e;
+  --rule:        rgba(201, 168, 76, 0.2);
+
+  /* Typography scale */
+  --title-size:   clamp(2rem, 6vw, 5rem);
+  --h2-size:      clamp(1.4rem, 3.5vw, 2.8rem);
+  --h3-size:      clamp(1.1rem, 2.5vw, 1.75rem);
+  --body-size:    clamp(0.8rem, 1.5vw, 1.15rem);
+  --small-size:   clamp(0.65rem, 1vw, 0.875rem);
+  --stat-size:    clamp(2.5rem, 8vw, 7rem);
+
+  /* Spacing */
+  --slide-padding: clamp(1.5rem, 5vw, 5rem);
+  --content-gap:   clamp(0.5rem, 2vw, 2rem);
+  --element-gap:   clamp(0.25rem, 1vw, 1rem);
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+  background: var(--bg-deep);
+  color: var(--ivory);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+}
+
+html {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+h1, h2, h3, .display {
+  font-family: 'Cormorant', serif;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+/* --- SLIDE SYSTEM --- */
+.slide {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: var(--slide-padding);
+}
+
+.slide-inner {
+  max-width: min(90vw, 1100px);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--content-gap);
+  z-index: 2;
+}
+
+/* --- DECORATIVE ELEMENTS --- */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orb-gold   { background: var(--gold); }
+.orb-blush  { background: var(--blush); }
+.orb-sage   { background: var(--sage); }
+.orb-terra  { background: var(--terracotta); }
+
+.fine-rule {
+  width: clamp(40px, 8vw, 120px);
+  height: 1px;
+  background: var(--rule);
+}
+
+.fine-rule-v {
+  width: 1px;
+  height: clamp(20px, 4vh, 60px);
+  background: var(--rule);
+}
+
+/* --- NAVIGATION --- */
+.nav-dots {
+  position: fixed;
+  right: clamp(12px, 2vw, 28px);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
+}
+
+.nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(245, 240, 232, 0.15);
+  border: 1px solid rgba(245, 240, 232, 0.2);
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+
+.nav-dot.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 0 0 12px rgba(201, 168, 76, 0.4);
+  transform: scale(1.3);
+}
+
+.slide-counter {
+  position: fixed;
+  bottom: clamp(12px, 2vh, 24px);
+  right: clamp(12px, 2vw, 28px);
+  font-size: var(--small-size);
+  color: rgba(245, 240, 232, 0.3);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  z-index: 100;
+}
+
+.keyboard-hint {
+  position: fixed;
+  bottom: clamp(12px, 2vh, 24px);
+  left: clamp(12px, 2vw, 28px);
+  font-size: var(--small-size);
+  color: rgba(245, 240, 232, 0.15);
+  z-index: 100;
+}
+
+/* --- REVEAL ANIMATIONS --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.15s; }
+.reveal-delay-2 { transition-delay: 0.3s; }
+.reveal-delay-3 { transition-delay: 0.45s; }
+.reveal-delay-4 { transition-delay: 0.6s; }
+.reveal-delay-5 { transition-delay: 0.75s; }
+
+/* --- TYPOGRAPHY --- */
+.tagline {
+  font-size: var(--small-size);
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--gold);
+  font-weight: 500;
+}
+
+.subtitle {
+  font-size: var(--body-size);
+  color: var(--ivory-dim);
+  font-weight: 300;
+  line-height: 1.6;
+  max-width: 650px;
+  text-align: center;
+}
+
+.accent { color: var(--gold); }
+.accent-blush { color: var(--blush); }
+.accent-sage { color: var(--sage); }
+.accent-terra { color: var(--terracotta); }
+.accent-cyan { color: var(--cyan-soft); }
+.accent-rose { color: var(--rose); }
+
+/* --- STAT DISPLAY --- */
+.stat-number {
+  font-family: 'Cormorant', serif;
+  font-size: var(--stat-size);
+  font-weight: 700;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--gold), var(--blush));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* --- CARDS --- */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: clamp(0.6rem, 1.5vw, 1.2rem);
+  width: 100%;
+}
+
+.card {
+  background: rgba(24, 24, 32, 0.7);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: clamp(1rem, 2vw, 1.8rem);
+  backdrop-filter: blur(8px);
+}
+
+.card h3 {
+  font-size: var(--h3-size);
+  margin-bottom: 0.4em;
+}
+
+.card p {
+  font-size: var(--body-size);
+  color: var(--ivory-dim);
+  line-height: 1.5;
+}
+
+.card-icon {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  margin-bottom: 0.3em;
+  display: block;
+}
+
+/* --- FEATURE LIST --- */
+.feature-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.4rem, 1vh, 0.8rem);
+}
+
+.feature-list li {
+  font-size: var(--body-size);
+  color: var(--ivory-dim);
+  line-height: 1.5;
+  padding-left: 1.5em;
+  position: relative;
+}
+
+.feature-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+/* --- FLOW / STEPS --- */
+.flow {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.5rem, 2vw, 2rem);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.flow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5em;
+  text-align: center;
+  max-width: 200px;
+}
+
+.flow-step-num {
+  width: clamp(36px, 5vw, 56px);
+  height: clamp(36px, 5vw, 56px);
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cormorant', serif;
+  font-size: var(--h3-size);
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.flow-arrow {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  color: rgba(201, 168, 76, 0.3);
+}
+
+.flow-step-label {
+  font-size: var(--body-size);
+  font-weight: 500;
+  color: var(--ivory);
+}
+
+.flow-step-desc {
+  font-size: var(--small-size);
+  color: var(--ivory-dim);
+}
+
+/* --- TECH STACK PILLS --- */
+.tech-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.4rem, 1vw, 0.8rem);
+  justify-content: center;
+}
+
+.tech-pill {
+  padding: clamp(0.3rem, 0.6vw, 0.5rem) clamp(0.8rem, 1.5vw, 1.2rem);
+  border: 1px solid var(--rule);
+  border-radius: 100px;
+  font-size: var(--small-size);
+  font-weight: 400;
+  color: var(--ivory-dim);
+  background: rgba(24, 24, 32, 0.5);
+  letter-spacing: 0.05em;
+}
+
+/* --- ICEBERG VISUAL --- */
+.iceberg-container {
+  position: relative;
+  width: min(90vw, 600px);
+  height: clamp(200px, 35vh, 340px);
+}
+
+.iceberg-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* --- SPLIT LAYOUT --- */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1rem, 3vw, 3rem);
+  width: 100%;
+  align-items: center;
+}
+
+/* --- CTA --- */
+.cta-link {
+  display: inline-block;
+  padding: clamp(0.6rem, 1.2vw, 0.9rem) clamp(1.5rem, 3vw, 2.5rem);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  color: var(--gold);
+  text-decoration: none;
+  font-size: var(--body-size);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.cta-link:hover {
+  background: var(--gold);
+  color: var(--bg-deep);
+}
+
+/* --- DEMO BADGE --- */
+.demo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: clamp(0.2rem, 0.4vw, 0.35rem) clamp(0.6rem, 1vw, 0.9rem);
+  border: 1px solid rgba(110,198,200,0.4);
+  border-radius: 100px;
+  font-size: var(--small-size);
+  font-weight: 500;
+  color: var(--cyan-soft);
+  background: rgba(110,198,200,0.08);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.demo-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan-soft);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* --- STORY QUOTE --- */
+.story-block {
+  background: rgba(24, 24, 32, 0.6);
+  border-left: 3px solid var(--terracotta);
+  border-radius: 0 8px 8px 0;
+  padding: clamp(0.8rem, 1.5vw, 1.5rem) clamp(1rem, 2vw, 2rem);
+  max-width: 600px;
+  width: 100%;
+}
+
+.story-block p {
+  font-size: var(--body-size);
+  color: var(--ivory-dim);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.story-block .story-name {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--terracotta);
+  margin-top: 0.5em;
+  font-size: var(--small-size);
+}
+
+/* --- MARKET STAT GRID --- */
+.market-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(0.6rem, 1.5vw, 1.2rem);
+  width: 100%;
+  max-width: 750px;
+}
+
+.market-stat {
+  text-align: center;
+  padding: clamp(0.6rem, 1vw, 1rem);
+}
+
+.market-stat .stat-val {
+  font-family: 'Cormorant', serif;
+  font-size: clamp(1.8rem, 4vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.2em;
+}
+
+.market-stat .stat-label {
+  font-size: var(--small-size);
+  color: var(--ivory-dim);
+  line-height: 1.3;
+}
+
+/* --- COMPARISON TABLE --- */
+.compare-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: clamp(0.5rem, 1vw, 1rem);
+  align-items: center;
+  width: 100%;
+  max-width: 700px;
+}
+
+.compare-label {
+  font-size: var(--body-size);
+  color: var(--ivory-dim);
+  text-align: center;
+}
+
+.compare-vs {
+  font-family: 'Cormorant', serif;
+  font-size: var(--h3-size);
+  color: var(--gold);
+  font-weight: 700;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-height: 700px) {
+  :root {
+    --slide-padding: clamp(0.75rem, 3vw, 2rem);
+    --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+    --title-size: clamp(1.5rem, 5vw, 3rem);
+    --h2-size: clamp(1.2rem, 3vw, 2rem);
+    --stat-size: clamp(2rem, 6vw, 4.5rem);
+  }
+}
+
+@media (max-height: 600px) {
+  :root {
+    --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+    --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+    --title-size: clamp(1.3rem, 4.5vw, 2.5rem);
+    --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+  }
+  .nav-dots, .keyboard-hint, .orb { display: none; }
+}
+
+@media (max-height: 500px) {
+  :root {
+    --slide-padding: clamp(0.4rem, 2vw, 1rem);
+    --title-size: clamp(1rem, 3.5vw, 1.8rem);
+    --h2-size: clamp(0.9rem, 2.5vw, 1.4rem);
+    --body-size: clamp(0.65rem, 1vw, 0.85rem);
+  }
+}
+
+@media (max-width: 700px) {
+  .split { grid-template-columns: 1fr; }
+  .flow { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+  .market-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  :root { --title-size: clamp(1.5rem, 8vw, 3rem); }
+  .card-grid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.2s !important;
+  }
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<!-- ============================================
+     SLIDE 1 — TITLE
+     ============================================ -->
+<section class="slide" id="slide-1">
+  <div class="orb orb-gold" style="width:400px;height:400px;top:-10%;left:-8%"></div>
+  <div class="orb orb-blush" style="width:300px;height:300px;bottom:-5%;right:-5%"></div>
+
+  <div class="slide-inner" style="text-align:center">
+    <div class="fine-rule reveal"></div>
+    <p class="tagline reveal reveal-delay-1">Career Intelligence Platform</p>
+    <h1 style="font-size:var(--title-size); font-weight:700" class="reveal reveal-delay-2">
+      Blind<span class="accent">Spot</span> AI
+    </h1>
+    <p class="subtitle reveal reveal-delay-3">
+      A health checkup for your career &mdash;<br>find what's quietly going wrong before it's too late.
+    </p>
+    <div class="fine-rule reveal reveal-delay-4"></div>
+    <p class="reveal reveal-delay-5" style="font-size:var(--small-size);color:var(--ivory-dim);letter-spacing:0.05em">
+      Built for people who want to stay ahead, not catch up.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================
+     SLIDE 2 — THE PROBLEM (Story-driven)
+     ============================================ -->
+<section class="slide" id="slide-2">
+  <div class="orb orb-terra" style="width:350px;height:350px;top:10%;right:-10%"></div>
+
+  <div class="slide-inner" style="text-align:center">
+    <p class="tagline reveal">The Problem</p>
+    <h2 style="font-size:var(--h2-size)" class="reveal reveal-delay-1">
+      Good people get <span class="accent-terra">blindsided</span> every day.
+    </h2>
+    <div class="fine-rule reveal reveal-delay-2"></div>
+
+    <div class="story-block reveal reveal-delay-3">
+      <p>"I was great at my job for 8 years. Then one Monday, my role got restructured. The skills I'd been proud of? The market had moved on two years ago. Nobody told me."</p>
+      <p class="story-name">&mdash; A real story, repeated millions of times</p>
+    </div>
+
+    <div class="card-grid reveal reveal-delay-4" style="max-width:800px">
+      <div class="card" style="text-align:center">
+        <span class="stat-number" style="font-size:clamp(2rem,5vw,4rem)">65%</span>
+        <p>of today's jobs will need <strong>new skills by 2030</strong></p>
+      </div>
+      <div class="card" style="text-align:center">
+        <span class="stat-number" style="font-size:clamp(2rem,5vw,4rem)">2.5yr</span>
+        <p>average <strong>shelf life</strong> of a technical skill</p>
+      </div>
+      <div class="card" style="text-align:center">
+        <span class="stat-number" style="font-size:clamp(2rem,5vw,4rem)">87%</span>
+        <p>of professionals <strong>overestimate</strong> their own abilities</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     SLIDE 3 — WHY NOW (Urgency)
+     ============================================ -->
+<section class="slide" id="slide-3">
+  <div class="orb orb-sage" style="width:500px;height:500px;bottom:-20%;left:-15%"></div>
+
+  <div class="slide-inner" style="text-align:center">
+    <p class="tagline reveal">Why Now</p>
+    <h2 style="font-size:var(--h2-size); max-width:700px" class="reveal reveal-delay-1">
+      The world changed. <span class="accent">Career planning didn't.</span>
+    </h2>
+    <div class="fine-rule reveal reveal-delay-2"></div>
+
+    <div class="card-grid reveal reveal-delay-3" style="max-width:800px;grid-template-columns:1fr 1fr">
+      <div class="card" style="border-left:3px solid var(--terracotta)">
+        <h3 style="color:var(--terracotta)">The Old Way</h3>
+        <p>Pick a career. Learn skills once. Ride them for decades. Update your resume when you get fired.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--sage)">
+        <h3 style="color:var(--sage)">The New Reality</h3>
+        <p>AI rewrites job descriptions monthly. Skills expire like milk. By the time you notice, you're already behind.</p>
+      </div>
+    </div>
+
+    <p class="subtitle reveal reveal-delay-4" style="font-style:italic; max-width:550px">
+      You wouldn't skip a health checkup for 5 years.<br>Why are you doing that with your career?
+    </p>
+  </div>
+</section>
+
+<!-- ============================================
+     SLIDE 4 — THE SOLUTION (Plain English)
+     ============================================ -->
+<section class="slide" id="slide-4">
+  <div class="orb orb-gold" style="width:400px;height:400px;top:-15%;right:-10%"></div>
+  <div class="orb orb-blush" style="width:250px;height:250px;bottom:5%;left:-5%"></div>
+
+  <div class="slide-inner" style="text-align:center">
+    <p class="tagline reveal">The Solution</p>
+    <h2 style="font-size:var(--h2-size)" class="reveal reveal-delay-1">
+      BlindSpot AI shows you <span class="accent">what you can't see.</span>
+    </h2>
+    <div class="fine-rule reveal reveal-delay-2"></div>
+
+    <div class="card-grid reveal reveal-delay-3" style="max-width:900px">
+      <div class="card">
+        <span class="card-icon" style="color:var(--gold)">&#9670;</span>
+        <h3>Career Health Score</h3>
+        <p>One number (0&ndash;100) that tells you how vulnerable your career is right now</p>
+      </div>
+      <div class="card">
+        <span class="card-icon" style="color:var(--blush)">&#9671;</span>
+        <h3>Skill Expiry Dates</h3>
+        <p>See which of your skills are thriving, which are fading, and which are already expired</p>
+      </div>
+      <div class="card">
+        <span class="card-icon" style="color:var(--sage)">&#9672;</span>
+        <h3>Reality Check</h3>
+        <p>Find the gap between how good you <em>think</em> you are and what the market actually values</p>
+      </div>
+      <div class="card">
+        <span class="card-icon" style="color:var(--cyan-soft)">&#9673;</span>
+        <h3>Future Self</h3>
+        <p>See two versions of your career: where you're heading now vs. where you could be</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     SLIDE 5 — DEMO: CAREER HEALTH SCORE
+     ============================================ -->
+<section class="slide" id="slide-5">
+  <div class="orb orb-gold" style="width:450px;height:450px;top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+
+  <div class="slide-inner" style="text-align:center">
+    <span class="demo-badge reveal">Live in the App</span>
+    <h2 style="font-size:var(--h2-size)" class="reveal reveal-delay-1">Your Career Health Score</h2>
+    <div class="fine-rule reveal reveal-delay-2"></div>
+
+    <!-- Gauge visualization -->
+    <div class="reveal reveal-delay-3" style="position:relative;width:min(80vw,320px);height:clamp(120px,20vh,180px)">
+      <svg viewBox="0 0 320 180" style="width:100%;height:100%">
+        <!-- Gauge arc background -->
+        <path d="M30,160 A130,130 0 0,1 290,160" fill="none" stroke="rgba(201,168,76,0.15)" stroke-width="18" stroke-linecap="round"/>
+        <!-- Gauge arc fill -->
+        <path d="M30,160 A130,130 0 0,1 200,35" fill="none" stroke="url(#gaugeGrad)" stroke-width="18" stroke-linecap="round"/>
+        <!-- Score -->
+        <text x="160" y="135" text-anchor="middle" font-family="Cormorant,serif" font-size="60" font-weight="700" fill="#c9a84c">39.7</text>
+        <text x="160" y="160" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="13" fill="#d4cfc5" letter-spacing="0.15em">OUT OF 100</text>
+        <defs>
+          <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#7a9e7e"/>
+            <stop offset="50%" stop-color="#c9a84c"/>
+            <stop offset="100%" stop-color="#b86b4a"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <p class="subtitle reveal reveal-delay-4">
+      Think of it like a credit score, but for your career.<br>
+      <span class="accent">Lower = more vulnerable.</span> Higher = future-proof.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================
+     SLIDE 6 — DEMO: SKILL ICEBERG
+     ============================================ -->
+<section class="slide" id="slide-6">
+  <div class="orb orb-sage" style="width:400px;height:400px;top:-10%;right:-10%"></div>
+
+  <div class="slide-inner" style="text-align:center">
+    <span class="demo-badge reveal">Live in the App</span>
+    <h2 style="font-size:var(--h2-size)" class="reveal reveal-delay-1">The Skill <span class="accent">Iceberg</span></h2>
+    <div class="fine-rule reveal reveal-delay-2"></div>
+
+    <!-- Iceberg mini visualization -->
+    <div class="reveal reveal-delay-3 iceberg-container">
+      <svg class="iceberg-svg" viewBox="0 0 600 340" preserveAspectRatio="xMidYMid meet">
+        <!-- Sky gradient -->
+        <defs>
+          <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#12121a"/>
+            <stop offset="100%" stop-color="#1a1a28"/>
+          </linearGradient>
+          <linearGradient id="waterG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="rgba(110,198,200,0.15)"/>
+            <stop offset="100%" stop-color="rgba(10,10,20,0.95)"/>
+          </linearGradient>
+          <linearGradient id="iceTop" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#e8e0d4"/>
+            <stop offset="100%" stop-color="#c9a84c"/>
+          </linearGradient>
+          <linearGradient id="iceBot" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="rgba(110,198,200,0.4)"/>
+            <stop offset="100%" stop-color="rgba(184,107,74,0.3)"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Sky -->
+        <rect x="0" y="0" width="600" height="150" fill="url(#skyG)"/>
+        <!-- Water -->
+        <rect x="0" y="150" width="600" height="190" fill="url(#waterG)"/>
+        <!-- Water line -->
+        <line x1="0" y1="150" x2="600" y2="150" stroke="rgba(110,198,200,0.3)" stroke-width="1.5"/>
+
+        <!-- Iceberg above -->
+        <polygon points="260,150 280,95 300,60 320,80 340,100 350,150" fill="url(#iceTop)" opacity="0.9"/>
+        <line x1="295" y1="70" x2="270" y2="140" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+        <line x1="310" y1="85" x2="340" y2="140" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/>
+
+        <!-- Iceberg below (much larger) -->
+        <polygon points="230,150 210,200 200,260 220,310 270,330 330,330 380,310 400,260 390,200 370,150" fill="url(#iceBot)" opacity="0.6"/>
+        <line x1="220" y1="170" x2="250" y2="310" stroke="rgba(110,198,200,0.1)" stroke-width="0.5"/>
+        <line x1="370" y1="170" x2="350" y2="310" stroke="rgba(110,198,200,0.1)" stroke-width="0.5"/>
+        <line x1="260" y1="200" x2="350" y2="200" stroke="rgba(110,198,200,0.08)" stroke-width="0.5"/>
+
+        <!-- Labels -->
+        <text x="460" y="115" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#7a9e7e" letter-spacing="0.15em">YOU SEE THIS</text>
+        <text x="460" y="135" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="rgba(122,158,126,0.6)">skills you're proud of</text>
+
+        <text x="460" y="210" font-family="IBM Plex Sans,sans-serif" font-size="11" fill="#b86b4a" letter-spacing="0.15em">YOU MISS THIS</text>
+        <text x="460" y="230" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="rgba(184,107,74,0.6)">skills quietly dying</text>
+
+        <!-- Skill pills above -->
+        <rect x="120" y="110" width="80" height="24" rx="12" fill="rgba(122,158,126,0.2)" stroke="rgba(122,158,126,0.4)" stroke-width="0.5"/>
+        <text x="160" y="126" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#7a9e7e">TypeScript</text>
+
+        <rect x="400" y="95" width="55" height="24" rx="12" fill="rgba(122,158,126,0.2)" stroke="rgba(122,158,126,0.4)" stroke-width="0.5"/>
+        <text x="427" y="111" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#7a9e7e">React</text>
+
+        <!-- Skill pills below -->
+        <rect x="100" y="220" width="70" height="24" rx="12" fill="rgba(184,107,74,0.2)" stroke="rgba(184,107,74,0.4)" stroke-width="0.5"/>
+        <text x="135" y="236" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#b86b4a">jQuery</text>
+
+        <rect x="430" y="270" width="65" height="24" rx="12" fill="rgba(181,86,110,0.2)" stroke="rgba(181,86,110,0.4)" stroke-width="0.5"/>
+        <text x="462" y="286" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="#b5566e">Excel VBA</text>
+
+        <!-- Bubbles -->
+        <circle cx="250" cy="260" r="2" fill="rgba(110,198,200,0.2)"><animate attributeName="cy" values="260;200;160" dur="4s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.3;0.15;0" dur="4s" repeatCount="indefinite"/></circle>
+        <circle cx="340" cy="290" r="1.5" fill="rgba(110,198,200,0.15)"><animate attributeName="cy" values="290;220;160" dur="5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.25;0.1;0" dur="5s" repeatCount="indefinite"/></circle>
+      </svg>
+    </div>
+
+    <p class="subtitle reveal reveal-delay-4">
+      Like a real iceberg &mdash; the dangerous part is what you <em>don't</em> see.<br>
+      We surface the skills silently losing value beneath the waterline.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================
+     SLIDE 7 — DEMO: REALITY CHECK
+     ============================================ -->
+<section class="slide" id="slide-7">
+  <div class="orb orb-blush" style="width:350px;height:350px;bottom:-10%;right:-8%"></div>
+
+  <div class="slide-inner" style="text-align:center">
+    <span class="demo-badge reveal">Live in the App</span>
+    <h2 style="font-size:var(--h2-size)" class="reveal reveal-delay-1">
+      The <span class="accent-blush">Reality Check</span>
+    </h2>
+    <div class="fine-rule reveal reveal-delay-2"></div>
+
+    <p class="subtitle reveal reveal-delay-2" style="max-width:500px;margin-bottom:0.5em">
+      How good you <em>think</em> you are vs. what employers actually pay for.
+    </p>
+
+    <!-- Bar comparison -->
+    <div class="reveal reveal-delay-3" style="width:min(90vw,550px);display:flex;flex-direction:column;gap:clamp(0.6rem,1.5vh,1.2rem)">
+      <!-- Skill 1: slight overconfidence -->
+      <div style="display:flex;align-items:center;gap:clamp(0.5rem,1vw,1rem)">
+        <span style="font-size:var(--small-size);width:80px;text-align:right;color:var(--ivory-dim)">React</span>
+        <div style="flex:1;position:relative;height:clamp(24px,3.5vh,36px);background:rgba(24,24,32,0.6);border-radius:4px;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;height:100%;width:90%;background:linear-gradient(90deg,rgba(201,168,76,0.25),rgba(201,168,76,0.5));border-radius:4px"></div>
+          <div style="position:absolute;top:0;left:0;height:100%;width:72%;background:rgba(201,168,76,0.08);border-right:2px solid var(--gold);border-radius:4px 0 0 4px"></div>
+          <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:var(--small-size);color:var(--ivory-dim)">You: 9/10 &middot; Market: 7.2</span>
+        </div>
+      </div>
+      <!-- Skill 2: underconfident (hidden gem) -->
+      <div style="display:flex;align-items:center;gap:clamp(0.5rem,1vw,1rem)">
+        <span style="font-size:var(--small-size);width:80px;text-align:right;color:var(--ivory-dim)">Python</span>
+        <div style="flex:1;position:relative;height:clamp(24px,3.5vh,36px);background:rgba(24,24,32,0.6);border-radius:4px;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;height:100%;width:70%;background:linear-gradient(90deg,rgba(122,158,126,0.25),rgba(122,158,126,0.5));border-radius:4px"></div>
+          <div style="position:absolute;top:0;left:0;height:100%;width:82%;background:rgba(122,158,126,0.08);border-right:2px solid var(--sage);border-radius:4px 0 0 4px"></div>
+          <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:var(--small-size);color:var(--ivory-dim)">You: 7/10 &middot; Market: 8.2</span>
+        </div>
+      </div>
+      <!-- Skill 3: dangerous overconfidence -->
+      <div style="display:flex;align-items:center;gap:clamp(0.5rem,1vw,1rem)">
+        <span style="font-size:var(--small-size);width:80px;text-align:right;color:var(--ivory-dim)">Excel</span>
+        <div style="flex:1;position:relative;height:clamp(24px,3.5vh,36px);background:rgba(24,24,32,0.6);border-radius:4px;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;height:100%;width:85%;background:linear-gradient(90deg,rgba(184,107,74,0.25),rgba(184,107,74,0.5));border-radius:4px"></div>
+          <div style="position:absolute;top:0;left:0;height:100%;width:35%;background:rgba(184,107,74,0.08);border-right:2px solid var(--terracotta);border-radius:4px 0 0 4px"></div>
+          <span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:var(--small-size);color:var(--ivory-dim)">You: 8.5/10 &middot; Market: 3.5</span>
+        </div>
+      </div>
+    </div>
+
+    <p class="subtitle reveal reveal-delay-4" style="margin-top:var(--content-gap)">
+      Excel feels safe, but the market moved to Python.<br>
+      <span class="accent-blush">That gap is your blind spot.</span>
+    </p>
+  </div>
+</section>
+
+<!-- ============================================
+     SLIDE 8 — DEMO: FUTURE SELF
+     ============================================ -->
+<section class="slide" id="slide-8">
+  <div class="orb orb-gold" style="width:300px;height:300px;top:15%;left:-8%"></div>
+
+  <div class="slide-inner" style="text-align:center">
+    <span class="demo-badge reveal">Live in the App</span>
+    <h2 style="font-size:var(--h2-size)" class="reveal reveal-delay-1">
+      Two futures. <span class="accent">You choose.</span>
+    </h2>
+    <div class="fine-rule reveal reveal-delay-2"></div>
+
+    <!-- Career Twin SVG -->
+    <div class="reveal reveal-delay-3" style="width:min(90vw,550px);height:clamp(140px,22vh,220px)">
+      <svg viewBox="0 0 550 200" style="width:100%;height:100%">
+        <defs>
+          <linearGradient id="optPath" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="var(--gold)" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="var(--gold)" stop-opacity="1"/>
+          </linearGradient>
+          <linearGradient id="curPath" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="var(--terracotta)" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="var(--terracotta)" stop-opacity="1"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Grid lines -->
+        <line x1="60" y1="20" x2="60" y2="170" stroke="rgba(245,240,232,0.06)" stroke-width="0.5"/>
+        <line x1="180" y1="20" x2="180" y2="170" stroke="rgba(245,240,232,0.06)" stroke-width="0.5"/>
+        <line x1="300" y1="20" x2="300" y2="170" stroke="rgba(245,240,232,0.06)" stroke-width="0.5"/>
+        <line x1="420" y1="20" x2="420" y2="170" stroke="rgba(245,240,232,0.06)" stroke-width="0.5"/>
+        <line x1="60" y1="170" x2="520" y2="170" stroke="rgba(245,240,232,0.1)" stroke-width="0.5"/>
+
+        <!-- Labels -->
+        <text x="60" y="190" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="rgba(245,240,232,0.3)">Today</text>
+        <text x="180" y="190" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="rgba(245,240,232,0.3)">1 Year</text>
+        <text x="300" y="190" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="rgba(245,240,232,0.3)">3 Years</text>
+        <text x="420" y="190" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="rgba(245,240,232,0.3)">5 Years</text>
+
+        <!-- Optimized path (up) -->
+        <path d="M60,120 C120,115 180,95 240,70 C300,45 360,35 500,25" fill="none" stroke="url(#optPath)" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="500" cy="25" r="4" fill="var(--gold)"/>
+        <text x="510" y="20" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="var(--gold)" font-weight="500">$145k</text>
+        <text x="510" y="33" font-family="IBM Plex Sans,sans-serif" font-size="8" fill="rgba(201,168,76,0.6)">if you act now</text>
+
+        <!-- Current path (flat/down) -->
+        <path d="M60,120 C120,122 180,128 240,138 C300,148 360,155 500,160" fill="none" stroke="url(#curPath)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="6 4"/>
+        <circle cx="500" cy="160" r="4" fill="var(--terracotta)"/>
+        <text x="510" y="156" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="var(--terracotta)" font-weight="500">$92k</text>
+        <text x="510" y="169" font-family="IBM Plex Sans,sans-serif" font-size="8" fill="rgba(184,107,74,0.6)">if you do nothing</text>
+
+        <!-- Start point -->
+        <circle cx="60" cy="120" r="4" fill="var(--ivory)" opacity="0.5"/>
+        <text x="20" y="124" font-family="IBM Plex Sans,sans-serif" font-size="10" fill="var(--ivory-dim)">$105k</text>
+      </svg>
+    </div>
+
+    <p class="subtitle reveal reveal-delay-4">
+      We project your salary 5 years out, two ways:<br>
+      <span class="accent-terra">do nothing</span> vs. <span class="accent">follow our recommendations</span>.
+      The gap is real.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================
+     SLIDE 9 — HOW IT WORKS
+     ============================================ -->
+<section class="slide" id="slide-9">
+  <div class="orb orb-sage" style="width:300px;height:300px;bottom:-10%;left:50%;transform:translateX(-50%)"></div>
+
+  <div class="slide-inner" style="text-align:center">
+    <p class="tagline reveal">How It Works</p>
+    <h2 style="font-size:var(--h2-size)" class="reveal reveal-delay-1">60 seconds to your first insight.</h2>
+    <div class="fine-rule reveal reveal-delay-2"></div>
+
+    <div class="flow reveal reveal-delay-3">
+      <div class="flow-step">
+        <div class="flow-step-num">1</div>
+        <span class="flow-step-label">Tell Us About You</span>
+        <span class="flow-step-desc">Your job title, skills, and how confident you feel</span>
+      </div>
+      <span class="flow-arrow">&#10132;</span>
+      <div class="flow-step">
+        <div class="flow-step-num">2</div>
+        <span class="flow-step-label">AI Does the Work</span>
+        <span class="flow-step-desc">We compare your profile against real market data</span>
+      </div>
+      <span class="flow-arrow">&#10132;</span>
+      <div class="flow-step">
+        <div class="flow-step-num">3</div>
+        <span class="flow-step-label">See Your Blind Spots</span>
+        <span class="flow-step-desc">Get your score, risks, and a personal action plan</span>
+      </div>
+    </div>
+
+    <div class="fine-rule reveal reveal-delay-4"></div>
+
+    <ul class="feature-list reveal reveal-delay-5" style="text-align:left;max-width:500px">
+      <li>No account needed &mdash; just open the app and go</li>
+      <li>Results are instant with interactive charts</li>
+      <li>Works for any role: engineers, designers, managers, marketers</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================
+     SLIDE 10 — MARKET & IMPACT
+     ============================================ -->
+<section class="slide" id="slide-10">
+  <div class="orb orb-terra" style="width:350px;height:350px;top:-15%;left:-10%"></div>
+
+  <div class="slide-inner" style="text-align:center">
+    <p class="tagline reveal">Why This Matters</p>
+    <h2 style="font-size:var(--h2-size)" class="reveal reveal-delay-1">
+      A <span class="accent">$370B problem</span> nobody is solving this way.
+    </h2>
+    <div class="fine-rule reveal reveal-delay-2"></div>
+
+    <div class="market-grid reveal reveal-delay-3">
+      <div class="market-stat">
+        <div class="stat-val" style="color:var(--gold)">$370B</div>
+        <div class="stat-label">Global career development &amp; upskilling market</div>
+      </div>
+      <div class="market-stat">
+        <div class="stat-val" style="color:var(--sage)">1B+</div>
+        <div class="stat-label">Knowledge workers who need career guidance</div>
+      </div>
+      <div class="market-stat">
+        <div class="stat-val" style="color:var(--cyan-soft)">0</div>
+        <div class="stat-label">Tools that show you your blind spots before it's too late</div>
+      </div>
+    </div>
+
+    <div class="card-grid reveal reveal-delay-4" style="max-width:800px;grid-template-columns:1fr 1fr">
+      <div class="card" style="text-align:center">
+        <h3 style="color:var(--ivory-dim);font-size:var(--body-size)">LinkedIn / Coursera / Udemy</h3>
+        <p>"Here's 10,000 courses &mdash; good luck figuring out which ones matter."</p>
+      </div>
+      <div class="card" style="text-align:center;border-color:var(--gold)">
+        <h3 style="color:var(--gold);font-size:var(--body-size)">BlindSpot AI</h3>
+        <p>"Your Python is fine. Your cloud skills expire in 8 months. Here's exactly what to learn next."</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     SLIDE 11 — ROADMAP + BUILT WITH
+     ============================================ -->
+<section class="slide" id="slide-11">
+  <div class="orb orb-blush" style="width:400px;height:400px;top:-10%;right:-10%"></div>
+
+  <div class="slide-inner" style="text-align:center">
+    <p class="tagline reveal">What's Next</p>
+    <h2 style="font-size:var(--h2-size)" class="reveal reveal-delay-1">This is just the beginning.</h2>
+    <div class="fine-rule reveal reveal-delay-2"></div>
+
+    <div class="card-grid reveal reveal-delay-3" style="max-width:800px;grid-template-columns:repeat(3,1fr)">
+      <div class="card" style="border-top:2px solid var(--sage)">
+        <p style="color:var(--sage);font-size:var(--small-size);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.4em">Now</p>
+        <h3>AI Coach</h3>
+        <p>Personalized learning paths based on your blind spots</p>
+      </div>
+      <div class="card" style="border-top:2px solid var(--gold)">
+        <p style="color:var(--gold);font-size:var(--small-size);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.4em">Next</p>
+        <h3>LinkedIn Sync</h3>
+        <p>Auto-import your profile so setup takes 5 seconds</p>
+      </div>
+      <div class="card" style="border-top:2px solid var(--blush)">
+        <p style="color:var(--blush);font-size:var(--small-size);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.4em">Future</p>
+        <h3>Team Mode</h3>
+        <p>Help managers find their team's collective blind spots</p>
+      </div>
+    </div>
+
+    <div class="reveal reveal-delay-4" style="margin-top:var(--content-gap)">
+      <p style="font-size:var(--small-size);color:var(--ivory-dim);margin-bottom:0.5em;letter-spacing:0.1em;text-transform:uppercase">Built With</p>
+      <div class="tech-pills">
+        <span class="tech-pill">React 18</span>
+        <span class="tech-pill">Python / Flask</span>
+        <span class="tech-pill">Tailwind CSS</span>
+        <span class="tech-pill">Framer Motion</span>
+        <span class="tech-pill">Chart.js</span>
+        <span class="tech-pill">Vercel</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================
+     SLIDE 12 — CTA / THANK YOU
+     ============================================ -->
+<section class="slide" id="slide-12">
+  <div class="orb orb-gold" style="width:500px;height:500px;top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+  <div class="orb orb-blush" style="width:250px;height:250px;bottom:-5%;left:-5%"></div>
+  <div class="orb orb-sage" style="width:200px;height:200px;top:-5%;right:-5%"></div>
+
+  <div class="slide-inner" style="text-align:center">
+    <div class="fine-rule reveal"></div>
+    <h2 style="font-size:var(--title-size);font-weight:700" class="reveal reveal-delay-1">
+      Don't wait for the market<br>to find your <span class="accent">blind spots</span>.
+    </h2>
+    <p class="subtitle reveal reveal-delay-2" style="font-style:italic">
+      Find them yourself. Fix them first. Stay ahead.
+    </p>
+    <div class="fine-rule reveal reveal-delay-3"></div>
+    <a href="https://blindspot-ai.vercel.app" target="_blank" class="cta-link reveal reveal-delay-4">
+      Try the Live Demo
+    </a>
+    <p class="reveal reveal-delay-5" style="font-size:var(--small-size);color:var(--ivory-dim);margin-top:var(--content-gap)">
+      blindspot-ai.vercel.app &mdash; open right now on your phone
+    </p>
+  </div>
+</section>
+
+</main>
+
+<!-- Navigation dots -->
+<nav class="nav-dots" aria-label="Slide navigation"></nav>
+<div class="slide-counter"></div>
+<div class="keyboard-hint">&#8593; &#8595; or scroll</div>
+
+<script>
+/* ===========================================
+   PRESENTATION CONTROLLER
+   Keyboard, wheel, touch, dot navigation
+   =========================================== */
+(function() {
+  'use strict';
+
+  const slides = document.querySelectorAll('.slide');
+  const dotsContainer = document.querySelector('.nav-dots');
+  const counter = document.querySelector('.slide-counter');
+  const total = slides.length;
+  let current = 0;
+  let isAnimating = false;
+  let touchStartY = 0;
+
+  // --- Build navigation dots ---
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.classList.add('nav-dot');
+    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  });
+
+  const dots = document.querySelectorAll('.nav-dot');
+
+  function updateUI() {
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    counter.textContent = `${current + 1} / ${total}`;
+  }
+
+  function goTo(index) {
+    if (index < 0 || index >= total || isAnimating) return;
+    current = index;
+    slides[current].scrollIntoView({ behavior: 'smooth' });
+    updateUI();
+    isAnimating = true;
+    setTimeout(() => { isAnimating = false; }, 600);
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  // --- Keyboard ---
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+      e.preventDefault(); next();
+    }
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault(); prev();
+    }
+    if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+    if (e.key === 'End')  { e.preventDefault(); goTo(total - 1); }
+  });
+
+  // --- Mouse wheel ---
+  let wheelCooldown = false;
+  document.addEventListener('wheel', (e) => {
+    if (wheelCooldown) return;
+    if (Math.abs(e.deltaY) < 30) return;
+    wheelCooldown = true;
+    if (e.deltaY > 0) next(); else prev();
+    setTimeout(() => { wheelCooldown = false; }, 800);
+  }, { passive: true });
+
+  // --- Touch ---
+  document.addEventListener('touchstart', (e) => {
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartY - e.changedTouches[0].clientY;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) next(); else prev();
+    }
+  }, { passive: true });
+
+  // --- Intersection Observer for reveals ---
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        // Update current slide index
+        const idx = Array.from(slides).indexOf(entry.target);
+        if (idx !== -1) { current = idx; updateUI(); }
+        // Trigger reveal animations
+        entry.target.querySelectorAll('.reveal').forEach((el) => {
+          el.classList.add('visible');
+        });
+      } else {
+        // Reset reveals when leaving
+        entry.target.querySelectorAll('.reveal').forEach((el) => {
+          el.classList.remove('visible');
+        });
+      }
+    });
+  }, { threshold: 0.5 });
+
+  slides.forEach((s) => observer.observe(s));
+
+  // --- Init ---
+  updateUI();
+  // Trigger first slide reveals
+  slides[0].querySelectorAll('.reveal').forEach((el) => el.classList.add('visible'));
+})();
+</script>
+</body>
+</html>

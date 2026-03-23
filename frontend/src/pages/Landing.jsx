@@ -4,6 +4,7 @@ import { useRef, useEffect, useCallback, useState } from 'react'
 import { listAnalyses, loadAnalysis } from '../utils/storage'
 import { useTheme } from '../context/ThemeContext'
 import ThemeToggle from '../components/ThemeToggle'
+import useAnalysisStore from '../store/useAnalysisStore'
 
 /* ── Feature cards data ─────────────────────────────────────── */
 const features = [
@@ -300,7 +301,10 @@ function PreviousAnalyses({ navigate }) {
 
   const handleLoad = (id) => {
     const data = loadAnalysis(id)
-    if (data) navigate('/dashboard', { state: { data } })
+    if (data) {
+      useAnalysisStore.getState().setData(data)
+      navigate('/dashboard')
+    }
   }
 
   const getBsiColor = (score) => {

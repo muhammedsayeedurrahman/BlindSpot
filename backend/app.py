@@ -279,5 +279,286 @@ def health():
     return jsonify({"status": "ok", "service": "blindspot-api"})
 
 
+# ── Role Enrichment ──────────────────────────────────────────
+
+_enrich_cache = {}
+
+
+def _build_enrich_prompt(role, role_data):
+    """Build AI prompt for role enrichment."""
+    category = role_data.get("category", "Technology")
+    salary_2024 = int(role_data.get("avg_salary_2024", 0))
+    salary_2027 = int(role_data.get("projected_salary_2027", 0))
+    growth = float(role_data.get("openings_trend", 0)) * 100
+    emerging = role_data.get("emerging_skills", "")
+    if isinstance(emerging, list):
+        emerging = ", ".join(emerging)
+
+    return f"""You are a career advisor. For the role "{role}" in {category}:
+- Salary: ${salary_2024 // 1000}k - ${salary_2027 // 1000}k
+- Growth: {growth:.0f}%
+- Key skills: {emerging}
+
+Return JSON with exactly these fields:
+{{
+  "description": "2-3 sentences: what this role does day-to-day",
+  "excitement": "1-2 sentences: why this role is exciting and impactful",
+  "personality_fit": "1-2 sentences: what kind of person thrives here"
+}}
+
+Return ONLY valid JSON, no markdown formatting."""
+
+
+def _fallback_enrich(role, role_data):
+    """Template-based fallback when AI is unavailable."""
+    category = role_data.get("category", "Technology")
+    emerging = role_data.get("emerging_skills", "")
+    if isinstance(emerging, str):
+        skills = [s.strip() for s in emerging.split(";") if s.strip()]
+    else:
+        skills = list(emerging) if emerging else []
+    growth = float(role_data.get("openings_trend", 0)) * 100
+
+    skill_text = f"{skills[0]} and {skills[1]}" if len(skills) >= 2 else (skills[0] if skills else "emerging technologies")
+
+    return {
+        "description": f"This {category} role focuses on {skill_text}, combining technical expertise with strategic thinking to drive innovation.",
+        "excitement": f"With {growth:.0f}% market growth, this is a high-demand career path with excellent long-term prospects.",
+        "personality_fit": "Ideal for analytical thinkers who enjoy problem-solving and staying ahead of technology trends.",
+    }
+
+
+def _enrich_single_role(role):
+    """Generate or retrieve cached enrichment for a single role."""
+    if role in _enrich_cache:
+        return _enrich_cache[role]
+
+    from models.data_loader import load_roles_dict
+    from models.ai_provider import AIProvider
+
+    roles_data = load_roles_dict()
+    role_data = roles_data.get(role)
+
+    if not role_data:
+        result = {
+            "description": f"A career focused on {role}, blending technical skills with industry expertise.",
+            "excitement": "This emerging role offers strong growth potential in today's evolving job market.",
+            "personality_fit": "Ideal for curious, adaptable professionals who enjoy continuous learning.",
+        }
+        _enrich_cache[role] = result
+        return result
+
+    prompt = _build_enrich_prompt(role, role_data)
+    ai_result = AIProvider().generate_json(prompt, max_tokens=512, temperature=0.7)
+
+    if (
+        isinstance(ai_result, dict)
+        and "description" in ai_result
+        and "excitement" in ai_result
+        and "personality_fit" in ai_result
+    ):
+        _enrich_cache[role] = ai_result
+        return ai_result
+
+    fallback = _fallback_enrich(role, role_data)
+    _enrich_cache[role] = fallback
+    return fallback
+
+
+@app.route("/api/roles/enrich", methods=["POST"])
+@limiter.limit("20 per minute")
+def enrich_roles():
+    """Generate AI-powered role descriptions on demand."""
+    data = request.get_json(silent=True)
+    if data is None:
+        return _error_response("INVALID_JSON", "Request body must be valid JSON")
+
+    roles = data.get("roles", [])
+    if not roles or not isinstance(roles, list):
+        return _error_response("VALIDATION_ERROR", "roles must be a non-empty array", status_code=422)
+
+    # Limit to 10 roles per request
+    roles = roles[:10]
+
+    results = {}
+    for role in roles:
+        if not isinstance(role, str) or not role.strip():
+            continue
+        results[role] = _enrich_single_role(role.strip())
+
+    return jsonify(results)
+
+
+# ── Evolution paths ───────────────────────────────────────────
+
+import json as _json
+
+_EVOLUTION_DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'api', 'data', 'evolution_paths.json')
+_GENERIC_EVOLUTION = [
+    {"type": "upgrade", "label": "Deepen Expertise", "skills": ["Advanced Patterns", "Best Practices"], "months": 3},
+    {"type": "expand", "label": "Broaden Skillset", "skills": ["Related Tools", "Complementary Skills"], "months": 5},
+    {"type": "career", "label": "Career Pivot", "role": "Senior Engineer", "skills": ["System Design", "Leadership", "Architecture"], "months": 10},
+]
+
+
+@app.route("/api/evolution", methods=["GET"])
+def evolution():
+    """Return evolution paths for a skill (or all skills)."""
+    all_paths = []
+
+    # Try Supabase first
+    try:
+        from models.db import get_supabase
+        db = get_supabase()
+        if db:
+            result = db.table("evolution_paths").select("*").execute()
+            if result.data:
+                all_paths = result.data
+    except Exception:
+        pass
+
+    # Fallback to JSON file
+    if not all_paths:
+        try:
+            with open(_EVOLUTION_DATA_PATH, "r", encoding="utf-8") as f:
+                all_paths = _json.load(f)
+        except (FileNotFoundError, _json.JSONDecodeError):
+            all_paths = []
+
+    skill = request.args.get("skill")
+    if skill:
+        match = next((p for p in all_paths if p["skill"].lower() == skill.lower()), None)
+        return jsonify(match if match else {"skill": skill, "paths": _GENERIC_EVOLUTION})
+    return jsonify(all_paths)
+
+
+# ── Explain endpoint ──────────────────────────────────────────
+
+import time as _time
+
+_explain_rate = {}
+_EXPLAIN_WINDOW = 60
+_EXPLAIN_MAX = 30
+
+_EXPLAIN_TEMPLATES = {
+    "skill_risk": "This skill is experiencing market shifts due to automation trends and changing industry demands. Consider diversifying into adjacent technologies to maintain your competitive edge.",
+    "role_fit": "This role aligns with your current skill profile. The match score reflects both your existing competencies and the gap between your skills and the role's requirements.",
+    "next_step": "Based on your current trajectory, this is the recommended next action to improve your career resilience and market positioning.",
+}
+
+
+@app.route("/api/explain", methods=["POST"])
+@limiter.limit("30 per minute")
+def explain():
+    """Generate AI explanation for a given context."""
+    data = request.get_json(silent=True)
+    if data is None:
+        return _error_response("INVALID_JSON", "Request body must be valid JSON")
+
+    context_type = data.get("context_type", "next_step")
+    context_data = data.get("data", {})
+
+    if context_type not in ("skill_risk", "role_fit", "next_step"):
+        return _error_response("INVALID_TYPE", f"Invalid context_type: {context_type}")
+
+    # Try AI providers (Gemini → Groq → Mistral → OpenRouter)
+    from models.ai_provider import AIProvider
+
+    prompts = {
+        "skill_risk": f"In 2-3 sentences, explain why the skill '{context_data.get('skill', 'this skill')}' is at risk. Data: {_json.dumps(context_data)}",
+        "role_fit": f"In 2-3 sentences, explain why '{context_data.get('role', 'this role')}' fits with match score {context_data.get('match_score', 'N/A')}%. Data: {_json.dumps(context_data)}",
+        "next_step": f"In 2-3 sentences, explain why this is the recommended next step. Data: {_json.dumps(context_data)}",
+    }
+
+    result = AIProvider().generate(prompts[context_type], max_tokens=256)
+    if result:
+        return jsonify({"explanation": result})
+
+    return jsonify({"explanation": _EXPLAIN_TEMPLATES.get(context_type, _EXPLAIN_TEMPLATES["next_step"])})
+
+
+# ── Progress sync endpoint ────────────────────────────────────
+
+def _get_user_id_from_request():
+    """Extract user ID from Supabase auth token in Authorization header."""
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        return None
+    token = auth_header[7:]
+    try:
+        from models.db import get_supabase
+        db = get_supabase()
+        if not db:
+            return None
+        user = db.auth.get_user(token)
+        return user.user.id if user and user.user else None
+    except Exception:
+        return None
+
+
+@app.route("/api/progress", methods=["GET", "POST"])
+@limiter.limit("30 per minute")
+def progress():
+    """Sync journey progress to/from Supabase."""
+    user_id = _get_user_id_from_request()
+    if not user_id:
+        return _error_response("UNAUTHORIZED", "Valid auth token required", status_code=401)
+
+    from models.db import get_supabase
+    db = get_supabase()
+    if not db:
+        return _error_response("DB_UNAVAILABLE", "Database not configured", status_code=503)
+
+    if request.method == "GET":
+        result = db.table("journey_progress").select("*").eq("user_id", user_id).maybe_single().execute()
+        data = result.data or {
+            "selected_paths": {},
+            "quiz_scores": {},
+            "completed_skills": [],
+            "evolution_choices": {},
+            "journey_step": 0,
+        }
+        return jsonify(data)
+
+    # POST — upsert progress
+    payload = request.get_json(silent=True)
+    if not payload:
+        return _error_response("INVALID_JSON", "Request body must be valid JSON")
+
+    row = {
+        "user_id": user_id,
+        "selected_paths": payload.get("selected_paths", {}),
+        "quiz_scores": payload.get("quiz_scores", {}),
+        "completed_skills": payload.get("completed_skills", []),
+        "evolution_choices": payload.get("evolution_choices", {}),
+        "journey_step": payload.get("journey_step", 0),
+    }
+    db.table("journey_progress").upsert(row, on_conflict="user_id").execute()
+    return jsonify({"ok": True})
+
+
+@app.route("/api/auth/anonymous", methods=["POST"])
+@limiter.limit("10 per minute")
+def auth_anonymous():
+    """Create an anonymous Supabase session."""
+    from models.db import get_supabase
+    db = get_supabase()
+    if not db:
+        return _error_response("DB_UNAVAILABLE", "Database not configured", status_code=503)
+
+    try:
+        result = db.auth.sign_in_anonymously()
+        if result and result.session:
+            return jsonify({
+                "access_token": result.session.access_token,
+                "refresh_token": result.session.refresh_token,
+                "user_id": result.user.id,
+            })
+        return _error_response("AUTH_ERROR", "Failed to create anonymous session", status_code=500)
+    except Exception:
+        logger.exception("Anonymous auth failed")
+        return _error_response("AUTH_ERROR", "Authentication failed", status_code=500)
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

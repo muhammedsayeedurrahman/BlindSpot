@@ -1,12 +1,15 @@
 """Vercel serverless function for GET /api/evolution?skill=Excel"""
 
 import json
+import logging
 import os
 import sys
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import parse_qs, urlparse
 
 sys.path.insert(0, os.path.dirname(__file__))
+
+logger = logging.getLogger(__name__)
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data", "evolution_paths.json")
 
@@ -18,6 +21,20 @@ GENERIC_PATHS = [
 
 
 def _load_paths():
+    # Try Supabase first
+    try:
+        from models.db import get_supabase
+
+        db = get_supabase()
+        if db:
+            result = db.table("evolution_paths").select("*").execute()
+            if result.data:
+                logger.info("Loaded %d evolution paths from Supabase", len(result.data))
+                return result.data
+    except Exception as e:
+        logger.warning("Supabase evolution_paths query failed: %s", e)
+
+    # Fallback to JSON file
     try:
         with open(DATA_PATH, "r", encoding="utf-8") as f:
             return json.load(f)

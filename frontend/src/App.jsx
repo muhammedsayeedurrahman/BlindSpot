@@ -1,6 +1,9 @@
+import { useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { CurrencyProvider } from './context/CurrencyContext'
 import { ThemeProvider } from './context/ThemeContext'
+import { useAuth } from './hooks/useAuth'
+import useJourneyStore from './store/useJourneyStore'
 import FloatingOrbs from './components/FloatingOrbs'
 import Landing from './pages/Landing'
 import Onboarding from './pages/Onboarding'
@@ -12,6 +15,16 @@ import Opportunities from './pages/Opportunities'
 import JourneyLayout from './layouts/JourneyLayout'
 
 export default function App() {
+  const { user } = useAuth()
+  const hydrateFromSupabase = useJourneyStore((s) => s.hydrateFromSupabase)
+
+  // Hydrate journey progress from Supabase once authenticated
+  useEffect(() => {
+    if (user) {
+      hydrateFromSupabase()
+    }
+  }, [user, hydrateFromSupabase])
+
   return (
     <ThemeProvider>
       <CurrencyProvider>

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import Gauge from '../components/Gauge'
 import RiskCards from '../components/RiskCards'
 import Iceberg from '../components/Iceberg'
@@ -15,6 +15,7 @@ import NarrativeDivider from '../components/NarrativeDivider'
 import CollapsibleSection from '../components/CollapsibleSection'
 import SkillEvolutionCard from '../components/SkillEvolutionCard'
 import SkillGrowthWarning from '../components/SkillGrowthWarning'
+import SkillQuiz from '../components/SkillQuiz'
 import ExplainButton from '../components/ExplainButton'
 import useAnalysisStore from '../store/useAnalysisStore'
 
@@ -65,10 +66,19 @@ export default function Analysis() {
   const data = useAnalysisStore((s) => s.data)
   const advanceJourney = useAnalysisStore((s) => s.advanceJourney)
   const [icebergMode, setIcebergMode] = useState('2d')
+  const [quizModal, setQuizModal] = useState(null) // { skill, path }
 
   const { blindspot_index: bsi, skill_survival, competence_illusion, evolution_paths } = data
   const assessmentData = data.assessment_data || null
   const isAiVerified = data.ai_verified || bsi?.ai_verified || false
+
+  const handleStartQuiz = useCallback((skill, path) => {
+    setQuizModal({ skill, path })
+  }, [])
+
+  const handleQuizComplete = useCallback(() => {
+    setQuizModal(null)
+  }, [])
 
   // Mark step 1 as visited
   useEffect(() => {
@@ -263,6 +273,7 @@ export default function Analysis() {
                       skill={ep.skill}
                       paths={ep.paths}
                       delay={0.02 * i}
+                      onStartQuiz={handleStartQuiz}
                     />
                   ))}
                 </div>
@@ -305,6 +316,48 @@ export default function Analysis() {
           </span>
         </div>
       </div>
+
+      {/* Quiz Modal — triggered from evolution path "Verify Skills" */}
+      <AnimatePresence>
+        {quizModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
+            onClick={(e) => { if (e.target === e.currentTarget) setQuizModal(null) }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="glass-card-premium neon-border p-6 w-full max-w-2xl max-h-[85vh] overflow-y-auto relative"
+            >
+              <button
+                onClick={() => setQuizModal(null)}
+                className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center theme-text-muted hover:theme-text transition-colors"
+                style={{ backgroundColor: 'var(--bg-tertiary)' }}
+              >
+                <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                  <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                </svg>
+              </button>
+              <div className="mb-4">
+                <p className="text-[10px] uppercase tracking-wider theme-text-muted mb-1">
+                  Verifying: {quizModal.path.label}
+                </p>
+              </div>
+              <SkillQuiz
+                skills={quizModal.path.skills.map((s) => ({ skill: s, confidence: 5 }))}
+                onComplete={handleQuizComplete}
+                onSkip={() => setQuizModal(null)}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

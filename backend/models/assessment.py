@@ -639,28 +639,33 @@ GENERIC_QUESTIONS = [
 ]
 
 
-def _try_gemini_questions(skills, count_per_skill):
-    """Attempt to generate questions via Gemini AI with timeout."""
-    try:
-        import google.generativeai as genai
+def _try_ai_questions(skills, count_per_skill, difficulty=None):
+    """Attempt to generate questions via AI providers with automatic failover."""
+    from .ai_provider import AIProvider
 
-        api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-        if not api_key:
-            logger.info("No Gemini API key found, using fallback questions")
-            return None
+    _ai = AIProvider()
 
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-2.0-flash")
+    skill_list = ", ".join(s["skill"] for s in skills)
+    difficulty_instruction = f"\nGenerate {difficulty}-level questions." if difficulty else ""
+    prompt = f"""Generate a mix of multiple-choice and scenario-based quiz questions for EACH of these skills: {skill_list}.{difficulty_instruction}
 
-        skill_list = ", ".join(s["skill"] for s in skills)
-        prompt = f"""Generate {count_per_skill} multiple-choice quiz questions for EACH of these skills: {skill_list}.
+For each skill, generate {count_per_skill} questions with this mix:
+- About half should be standard MCQ questions testing knowledge
+- About half should be "scenario" questions that present a real-world situation
 
 For each question return a JSON object with:
 - "skill": the skill name
 - "question": the question text
+- "type": either "mcq" or "scenario"
 - "options": array of exactly 4 answer options
 - "correct": index (0-3) of the correct answer
-- "difficulty": "easy" or "medium"
+- "difficulty": "easy", "medium", or "hard"
+- "explanation": a brief explanation of why the correct answer is best (required for scenario questions, optional for mcq)
+
+For scenario questions:
+- Start with a real-world situation (e.g. "You receive a 500MB CSV with duplicate rows...")
+- Options should represent different approaches, not just facts
+- The explanation should teach WHY the correct approach is better
 
 Requirements:
 - Questions should test practical knowledge, not trivia
@@ -670,53 +675,36 @@ Requirements:
 
 Return ONLY valid JSON, no markdown formatting."""
 
-        response = model.generate_content(
-            prompt,
-            generation_config=genai.types.GenerationConfig(
-                temperature=0.7,
-                max_output_tokens=2048,
-            ),
-            request_options={"timeout": GEMINI_TIMEOUT_SECONDS},
-        )
-
-        text = response.text.strip()
-        # Strip markdown code fences if present
-        if text.startswith("```"):
-            text = text.split("\n", 1)[1] if "\n" in text else text[3:]
-            if text.endswith("```"):
-                text = text[:-3]
-            text = text.strip()
-
-        questions = json.loads(text)
-        if not isinstance(questions, list):
-            return None
-
-        # Validate each question
-        valid = []
-        for q in questions:
-            if (
-                isinstance(q, dict)
-                and "question" in q
-                and "options" in q
-                and "correct" in q
-                and isinstance(q["options"], list)
-                and len(q["options"]) == 4
-                and isinstance(q["correct"], int)
-                and 0 <= q["correct"] <= 3
-            ):
-                valid.append({
-                    "skill": q.get("skill", "General"),
-                    "question": q["question"],
-                    "options": q["options"],
-                    "correct": q["correct"],
-                    "difficulty": q.get("difficulty", "medium"),
-                })
-
-        return valid if valid else None
-
-    except Exception as e:
-        logger.warning("Gemini question generation failed: %s", e)
+    questions = _ai.generate_json(prompt, max_tokens=4096)
+    if not isinstance(questions, list):
         return None
+
+    # Validate each question
+    valid = []
+    for q in questions:
+        if (
+            isinstance(q, dict)
+            and "question" in q
+            and "options" in q
+            and "correct" in q
+            and isinstance(q["options"], list)
+            and len(q["options"]) == 4
+            and isinstance(q["correct"], int)
+            and 0 <= q["correct"] <= 3
+        ):
+            validated = {
+                "skill": q.get("skill", "General"),
+                "question": q["question"],
+                "type": q.get("type", "mcq"),
+                "options": q["options"],
+                "correct": q["correct"],
+                "difficulty": q.get("difficulty", "medium"),
+            }
+            if q.get("explanation"):
+                validated["explanation"] = q["explanation"]
+            valid.append(validated)
+
+    return valid if valid else None
 
 
 def _shuffle_options(question):
@@ -728,12 +716,16 @@ def _shuffle_options(question):
     return {**question, "options": options, "correct": new_correct}
 
 
-def _get_fallback_questions(skills, count_per_skill):
+def _get_fallback_questions(skills, count_per_skill, difficulty=None):
     """Generate rule-based fallback questions for given skills."""
     questions = []
     for skill_entry in skills:
         skill_name = skill_entry["skill"]
         pool = FALLBACK_QUESTIONS.get(skill_name, GENERIC_QUESTIONS)
+        # Filter by difficulty if specified
+        if difficulty:
+            filtered = [q for q in pool if q.get("difficulty") == difficulty]
+            pool = filtered if filtered else pool
         # Shuffle and pick up to count_per_skill
         sampled = random.sample(pool, min(count_per_skill, len(pool)))
         for q in sampled:
@@ -746,13 +738,14 @@ def _get_fallback_questions(skills, count_per_skill):
 class AssessmentEngine:
     """AI-powered skill assessment with Gemini + rule-based fallback."""
 
-    def generate_questions(self, skills, count_per_skill=QUESTIONS_PER_SKILL):
+    def generate_questions(self, skills, count_per_skill=QUESTIONS_PER_SKILL, difficulty=None):
         """
         Generate quiz questions for the given skills.
 
         Args:
             skills: list of {"skill": str, "confidence": int}
             count_per_skill: questions per skill (default 2)
+            difficulty: optional filter — "easy", "medium", or "hard"
 
         Returns:
             list of question dicts with: skill, question, options, correct, difficulty
@@ -761,16 +754,18 @@ class AssessmentEngine:
         if len(skills) > 5:
             skills = sorted(skills, key=lambda s: s.get("confidence", 5), reverse=True)[:5]
 
-        # Try Gemini with retries
+        # Try AI providers with retries
         for attempt in range(MAX_RETRIES):
-            ai_questions = _try_gemini_questions(skills, count_per_skill)
+            ai_questions = _try_ai_questions(skills, count_per_skill, difficulty)
             if ai_questions:
-                logger.info("Gemini generated %d questions (attempt %d)", len(ai_questions), attempt + 1)
+                logger.info("AI generated %d questions (attempt %d)", len(ai_questions), attempt + 1)
+                if difficulty:
+                    ai_questions = [q for q in ai_questions if q.get("difficulty") == difficulty] or ai_questions
                 return ai_questions[:MAX_QUESTIONS_TOTAL]
 
         # Fallback to rule-based
         logger.info("Using fallback question set")
-        fallback = _get_fallback_questions(skills, count_per_skill)
+        fallback = _get_fallback_questions(skills, count_per_skill, difficulty)
         return fallback[:MAX_QUESTIONS_TOTAL]
 
     def score_answers(self, questions, user_answers, skills_with_confidence):

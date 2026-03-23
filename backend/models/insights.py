@@ -4,27 +4,12 @@ Generates career insights using Google Gemini API with a rule-based fallback
 when the API key is unavailable or the call fails.
 """
 
-import os
+from .ai_provider import AIProvider
+
+_ai = AIProvider()
 
 
-def _try_gemini(prompt):
-    """Attempt to generate insights via Gemini API. Returns None on failure."""
-    api_key = os.environ.get("GOOGLE_API_KEY")
-    if not api_key:
-        return None
-
-    try:
-        import google.generativeai as genai
-
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-2.0-flash")
-        response = model.generate_content(prompt)
-        return response.text
-    except Exception:
-        return None
-
-
-def _parse_gemini_response(text):
+def _parse_ai_response(text):
     """Parse structured Gemini response into 4 insight cards."""
     sections = {
         "career_direction": "",
@@ -103,10 +88,10 @@ class InsightEngine:
         # Build the prompt with all analysis data
         prompt = self._build_prompt(bsi, survival, illusion, twin)
 
-        # Try Gemini first
-        ai_text = _try_gemini(prompt)
+        # Try AI providers (Gemini → Groq → Mistral → OpenRouter)
+        ai_text = _ai.generate(prompt)
         if ai_text:
-            parsed = _parse_gemini_response(ai_text)
+            parsed = _parse_ai_response(ai_text)
             return self._format_insights(parsed, source="ai")
 
         # Fallback to rule-based insights

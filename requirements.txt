@@ -1,2 +1,4 @@
-# Vercel serverless Python functions — no external deps needed
-# (stdlib only: csv, json, math, os)
+google-generativeai>=0.8.0
+openai>=1.0.0
+supabase>=2.0.0
+python-dotenv>=1.0.0

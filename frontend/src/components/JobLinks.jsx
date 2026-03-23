@@ -22,7 +22,27 @@ const PLATFORMS = [
     ),
   },
   {
-    name: 'Google',
+    name: 'Glassdoor',
+    color: '#0CAA41',
+    urlTemplate: (role) => `https://www.glassdoor.com/Job/jobs.htm?sc.keyword=${encodeURIComponent(role)}`,
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
+        <path d="M17.14 2H6.86A2.86 2.86 0 004 4.86v14.28A2.86 2.86 0 006.86 22h10.28A2.86 2.86 0 0020 19.14V4.86A2.86 2.86 0 0017.14 2zM12 18a6 6 0 110-12 6 6 0 010 12z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Wellfound',
+    color: '#E74C3C',
+    urlTemplate: (role) => `https://wellfound.com/jobs?q=${encodeURIComponent(role)}`,
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" fill="none" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Google Jobs',
     color: '#4285F4',
     urlTemplate: (role) => `https://www.google.com/search?q=${encodeURIComponent(role + ' jobs')}`,
     icon: (
@@ -34,31 +54,157 @@ const PLATFORMS = [
       </svg>
     ),
   },
+  {
+    name: 'We Work Remotely',
+    color: '#FB923C',
+    urlTemplate: (role) => `https://weworkremotely.com/remote-jobs/search?term=${encodeURIComponent(role)}`,
+    icon: (
+      <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+      </svg>
+    ),
+  },
 ]
 
-export default function JobLinks({ role }) {
+const COMPANY_MAP = {
+  'AI/ML': [
+    { name: 'OpenAI', color: '#10A37F' },
+    { name: 'Anthropic', color: '#D4A574' },
+    { name: 'Google DeepMind', color: '#4285F4' },
+    { name: 'Meta AI', color: '#0668E1' },
+    { name: 'NVIDIA', color: '#76B900' },
+    { name: 'Hugging Face', color: '#FFD21E' },
+  ],
+  'Engineering': [
+    { name: 'Google', color: '#4285F4' },
+    { name: 'Microsoft', color: '#00A4EF' },
+    { name: 'Stripe', color: '#635BFF' },
+    { name: 'Vercel', color: '#E2E8F0' },
+    { name: 'Cloudflare', color: '#F6821F' },
+    { name: 'Amazon', color: '#FF9900' },
+  ],
+  'Data': [
+    { name: 'Snowflake', color: '#29B5E8' },
+    { name: 'Databricks', color: '#FF3621' },
+    { name: 'Palantir', color: '#E2E8F0' },
+    { name: 'dbt Labs', color: '#FF694A' },
+    { name: 'Confluent', color: '#38BDF8' },
+    { name: 'Fivetran', color: '#0073FF' },
+  ],
+  'Infrastructure': [
+    { name: 'AWS', color: '#FF9900' },
+    { name: 'HashiCorp', color: '#E2E8F0' },
+    { name: 'Datadog', color: '#632CA6' },
+    { name: 'Grafana Labs', color: '#F46800' },
+    { name: 'Cloudflare', color: '#F6821F' },
+    { name: 'Elastic', color: '#00BFB3' },
+  ],
+  'Security': [
+    { name: 'CrowdStrike', color: '#FF0000' },
+    { name: 'Palo Alto Networks', color: '#FA582D' },
+    { name: 'Snyk', color: '#4C4A73' },
+    { name: 'Fortinet', color: '#EE3124' },
+    { name: 'SentinelOne', color: '#6C2EB9' },
+  ],
+  'Management': [
+    { name: 'Atlassian', color: '#0052CC' },
+    { name: 'Asana', color: '#F06A6A' },
+    { name: 'Linear', color: '#5E6AD2' },
+    { name: 'Notion', color: '#E2E8F0' },
+    { name: 'GitLab', color: '#FC6D26' },
+  ],
+  'Design': [
+    { name: 'Figma', color: '#A259FF' },
+    { name: 'Canva', color: '#00C4CC' },
+    { name: 'Adobe', color: '#FF0000' },
+    { name: 'Framer', color: '#0055FF' },
+  ],
+  'Content': [
+    { name: 'Notion', color: '#E2E8F0' },
+    { name: 'GitBook', color: '#3884FF' },
+    { name: 'Contentful', color: '#2478CC' },
+    { name: 'Readme', color: '#018EF5' },
+  ],
+  'QA': [
+    { name: 'BrowserStack', color: '#F5A623' },
+    { name: 'Sauce Labs', color: '#E2231A' },
+    { name: 'LambdaTest', color: '#0EBAC5' },
+    { name: 'Testim', color: '#6366F1' },
+  ],
+}
+
+function PlatformPill({ platform, role }) {
   return (
-    <div className="flex items-center gap-1.5">
-      {PLATFORMS.map((platform) => (
-        <motion.a
-          key={platform.name}
-          href={platform.urlTemplate(role)}
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{ scale: 1.08, y: -1 }}
-          whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-medium border transition-all"
-          style={{
-            borderColor: `${platform.color}30`,
-            color: platform.color,
-            backgroundColor: `${platform.color}08`,
-          }}
-          title={`Search ${platform.name} for ${role} jobs`}
-        >
-          {platform.icon}
-          {platform.name}
-        </motion.a>
-      ))}
+    <motion.a
+      href={platform.urlTemplate(role)}
+      target="_blank"
+      rel="noopener noreferrer"
+      whileHover={{ scale: 1.06, y: -1 }}
+      whileTap={{ scale: 0.95 }}
+      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-colors"
+      style={{
+        borderColor: `${platform.color}50`,
+        color: platform.color,
+        backgroundColor: `${platform.color}15`,
+      }}
+      title={`Search ${platform.name} for ${role} jobs`}
+    >
+      {platform.icon}
+      {platform.name}
+    </motion.a>
+  )
+}
+
+function CompanyPill({ company, role }) {
+  const url = `https://www.google.com/search?q=${encodeURIComponent(company.name + ' ' + role + ' careers')}`
+  return (
+    <motion.a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      whileHover={{ scale: 1.06, y: -1 }}
+      whileTap={{ scale: 0.95 }}
+      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-colors"
+      style={{
+        borderColor: `${company.color}50`,
+        color: company.color,
+        backgroundColor: `${company.color}12`,
+      }}
+      title={`${company.name} — ${role} careers`}
+    >
+      {company.name}
+    </motion.a>
+  )
+}
+
+export default function JobLinks({ role, category }) {
+  const companies = COMPANY_MAP[category] || COMPANY_MAP['Engineering']
+
+  return (
+    <div className="space-y-3">
+      {/* Search Platforms */}
+      <div>
+        <p className="text-[10px] uppercase tracking-wider font-semibold mb-1.5" style={{ color: '#94A3B8' }}>
+          Search Platforms
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {PLATFORMS.map((platform) => (
+            <PlatformPill key={platform.name} platform={platform} role={role} />
+          ))}
+        </div>
+      </div>
+
+      {/* Top Companies Hiring */}
+      <div>
+        <p className="text-[10px] uppercase tracking-wider font-semibold mb-1.5" style={{ color: '#94A3B8' }}>
+          Top Companies Hiring
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {companies.map((company) => (
+            <CompanyPill key={company.name} company={company} role={role} />
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

@@ -1,9 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import NarrativeDivider from '../components/NarrativeDivider'
-import RoleUnlockCard from '../components/RoleUnlockCard'
+import RoleDetailCard from '../components/RoleDetailCard'
 import useAnalysisStore from '../store/useAnalysisStore'
+import useRoleDetails from '../hooks/useRoleDetails'
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 24, filter: 'blur(4px)' },
@@ -15,12 +16,41 @@ export default function Explore() {
   const navigate = useNavigate()
   const data = useAnalysisStore((s) => s.data)
   const advanceJourney = useAnalysisStore((s) => s.advanceJourney)
+  const prefetchedRef = useRef(false)
 
   const alignments = data?.career_twin?.career_alignments || []
+  const { getDetails, isLoading, fetchRoles } = useRoleDetails()
+
+  const heroRole = alignments[0] || null
+  const gridRoles = alignments.slice(1)
 
   useEffect(() => {
     advanceJourney(2)
   }, [advanceJourney])
+
+  // Prefetch hero card immediately
+  useEffect(() => {
+    if (heroRole) {
+      fetchRoles([heroRole.role])
+    }
+  }, [heroRole, fetchRoles])
+
+  // Prefetch top 3 after 2s delay
+  useEffect(() => {
+    if (prefetchedRef.current || alignments.length <= 1) return
+    const timer = setTimeout(() => {
+      const top3 = alignments.slice(1, 4).map((a) => a.role)
+      if (top3.length > 0) {
+        fetchRoles(top3)
+      }
+      prefetchedRef.current = true
+    }, 2000)
+    return () => clearTimeout(timer)
+  }, [alignments, fetchRoles])
+
+  const handleExpand = (role) => {
+    fetchRoles([role])
+  }
 
   return (
     <motion.div
@@ -36,23 +66,55 @@ export default function Explore() {
           <p className="text-sm theme-text-tertiary">Discover roles that align with your skills and growth potential</p>
         </motion.div>
 
-        <NarrativeDivider label="Career Matches" delay={0.04} />
-
         {alignments.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {alignments.map((item, i) => (
-              <RoleUnlockCard
-                key={item.role}
-                role={item.role}
-                matchScore={item.match_score}
-                missingSkills={item.missing_skills}
-                salaryRange={item.salary_range}
-                growthTrend={item.growth_trend}
-                category={item.category}
-                index={i}
-              />
-            ))}
-          </div>
+          <>
+            {/* Hero card — best match */}
+            {heroRole && (
+              <>
+                <NarrativeDivider label="Best Match" delay={0.04} />
+                <RoleDetailCard
+                  role={heroRole.role}
+                  matchScore={heroRole.match_score}
+                  missingSkills={heroRole.missing_skills}
+                  salaryRange={heroRole.salary_range}
+                  growthTrend={heroRole.growth_trend}
+                  category={heroRole.category}
+                  automationRisk={heroRole.automation_risk}
+                  index={0}
+                  isHero
+                  defaultExpanded
+                  details={getDetails(heroRole.role)}
+                  isLoadingDetails={isLoading(heroRole.role)}
+                  onExpand={handleExpand}
+                />
+              </>
+            )}
+
+            {/* Grid — remaining cards */}
+            {gridRoles.length > 0 && (
+              <>
+                <NarrativeDivider label="More Careers" delay={0.08} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {gridRoles.map((item, i) => (
+                    <RoleDetailCard
+                      key={item.role}
+                      role={item.role}
+                      matchScore={item.match_score}
+                      missingSkills={item.missing_skills}
+                      salaryRange={item.salary_range}
+                      growthTrend={item.growth_trend}
+                      category={item.category}
+                      automationRisk={item.automation_risk}
+                      index={i + 1}
+                      details={getDetails(item.role)}
+                      isLoadingDetails={isLoading(item.role)}
+                      onExpand={handleExpand}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         ) : (
           <motion.div {...fadeUp(0.08)} className="glass-card-premium p-8 text-center">
             <p className="theme-text-tertiary">No career alignments available. Complete your analysis first.</p>

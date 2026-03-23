@@ -1,7 +1,7 @@
 /**
  * SkillQuiz — AI-powered skill assessment quiz
  * Props: skills, onComplete(results), onSkip()
- * === NEW: Quiz component (delete file to remove) ===
+ * Supports MCQ + scenario question types with weighted scoring.
  */
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -12,6 +12,9 @@ const ANSWER_COLORS = {
   correct: '#34D399',
   incorrect: '#FB7185',
 }
+
+// Weighted scoring by question type
+const TYPE_WEIGHTS = { easy: 0.15, medium: 0.25, scenario: 0.35, hard: 0.25 }
 
 function SkeletonLoader() {
   return (
@@ -81,6 +84,7 @@ function ScoreSummary({ results, onContinue }) {
   }, [results.overall_accuracy])
 
   const maxLevel = results.max_difficulty || 'easy'
+  const scenarioCount = results.scenario_count || 0
 
   return (
     <motion.div
@@ -107,12 +111,20 @@ function ScoreSummary({ results, onContinue }) {
         {results.total_correct} of {results.total_questions} correct
       </p>
 
-      <p className="text-xs theme-text-muted mb-6">
-        Max difficulty reached:{' '}
-        <span className="font-bold" style={{ color: DIFFICULTY_COLORS[maxLevel] }}>
-          {DIFFICULTY_LABELS[maxLevel]}
+      <div className="flex items-center justify-center gap-3 text-xs theme-text-muted mb-6">
+        <span>
+          Max difficulty:{' '}
+          <span className="font-bold" style={{ color: DIFFICULTY_COLORS[maxLevel] }}>
+            {DIFFICULTY_LABELS[maxLevel]}
+          </span>
         </span>
-      </p>
+        {scenarioCount > 0 && (
+          <>
+            <span>&middot;</span>
+            <span>{scenarioCount} scenario{scenarioCount !== 1 ? 's' : ''} completed</span>
+          </>
+        )}
+      </div>
 
       <div className="space-y-2 mb-6 max-w-sm mx-auto">
         {results.per_skill.map((s, i) => (
@@ -165,7 +177,7 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
   const [loadingMsg, setLoadingMsg] = useState('Generating AI questions...')
   const [currentIndex, setCurrentIndex] = useState(0)
   const [userAnswers, setUserAnswers] = useState([])
-  const [feedback, setFeedback] = useState(null) // { index, isCorrect }
+  const [feedback, setFeedback] = useState(null) // { index, isCorrect, explanation }
   const [results, setResults] = useState(null)
   const [error, setError] = useState(null)
 
@@ -174,7 +186,7 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
   const [consecutiveCorrect, setConsecutiveCorrect] = useState(0)
   const [consecutiveIncorrect, setConsecutiveIncorrect] = useState(0)
   const [maxDifficultyReached, setMaxDifficultyReached] = useState('easy')
-  const [questionDetails, setQuestionDetails] = useState([]) // { difficulty, timeTaken, correct }
+  const [questionDetails, setQuestionDetails] = useState([])
 
   useEffect(() => {
     let cancelled = false
@@ -190,7 +202,6 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
       } catch {
         if (cancelled) return
         setLoadingMsg('Using optimized question set...')
-        // Try once more - the backend has fallback built in
         try {
           const data = await generateAssessment(skills)
           if (cancelled) return
@@ -213,16 +224,22 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
   }, [skills])
 
   const handleAnswer = useCallback((answerIndex) => {
-    if (feedback) return // prevent double-click
+    if (feedback) return
 
-    const isCorrect = answerIndex === questions[currentIndex].correct
-    setFeedback({ index: answerIndex, isCorrect })
+    const q = questions[currentIndex]
+    const isCorrect = answerIndex === q.correct
+    const isScenario = q.type === 'scenario'
+
+    setFeedback({
+      index: answerIndex,
+      isCorrect,
+      explanation: isScenario ? q.explanation : null,
+    })
 
     const newAnswers = [...userAnswers, answerIndex]
     setUserAnswers(newAnswers)
 
-    // Track question details for adaptive difficulty
-    const newDetail = { difficulty: currentDifficulty, correct: isCorrect }
+    const newDetail = { difficulty: currentDifficulty, correct: isCorrect, type: q.type || 'mcq' }
     const newDetails = [...questionDetails, newDetail]
     setQuestionDetails(newDetails)
 
@@ -251,24 +268,39 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
     const newMaxDifficulty = DIFFICULTY_ORDER[newMaxIdx]
     setMaxDifficultyReached(newMaxDifficulty)
 
-    // Show feedback briefly then advance
+    // Longer feedback for scenarios with explanations
+    const feedbackDelay = isScenario && q.explanation ? 2500 : 800
+
     setTimeout(() => {
       setFeedback(null)
       if (currentIndex + 1 < questions.length) {
         setCurrentIndex(currentIndex + 1)
       } else {
-        // Quiz complete - compute results client-side
+        // Quiz complete — compute weighted results client-side
         const skillScores = {}
         const confidenceMap = {}
         for (const s of skills) {
           confidenceMap[s.skill] = s.confidence || 5
         }
 
+        let scenarioCount = 0
         for (let i = 0; i < questions.length; i++) {
-          const q = questions[i]
-          if (!skillScores[q.skill]) skillScores[q.skill] = { correct: 0, total: 0 }
-          if (newAnswers[i] === q.correct) skillScores[q.skill].correct++
-          skillScores[q.skill].total++
+          const quest = questions[i]
+          if (!skillScores[quest.skill]) {
+            skillScores[quest.skill] = { weightedCorrect: 0, weightedTotal: 0, rawCorrect: 0, rawTotal: 0 }
+          }
+
+          const qType = quest.type === 'scenario' ? 'scenario' : quest.difficulty || 'medium'
+          const weight = TYPE_WEIGHTS[qType] || TYPE_WEIGHTS.medium
+
+          if (quest.type === 'scenario') scenarioCount++
+
+          if (newAnswers[i] === quest.correct) {
+            skillScores[quest.skill].weightedCorrect += weight
+            skillScores[quest.skill].rawCorrect++
+          }
+          skillScores[quest.skill].weightedTotal += weight
+          skillScores[quest.skill].rawTotal++
         }
 
         const perSkill = []
@@ -278,7 +310,7 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
         let gapCount = 0
 
         for (const [skill, scores] of Object.entries(skillScores)) {
-          const accuracy = scores.total > 0 ? (scores.correct / scores.total) * 100 : 0
+          const accuracy = scores.weightedTotal > 0 ? (scores.weightedCorrect / scores.weightedTotal) * 100 : 0
           const selfReported = (confidenceMap[skill] || 5) * 10
           const gap = selfReported - accuracy
           const status = gap > 15 ? 'overconfident' : gap < -15 ? 'hidden_strength' : 'verified'
@@ -289,12 +321,12 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
             self_reported: selfReported,
             gap: Math.round(gap * 10) / 10,
             status,
-            correct_count: scores.correct,
-            total_count: scores.total,
+            correct_count: scores.rawCorrect,
+            total_count: scores.rawTotal,
           })
 
-          totalCorrect += scores.correct
-          totalQ += scores.total
+          totalCorrect += scores.rawCorrect
+          totalQ += scores.rawTotal
           totalGap += gap
           gapCount++
         }
@@ -320,9 +352,10 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
           total_correct: totalCorrect,
           total_questions: totalQ,
           max_difficulty: newMaxDifficulty,
+          scenario_count: scenarioCount,
         })
       }
-    }, 800)
+    }, feedbackDelay)
   }, [feedback, questions, currentIndex, userAnswers, skills, currentDifficulty, consecutiveCorrect, consecutiveIncorrect, maxDifficultyReached, questionDetails])
 
   if (loading) {
@@ -363,6 +396,8 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
   const q = questions[currentIndex]
   if (!q) return null
 
+  const isScenario = q.type === 'scenario'
+
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
@@ -383,6 +418,7 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
           exit={{ x: -100, opacity: 0 }}
           transition={{ duration: 0.3, ease: 'easeOut' }}
         >
+          {/* Badges row */}
           <div className="mb-2 flex items-center gap-2">
             <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-neon-cyan/10 text-neon-cyan uppercase tracking-wider">
               {q.skill}
@@ -396,10 +432,32 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
             >
               {DIFFICULTY_LABELS[currentDifficulty]}
             </span>
+            {isScenario && (
+              <span
+                className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border"
+                style={{
+                  backgroundColor: 'rgba(251, 146, 60, 0.10)',
+                  color: '#FB923C',
+                  borderColor: 'rgba(251, 146, 60, 0.30)',
+                }}
+              >
+                Scenario
+              </span>
+            )}
           </div>
 
-          <p className="theme-text font-medium text-base mb-4">{q.question}</p>
+          {/* Question text — scenario gets distinct styling */}
+          <div
+            className={`rounded-xl mb-4 ${isScenario ? 'p-4 border' : ''}`}
+            style={isScenario ? {
+              backgroundColor: 'rgba(251, 146, 60, 0.05)',
+              borderColor: 'rgba(251, 146, 60, 0.15)',
+            } : undefined}
+          >
+            <p className="theme-text font-medium text-base">{q.question}</p>
+          </div>
 
+          {/* Answer options */}
           <div className="space-y-2">
             {q.options.map((option, i) => {
               let borderColor = 'var(--border-subtle)'
@@ -447,6 +505,31 @@ export default function SkillQuiz({ skills, onComplete, onSkip }) {
               )
             })}
           </div>
+
+          {/* Explanation display for scenario questions */}
+          <AnimatePresence>
+            {feedback && feedback.explanation && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, height: 0 }}
+                animate={{ opacity: 1, y: 0, height: 'auto' }}
+                exit={{ opacity: 0, y: -10, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mt-4 p-4 rounded-xl border"
+                style={{
+                  backgroundColor: 'rgba(56, 189, 248, 0.05)',
+                  borderColor: 'rgba(56, 189, 248, 0.20)',
+                }}
+              >
+                <div className="flex items-start gap-2">
+                  <span className="text-neon-cyan text-sm mt-0.5">💡</span>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider font-bold text-neon-cyan mb-1">Explanation</p>
+                    <p className="text-sm theme-text-secondary leading-relaxed">{feedback.explanation}</p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </AnimatePresence>
     </div>

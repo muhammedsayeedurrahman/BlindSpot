@@ -38,39 +38,21 @@ def _check_rate_limit(client_ip):
 
 
 def _generate_explanation(context_type, data):
-    """Generate explanation via Gemini, with fallback to templates."""
-    try:
-        import google.generativeai as genai
+    """Generate explanation via AI providers, with fallback to templates."""
+    from models.ai_provider import AIProvider
 
-        api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-        if not api_key:
-            return FALLBACK_TEMPLATES.get(context_type, FALLBACK_TEMPLATES["next_step"])
+    prompts = {
+        "skill_risk": f"In 2-3 sentences, explain why the skill '{data.get('skill', 'this skill')}' is at risk in the job market. Be specific about automation trends and market demand shifts. Data: {json.dumps(data)}",
+        "role_fit": f"In 2-3 sentences, explain why the role '{data.get('role', 'this role')}' is a good fit based on the user's skills. Mention the match score of {data.get('match_score', 'N/A')}% and what skills they'd need. Data: {json.dumps(data)}",
+        "next_step": f"In 2-3 sentences, explain why this is the recommended next step for the user's career growth. Be encouraging but specific. Data: {json.dumps(data)}",
+    }
 
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-2.0-flash")
+    prompt = prompts.get(context_type, prompts["next_step"])
+    result = AIProvider().generate(prompt, max_tokens=256)
+    if result:
+        return result
 
-        prompts = {
-            "skill_risk": f"In 2-3 sentences, explain why the skill '{data.get('skill', 'this skill')}' is at risk in the job market. Be specific about automation trends and market demand shifts. Data: {json.dumps(data)}",
-            "role_fit": f"In 2-3 sentences, explain why the role '{data.get('role', 'this role')}' is a good fit based on the user's skills. Mention the match score of {data.get('match_score', 'N/A')}% and what skills they'd need. Data: {json.dumps(data)}",
-            "next_step": f"In 2-3 sentences, explain why this is the recommended next step for the user's career growth. Be encouraging but specific. Data: {json.dumps(data)}",
-        }
-
-        prompt = prompts.get(context_type, prompts["next_step"])
-
-        response = model.generate_content(
-            prompt,
-            generation_config=genai.types.GenerationConfig(
-                temperature=0.7,
-                max_output_tokens=256,
-            ),
-            request_options={"timeout": 5},
-        )
-
-        return response.text.strip()
-
-    except Exception as e:
-        logger.warning("Gemini explanation failed: %s", e)
-        return FALLBACK_TEMPLATES.get(context_type, FALLBACK_TEMPLATES["next_step"])
+    return FALLBACK_TEMPLATES.get(context_type, FALLBACK_TEMPLATES["next_step"])
 
 
 class handler(BaseHTTPRequestHandler):
